@@ -3,8 +3,10 @@ from itertools import combinations
 from scipy.stats import chi2_contingency
 
 class PC:
-    def __init__(self, alpha=0.01, directional=False):
+    def __init__(self, alpha=0.01, endogeneous=[], exogeneous=[], directional=False):
         self.alpha = alpha
+        self.endogeneous = endogeneous
+        self.exogeneous = exogeneous
         self.directional = directional
         
     def causalDiscovery(self, data: pd.DataFrame):
@@ -37,19 +39,48 @@ class PC:
                         self.graph[X].difference_update( [(Y)] )
                         self.graph[Y].difference_update( [(X)] )
                         
-                        if self.directional: # Optional step to remove separating implications
-                            for z in Z:
-                                self.graph[X].difference_update( [(z)] )
-                                self.graph[Y].difference_update( [(z)] )
-                        
                         self.separatingSets.append(((X, Y), Z))
                         break
             print(f'Depth {depth} completed')
             depth += 1
-            
+
+        self.__cleanGraph()
         
         return self.graph, self.separatingSets
     
+    def __cleanGraph(self):
+        if self.directional:
+            for nodes, Z in self.separatingSets:
+                for z in Z:
+                    X, Y = nodes
+                    self.graph[X].difference_update( [(z)] )
+                    self.graph[Y].difference_update( [(z)] )
+        
+        
+        for node in self.exogeneous:
+            self.__setExogeneous(node)
+            
+        for node in self.endogeneous:
+            self.__setEndogeneous(node)
+        
+        self.__removeBidirectionalEdges()
+    
+    def __setEndogeneous(self, node):
+        while len(self.graph[node]) != 0:
+            addjacent = self.graph[node].pop()
+            self.graph[addjacent].add(node)
+        
+    def __setExogeneous(self, node):
+        for key, addjacents in self.graph.items():
+            if node in addjacents:
+                addjacents.remove(node)
+                self.graph[node].add(key)
+    
+    def __removeBidirectionalEdges(self):
+        for key, value in self.graph.items():
+            for addjacent in value:
+                if key in self.graph[addjacent]:
+                    self.graph[addjacent].remove(key)
         
     def __adjacent(self, node: str)->set:
         return set(self.graph[node])
