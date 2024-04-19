@@ -3,8 +3,9 @@ from itertools import combinations
 from scipy.stats import chi2_contingency
 
 class PC:
-    def __init__(self, alpha=0.01):
+    def __init__(self, alpha=0.01, directional=False):
         self.alpha = alpha
+        self.directional = directional
         
     def causalDiscovery(self, data: pd.DataFrame):
         # Initialize the complete graph
@@ -35,6 +36,12 @@ class PC:
                     if p_value > self.alpha:
                         self.graph[X].difference_update( [(Y)] )
                         self.graph[Y].difference_update( [(X)] )
+                        
+                        if self.directional: # Optional step to remove separating implications
+                            for z in Z:
+                                self.graph[X].difference_update( [(z)] )
+                                self.graph[Y].difference_update( [(z)] )
+                        
                         self.separatingSets.append(((X, Y), Z))
                         break
             print(f'Depth {depth} completed')
@@ -42,6 +49,7 @@ class PC:
             
         
         return self.graph, self.separatingSets
+    
         
     def __adjacent(self, node: str)->set:
         return set(self.graph[node])
