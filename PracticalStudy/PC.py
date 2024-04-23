@@ -1,6 +1,6 @@
 import pandas as pd
 from itertools import combinations
-from scipy.stats import chi2_contingency
+from scipy.stats import kstest, chi2_contingency
 
 class PC:
     def __init__(self, alpha=0.01, endogeneous=[], exogeneous=[], directional=False):
@@ -18,7 +18,7 @@ class PC:
         
         # Case with depth=0
         for X, Y in combinations(self.graph.keys(), 2):
-            p_value = chi2_contingency(pd.DataFrame([data[X], data[Y]]).T)[1]
+            p_value = kstest(data[X], data[Y])[1]
             if p_value > self.alpha:
                 self.graph[X].difference_update( [(Y)] )
                 self.graph[Y].difference_update( [(X)] )
