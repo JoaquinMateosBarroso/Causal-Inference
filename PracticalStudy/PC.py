@@ -1,14 +1,17 @@
 import pandas as pd
 from itertools import combinations
-from scipy.stats import kstest, chi2_contingency
+from scipy.stats import kstest, chi2_contingency, distributions
+from numba import njit
 
 class PC:
-    def __init__(self, alpha=0.01, endogeneous=[], exogeneous=[], directional=False):
+    def __init__(self, alpha=0.01, endogeneous=[], exogeneous=[], directional=False, maxSeparatingDepth=10):
         self.alpha = alpha
         self.endogeneous = endogeneous
         self.exogeneous = exogeneous
         self.directional = directional
-        
+        self.maxDepth = maxSeparatingDepth
+
+
     def causalDiscovery(self, data: pd.DataFrame):
         # Initialize the complete graph
         self.graph = {column: set(data.columns.drop(column)) \
@@ -32,10 +35,8 @@ class PC:
                 if Y not in self.__adjacent(X):
                     continue # We just want adjacent nodes
                 
-                for Z in combinations(self.__adjacent(X).difference(Y), depth):
-                    p_value = chi2_contingency(pd.crosstab(index=[data[X], data[Y]], 
-                                    columns=[data[z] for z in Z]))[1]
-                    if p_value > self.alpha:
+                for Z in combinations(self.__adjacent(X).difference({Y}), depth):
+                    if self.__testConditionalIndependence(X, Y, list(Z), data):
                         self.graph[X].difference_update( [(Y)] )
                         self.graph[Y].difference_update( [(X)] )
                         
@@ -87,8 +88,36 @@ class PC:
 
     def __testStopCriteria(self, depth):
         '''Returns True if the algorithm should stop, False otherwise'''
+        if depth > self.maxDepth:
+            return True
+        
         for X, Y in combinations(self.graph.keys(), 2):
             if len(self.__adjacent(X).difference(Y)) > depth:
                 return False
         return True
 
+    def __testConditionalIndependence(self, X, Y, Z, data):
+        '''Returns True if X and Y are conditionally independent given Z, False otherwise'''        
+        p_values = []
+        for z in self.__allValuesOf(Z, data):
+            conditionalData = data.loc[(data[Z]==z).all(axis=1)]
+            
+            res = chi2_contingency(pd.crosstab(conditionalData[X], conditionalData[Y]))
+            
+            p_values.append(res[1])
+        
+        
+        # Bonferroni correction
+        adjusted_alpha = self.alpha / len(p_values)
+        
+        # Check if any p-value is significant after Bonferroni correction
+        if any(p_value < adjusted_alpha for p_value in p_values):
+            return False # H0: X and Y are dependent given Z
+        else:
+            return True # H1: X and Y are independent given Z
+            
+            
+    def __allValuesOf(self, nodes, data):
+        '''Returns all possible values of the nodes in the dataframe data'''
+        return data[nodes].drop_duplicates().values
+    
