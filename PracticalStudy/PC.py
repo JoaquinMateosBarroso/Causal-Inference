@@ -106,7 +106,6 @@ class PC:
             
             p_values.append(res[1])
         
-        
         # Bonferroni correction
         adjusted_alpha = self.alpha / len(p_values)
         
