@@ -3,6 +3,7 @@ tigramite-example/Runge_Causal_Inference_for_Time_Series_NREE.pdf
 
 # Google development platform
 .idx
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
