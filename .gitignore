@@ -1,6 +1,8 @@
 # A paper I have in local
-/tigramite-example/Runge_Causal_Inference_for_Time_Series_NREE.pdf
+tigramite-example/Runge_Causal_Inference_for_Time_Series_NREE.pdf
 
+# Google development platform
+.idx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
