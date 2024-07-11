@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Inference</title>
+    <link rel="stylesheet" href="/frontend/static/basic-pc/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Basic PC algorithm for Causal Discovery</h1>
+        <input class="choose-file" type="file" id="csvFileInput" accept=".csv"/>
+    </div>
+    
+    <div class="container">
+        <div id="columns" class="column-container">
+            <div class="column" id="default-column" ondrop="drop(event, 'default-column')" ondragover="allowDrop(event)">
+                <h2>Default</h2>
+            </div>
+            <div class="column" id="exogeneous-column" ondrop="drop(event, 'exogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Exogeneous</h2>
+            </div>
+            <div class="column" id="endogeneous-column" ondrop="drop(event, 'endogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Endogeneous</h2>
+            </div>
+        </div>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/frontend/static/basic-pc/script.js"></script>
+
+    <div class="container">
+        <button onclick="callBasicPC()" class="calling-button">Obtain causalities</button>
+    </div>
+</body>
+</html>
