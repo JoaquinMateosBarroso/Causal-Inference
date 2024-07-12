@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Causal Inference</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link rel="stylesheet" href="/frontend/static/style.css">
     <link rel="stylesheet" href="/frontend/static/basic-pc/style.css">
 </head>
 <body>
     <div class="container">
         <h1 class="title">Basic PC algorithm for Causal Discovery</h1>
-        <input class="choose-file" type="file" id="csvFileInput" accept=".csv"/>
+        <div class="horizontal-container">
+            <input class="choose-file" type="file" id="csvFileInput" accept=".csv"/>
+            <button class="toy-dataset-button" id="toyDatasetChosal" onclick="chooseToyDataset('titanic_no_id.csv')">Use toy dataset (Titanic)</button>
+        </div>
     </div>
     
     <div class="container">
@@ -28,8 +33,14 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="/frontend/static/basic-pc/script.js"></script>
 
-    <div class="container">
-        <button onclick="callBasicPC()" class="calling-button">Obtain causalities</button>
+    <div class="calling-container">
+        <button onclick="callBasicPC()" class="calling-button" id="obtain-causalities-button">Obtain causalities</button>
+        <div id="loading-container">
+            <img src="/frontend/static/images/loading.gif" alt="Loading..." class="loading-gif">
+        </div>
     </div>
+
+    <div id="graph-container"></div>
+
 </body>
 </html>

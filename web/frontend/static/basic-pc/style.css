@@ -1,38 +1,25 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 40px 0;
-    padding: 40px;
-    display: block;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    box-sizing: border-box;
-}
-
-.container {
-    display: flex;
-    justify-content: center;
-    flex-direction: column; /* Optional: If you want items stacked vertically */
-    align-items: center; /* Optional: Align items horizontally */
-    text-align: center; /* Optional: Align text within elements */
-}
-
-.title {
-    color: #3444d0c3;
-    margin-bottom: 20px; /* Space below the title */
-}
-
 .choose-file {
     background-color: #fff;
     width: 40%;
     padding: 15px;
-    margin: 20px 0; /* Increased margin for more separation */
+    margin: 20px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease-in-out;
     cursor: pointer;
+}
+
+.toy-dataset-button {
+    background-color: #6d6d6d;
+    width: 40%;
+    padding: 15px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
 }
 
 
@@ -66,6 +53,7 @@ body {
 .column-container:hover {
     transform: scale(1.02);
 }
+
 .column-item {
     background-color: #fff;
     padding: 10px;
@@ -96,9 +84,50 @@ body {
     text-decoration: none;
     transition: background-color 0.3s;
 
-    display: none;
+    visibility: hidden;
 }
 
 .calling-button:hover {
     background-color: #45a049;
+}
+
+.calling-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.loading-gif {
+    display: block;
+    margin: 0 auto;
+    width: 70px;
+    height: 70px;
+}
+
+#loading-container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: center;
+    padding: 20px;
+    margin: 20px 20px;
+    transition: transform 0.3s ease-in-out;
+    visibility: hidden;
+}
+
+#graph-container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: center;
+    width: 80%;
+    height: 80%;
+    padding: 20px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #a0a5a7, #d7e4ed);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    visibility: hidden;
 }

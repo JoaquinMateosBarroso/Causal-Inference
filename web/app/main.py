@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, UploadFile
+from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
@@ -22,16 +22,32 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
-from app.parametersDefinition import BasicPC_parameters
-from app.algorithms.basicPC import callBasicPC
 @app.get("/basic-pc")
-async def readIndex(request: Request, 
-                    dataFile: UploadFile | None = None, 
-                    parameters: BasicPC_parameters | None = None):
-    if dataFile is None: # No file uploaded
-        response = FileResponse("frontend/static/basic-pc/index.html")
-    else:
-        response = callBasicPC(dataFile, parameters)
+async def readBasicPCIndex(request: Request):
+    response = FileResponse("frontend/static/basic-pc/index.html")
     return response
+
+from app.parametersDefinition import BasicPC_parameters
+from typing import List
+from app.algorithms.basicPC import callBasicPC  
+@app.put("/basic-pc")
+async def executeBasicPC(request: Request,
+                defaultFeatures: str,
+                endogeneousFeatures: str,
+                exogeneousFeatures: str,
+                datasetFile: UploadFile = File(...)):
+    
+    
+    pcParameters = BasicPC_parameters(
+            # I use the list comprehension to avoid empty strings
+            defaultFeatures=[feature for feature in defaultFeatures.split(",") if feature],
+            endogeneousFeatures=[feature for feature in endogeneousFeatures.split(",") if feature],
+            exogeneousFeatures=[feature for feature in exogeneousFeatures.split(",") if feature])
+    
+    
+    
+    response = await callBasicPC(datasetFile, pcParameters)
+    return response
+        
 
 

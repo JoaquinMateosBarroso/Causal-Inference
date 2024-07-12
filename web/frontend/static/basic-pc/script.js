@@ -1,6 +1,9 @@
-document.getElementById('csvFileInput').addEventListener('change', function (event) {
-    const file = event.target.files[0];
+let chosenDatasetFile = null;
+
+function loadCSV(file) {
     if (file) {
+        chosenDatasetFile = file;
+
         const reader = new FileReader();
         reader.onload = function (e) {
             const csvData = e.target.result;
@@ -8,8 +11,18 @@ document.getElementById('csvFileInput').addEventListener('change', function (eve
             displayColumnNames(parsedData.columns);
         };
         reader.readAsText(file);
+
+        document.getElementById('csvFileInput').disabled = true;
+        document.getElementById('toyDatasetChosal').disabled = true;
     }
-});
+
+}
+
+function chooseToyDataset(datasetName) {
+    fetch('/frontend/static/toy-datasets/' + datasetName)
+        .then(response => response.blob())
+        .then(loadCSV);
+}
 
 function displayColumnNames(columns) {
     const columnContainer = document.getElementById('default-column');
@@ -28,9 +41,14 @@ function displayColumnNames(columns) {
     let callingButtons = document.getElementsByClassName('calling-button');
     
     for (let i=0; i<callingButtons.length; i++) {
-        callingButtons[i].style.display = 'block';
+        callingButtons[i].style.visibility = 'visible';
     }
 }
+
+document.getElementById('csvFileInput').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    loadCSV(file);    
+});
 
 
 function allowDrop(event) {
@@ -50,7 +68,77 @@ function drop(event, columnId) {
     target.appendChild(draggedElement);
 }
 
+
 function callBasicPC() {
+    document.getElementById('loading-container').style.visibility = 'visible';
+    document.getElementById('obtain-causalities-button').disabled = true;
+
+    const formData = new FormData();
+    formData.append('datasetFile', chosenDatasetFile);
     
+    function getFeaturesFromElement(element) {
+        return Array.from(element.children)
+            .map(column => column.id)
+            .slice(1); // remove the first element which is the column name
+    }
+    const defaultFeatures =  getFeaturesFromElement(document.getElementById('default-column'));
+    const exogeneousFeatures = getFeaturesFromElement(document.getElementById('exogeneous-column'));
+    const endogeneousFeatures = getFeaturesFromElement(document.getElementById('endogeneous-column'));
+    
+    let urlParams = '';
+    urlParams += `defaultFeatures=${defaultFeatures.toString()}`;
+    urlParams += `&exogeneousFeatures=${exogeneousFeatures.toString()}`;
+    urlParams += `&endogeneousFeatures=${endogeneousFeatures.toString()}`;
+    
+    
+    const baseUrl = '/basic-pc';
+    const url = `${baseUrl}?${urlParams}`;
+
+    fetch(url, {
+        method: 'PUT',
+        body: formData
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            drawGraph(data.graph);
+            document.getElementById('loading-container').style.visibility = 'hidden';
+            document.getElementById('graph-container').style.visibility = 'visible';
+        })
+    
+    async function drawGraph(graph) {
+        // Transform data into nodes and edges
+        const nodes = [];
+        const edges = [];
+
+        Object.keys(graph).forEach((key) => {
+            nodes.push({ id: key, label: key });
+            graph[key].forEach((target) => {
+                edges.push({ from: key, to: target });
+            });
+        });
+
+        // Create a network
+        const container = document.getElementById('graph-container');
+        const visData = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        const options = {
+            edges: {
+                arrows: {
+                    to: true // Show arrows indicating the direction of edges
+                }
+            }
+        };
+
+        // Initialize the network
+        const network = new vis.Network(container, visData, options);
+    }
 
 }

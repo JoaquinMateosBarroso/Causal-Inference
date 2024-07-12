@@ -2,10 +2,36 @@ from app.parametersDefinition import BasicPC_parameters
 from fastapi import UploadFile, Response
 import pandas as pd
 
-async def callBasicPC(dataFile: UploadFile, parameters: BasicPC_parameters) -> Response:
-    df = pd.read_csv(dataFile.file)
-    print(df)
-    return {}
+async def callBasicPC(datasetFile: UploadFile, parameters: BasicPC_parameters) -> Response:
+    data = pd.read_csv(datasetFile.file)
+    
+    # Eliminate unwanted columns
+    data = data[parameters.defaultFeatures + parameters.endogeneousFeatures + parameters.exogeneousFeatures]
+    
+    data.dropna(inplace=True) # Default behavior, to drop rows with missing values
+    
+    # Apply integer encoding to categorical variables
+    for column in data.columns:
+        if data[column].dtype == 'object':
+            data[column] = data[column].astype('category').cat.codes
+    
+    # Eliminate continuous variables
+    def discretize(data, column, bins):
+        data[column] = pd.cut(data[column], bins, labels=False)
+    for column in data.columns:
+        if data[column].unique().size > 10:
+            discretize(data, column, 10)
+    
+    pc = PC_(0.5, exogeneous=parameters.exogeneousFeatures, 
+                endogeneous=parameters.endogeneousFeatures,
+                directional=True, maxSeparatingDepth=2)
+    
+    graph, separatingSets = pc.causalDiscovery(data)
+    
+    separationInfo = f'Number of disconnections: {len(separatingSets)}\n' +\
+            str([f'{separatingSet[0]} are separated by {separatingSet[1]}' for separatingSet in separatingSets])
+            
+    return {'separationInfo': separationInfo, 'graph': graph}
     
     
 from itertools import combinations
