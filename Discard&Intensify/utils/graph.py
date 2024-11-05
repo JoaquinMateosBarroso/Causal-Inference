@@ -36,6 +36,10 @@ class DGraph:
         '''Return a copy of the edges of the graph'''
         return list(self._edges.copy())
     
+    def nOfEdges(self) -> int:
+        '''Return the number of edges in the graph'''
+        return len(self._edges)
+    
     def getAdjacencyDict(self) -> dict:
         '''Return a copy of the adjacency list of the graph'''
         return self._adjacencyDict.copy()
@@ -98,13 +102,27 @@ class DGraph:
         else:
             raise ValueError(f"Edge ({origin}, {destiny}) not found in the graph")
     
-    def reverseEdge(self, origin=None, destiny=None):
+    def reverseEdge(self, origin=None, destiny=None) -> bool:
         '''Reverse an edge from the graph.
-           If no edges are provided, there will be chosen a random edge to reverse.'''
+           If no edges are provided, there will be chosen a random edge to reverse.
+        '''
         if origin is None or destiny is None:
             origin, destiny = random.choice(list(self._edges))
         self.removeEdge(origin, destiny)
         self.addEdge(destiny, origin)
+        
+    def getNeighbourGraph(self):
+        '''Return a neighbour graph of the current graph'''
+        # If there are no edges, you can only add one
+        if (len(self._edges) == 0):
+            newGraph = self.copy()
+            newGraph.addEdge()
+        else:
+            movement = random.choice([self.addEdge, self.removeEdge, self.reverseEdge])
+            newGraph = self.copy()
+            movement(newGraph)
+        
+        return newGraph
     
     def copy(self):
         '''Return a copy of the graph'''
@@ -150,6 +168,7 @@ def createFullyConnectedDGraph(nodes: list) -> DGraph:
     '''Create a fully connected directed graph with given nodes'''
     edges = {(i, j) for i in nodes for j in nodes if i != j}
     return DGraph(edges)
+
     
 if __name__ == '__main__':
     '''Some test cases'''
