@@ -1,6 +1,6 @@
 import pandas as pd
 from itertools import combinations
-from scipy.stats import kstest, chi2_contingency, distributions
+from scipy.stats import kstest, chi2_contingency
 
 class PC:
     def __init__(self, alpha=0.01, endogeneous=[], exogeneous=[], directional=False, maxSeparatingDepth=10):
