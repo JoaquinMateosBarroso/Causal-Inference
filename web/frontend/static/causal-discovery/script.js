@@ -15,8 +15,8 @@ function loadCSV(file) {
         document.getElementById('csvFileInput').disabled = true;
         document.getElementById('toyDatasetChosal').disabled = true;
     }
-
 }
+
 
 function chooseToyDataset(datasetName) {
     fetch('/frontend/static/toy-datasets/' + datasetName)
@@ -139,6 +139,50 @@ function callBasicPC() {
 
         // Initialize the network
         const network = new vis.Network(container, visData, options);
-    }
 
+        // Scroll to the graph
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function callCausalDiscovery_TimeSeries() {
+    document.getElementById('loading-container').style.visibility = 'visible';
+    document.getElementById('obtain-causalities-button').disabled = true;
+
+    const formData = new FormData();
+    formData.append('datasetFile', chosenDatasetFile);
+
+    // The algorithm name is the last element in the URL
+    const algorithm = window.location.pathname.split('/').at(-1);
+
+    const baseUrl = '/causal-discovery-ts';
+    const url = `${baseUrl}/${algorithm}`;
+
+    fetch(url, {
+        method: 'PUT',
+        body: formData
+    })
+        .then(response => {
+            console.log(response);
+            if (!response.ok)
+                throw new Error('Network response was not ok');
+
+            return response.json();
+        })
+        .then(data => {
+            drawGraphImage(data.graph_image);
+            document.getElementById('loading-container').style.visibility = 'hidden';
+            document.getElementById('graph-container').style.visibility = 'visible';
+        })
+    
+    async function drawGraphImage(graph_image) {
+        console.log('graph_image', graph_image);
+        const container = document.getElementById('graph-container');
+        const img = document.createElement('img');
+        img.src = graph_image;
+        container.appendChild(img);
+
+        // Scroll to the graph
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
 }

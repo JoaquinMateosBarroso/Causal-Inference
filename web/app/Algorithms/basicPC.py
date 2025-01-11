@@ -22,7 +22,7 @@ async def callBasicPC(datasetFile: UploadFile, parameters: Parameters_CausalDisc
         if data[column].unique().size > 10:
             discretize(data, column, 10)
     
-    pc = PC_(0.5, exogeneous=parameters.exogeneousFeatures, 
+    pc = PC_(0.01, exogeneous=parameters.exogeneousFeatures, 
                 endogeneous=parameters.endogeneousFeatures,
                 directional=True, maxSeparatingDepth=2)
     

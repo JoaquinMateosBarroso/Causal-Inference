@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Request, UploadFile, File
+from fastapi import FastAPI, Request, Response, UploadFile, File
 from fastapi.responses import FileResponse
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.Algorithms.timeSeries import causal_discovery_from_time_series_algorithms
+from app.Algorithms.timeSeries import causal_discovery_from_time_series_algorithms, runCausalDiscoveryFromTimeSeries
 
 app = FastAPI()
 favicon_path = "frontend/static/favicon.ico"
@@ -37,8 +37,7 @@ async def read_causal_discovery_base(algorithm: str,
 from app.parametersDefinition import Parameters_CausalDiscoveryBase
 from app.Algorithms.basicPC import callBasicPC  
 @app.put("/basic-pc")
-async def executeBasicPC(request: Request,
-                defaultFeatures: str,
+async def executeBasicPC(defaultFeatures: str,
                 endogeneousFeatures: str,
                 exogeneousFeatures: str,
                 datasetFile: UploadFile = File(...)):
@@ -49,11 +48,8 @@ async def executeBasicPC(request: Request,
             endogeneousFeatures=[feature for feature in endogeneousFeatures.split(",") if feature],
             exogeneousFeatures=[feature for feature in exogeneousFeatures.split(",") if feature])
     
-    
-    
     response = await callBasicPC(datasetFile, pcParameters)
     return response
-        
 
 
 @app.get("/causal-discovery-ts/{algorithm}")
@@ -61,9 +57,16 @@ async def read_causal_discovery_base(algorithm: str,
                                      request: Request):
     response = templates.TemplateResponse("causal-discovery-ts/index.html",
                                 {"request": request,
-                                 "algorithm": algorithm})
-    
+                                 "algorithm": algorithm})    
     return response
+
+@app.put("/causal-discovery-ts/{algorithm}")
+async def executeCusalDiscovery_TimeSeries(algorithm: str,
+                                           datasetFile: UploadFile = File(...)):
+    graph_image = runCausalDiscoveryFromTimeSeries(algorithm, datasetFile)
+
+    return graph_image
+    return Response(content=graph_image, media_type="image/png")
 
 
 @app.get("/causal-discovery-compare-ts")

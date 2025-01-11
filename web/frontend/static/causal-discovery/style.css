@@ -92,7 +92,7 @@
 }
 
 .calling-container {
-    display: flex;
+    display: vertical;
     justify-content: center;
     align-items: center;
     text-align: center;
