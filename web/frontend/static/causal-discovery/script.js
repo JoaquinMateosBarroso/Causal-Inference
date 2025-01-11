@@ -158,31 +158,36 @@ function callCausalDiscovery_TimeSeries() {
     const baseUrl = '/causal-discovery-ts';
     const url = `${baseUrl}/${algorithm}`;
 
-    fetch(url, {
-        method: 'PUT',
-        body: formData
-    })
-        .then(response => {
-            console.log(response);
-            if (!response.ok)
-                throw new Error('Network response was not ok');
-
-            return response.json();
+    try {
+        fetch(url, {
+            method: 'PUT',
+            body: formData
         })
-        .then(data => {
-            drawGraphImage(data.graph_image);
-            document.getElementById('loading-container').style.visibility = 'hidden';
-            document.getElementById('graph-container').style.visibility = 'visible';
-        })
-    
-    async function drawGraphImage(graph_image) {
-        console.log('graph_image', graph_image);
-        const container = document.getElementById('graph-container');
-        const img = document.createElement('img');
-        img.src = graph_image;
-        container.appendChild(img);
+            .then(response => {
+                console.log(response);
+                if (!response.ok)
+                    throw new Error('Network response was not ok');
 
-        // Scroll to the graph
-        container.scrollIntoView({ behavior: 'smooth' });
+                return response.json();
+            })
+            .then(data => {
+                drawGraphImage(data.graph_image);
+                document.getElementById('loading-container').style.visibility = 'hidden';
+                document.getElementById('graph-container').style.visibility = 'visible';
+            })
+        
+        async function drawGraphImage(graph_image) {
+            console.log('graph_image', graph_image);
+            const container = document.getElementById('graph-container');
+            const img = document.createElement('img');
+            img.src = graph_image;
+            container.appendChild(img);
+
+            // Scroll to the graph
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        alert('An error occurred looking for the graph. Please try again.');
+        console.error('Error:', error);
     }
 }

@@ -2,7 +2,6 @@ import pandas as pd
 
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
-from tigramite.jpcmciplus import JPCMCIplus
 
 from tigramite.independence_tests.parcorr import ParCorr
 
@@ -15,7 +14,7 @@ import base64
 
 from tigramite import plotting as tp
 
-tigramite_algorithms = ['PCMCI', 'LPCMCI', 'JPCMCIplus']
+tigramite_algorithms = ['PCMCI', 'PCMCIplus', 'LPCMCI']
 def runTigramiteCausalDiscovery(algorithmName: str,
                                    data: pd.DataFrame,
                                    max_lag: int = 3,
@@ -38,12 +37,12 @@ def runTigramiteCausalDiscovery(algorithmName: str,
     if algorithmName == 'PCMCI':
         pcmci = PCMCI(dataframe=tigramite_dataframe, cond_ind_test=cond_ind_test)
         results = pcmci.run_pcmci(tau_max=max_lag)
+    elif algorithmName == 'PCMCIplus':
+        rpcmci = PCMCI(dataframe=tigramite_dataframe, cond_ind_test=cond_ind_test)
+        results = rpcmci.run_pcmciplus(tau_max=max_lag)
     elif algorithmName == 'LPCMCI':
         lpcmci = LPCMCI(dataframe=tigramite_dataframe, cond_ind_test=cond_ind_test)
         results = lpcmci.run_lpcmci(tau_max=max_lag, tau_min=1)
-    elif algorithmName == 'JPCMCIplus':
-        rpcmci = JPCMCIplus(dataframe=tigramite_dataframe, cond_ind_test=cond_ind_test)
-        results = rpcmci.run_jpcmciplus(tau_max=max_lag)
     else:
         raise ValueError(f'Unknown algorithm: {algorithmName}')
     
