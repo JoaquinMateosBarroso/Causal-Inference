@@ -8,24 +8,55 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Available Causal Inference tools</h1>
+        <h1 class="title">Static Causal Discovery</h1>
     </div>
     
     <div class="container">
         <div>
-            <a href="/basic-pc">
-            <div class="text-item">
-                    <h2>Basic PC Algorithm for Causal Discovery</h2>
-                </href>
-            </div>
-            </a>
-            <div class="text-item">
-                <h2>Coming soon...</h2>
-            </div>
-            <div class="text-item">
-                <h2>Coming soon...</h2>
-            </div>
+            {% for algorithm in causal_discovery_base_algorithms %}
+                <a href="/causal-discovery-base/{{ algorithm }}">
+                    <div class="text-item">
+                            <h2>{{ algorithm }}</h2>
+                        </href>
+                    </div>
+                </a>
+            {% endfor %}
         </div>
     </div>
+
+    
+    <div class="container">
+        <h1 class="title">Causal Discovery from Time Series (In development)</h1>
+    </div>
+    
+    <div class="container">
+        <div>
+            {% for algorithm in causal_discovery_from_time_series_algorithms %}
+                <a href="/causal-discovery-ts/{{ algorithm }}">
+                    <div class="text-item">
+                            <h2> {{ algorithm }} </h2>
+                        </href>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="container">
+        <h1 class="title">Compare Causal Discovery Methods (In development)</h1>
+    </div>
+    
+    <div class="container">
+        <div>
+            <a href="/causal-discovery-compare-ts/">
+                    <div class="text-item">
+                            <h2> Time Series </h2>
+                        </href>
+                    </div>
+                </a>
+        </div>
+    </div>
+
 </body>
 </html>

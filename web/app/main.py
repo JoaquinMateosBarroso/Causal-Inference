@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request, UploadFile, File
-from fastapi.responses import HTMLResponse
-from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from app.algorithms.tigramiteAlgorithms import tigramite_algorithms
 
 app = FastAPI()
 favicon_path = "frontend/static/favicon.ico"
@@ -14,7 +14,10 @@ templates = Jinja2Templates(directory="frontend/templates")
 
 @app.get("/")
 async def readIndex(request: Request):
-    response = templates.TemplateResponse("index.html", {"request": request})
+    response = templates.TemplateResponse("index.html",
+                    {"request": request,
+                    "causal_discovery_base_algorithms": ["basic-pc"],
+                    "causal_discovery_from_time_series_algorithms": tigramite_algorithms})
     return response
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -22,13 +25,16 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
-@app.get("/basic-pc")
-async def readBasicPCIndex(request: Request):
-    response = FileResponse("frontend/static/basic-pc/index.html")
+@app.get("/causal-discovery-base/{algorithm}")
+async def read_causal_discovery_base(algorithm: str,
+                                     request: Request):
+    response = templates.TemplateResponse("causal-discovery-base/index.html",
+                                {"request": request,
+                                 "algorithm": algorithm})
+    
     return response
 
 from app.parametersDefinition import BasicPC_parameters
-from typing import List
 from app.algorithms.basicPC import callBasicPC  
 @app.put("/basic-pc")
 async def executeBasicPC(request: Request,
@@ -36,7 +42,6 @@ async def executeBasicPC(request: Request,
                 endogeneousFeatures: str,
                 exogeneousFeatures: str,
                 datasetFile: UploadFile = File(...)):
-    
     
     pcParameters = BasicPC_parameters(
             # I use the list comprehension to avoid empty strings
@@ -51,3 +56,20 @@ async def executeBasicPC(request: Request,
         
 
 
+@app.get("/causal-discovery-ts/{algorithm}")
+async def read_causal_discovery_base(algorithm: str,
+                                     request: Request):
+    response = templates.TemplateResponse("causal-discovery-ts/index.html",
+                                {"request": request,
+                                 "algorithm": algorithm})
+    
+    return response
+
+
+@app.get("/causal-discovery-compare-ts")
+async def read_causal_discovery_compare_ts(request: Request):
+    response = templates.TemplateResponse("causal-discovery-compare-ts/index.html",
+                                {"request": request,
+                                 "causal_discovery_from_time_series_algorithms": tigramite_algorithms})
+    
+    return response
