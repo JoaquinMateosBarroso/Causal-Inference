@@ -1,8 +1,10 @@
-from app.algorithms.tigramiteAlgorithms import tigramite_algorithms, runTigramiteCausalDiscovery
+from app.Algorithms.tigramiteAlgorithms import tigramite_algorithms, runTigramiteCausalDiscovery
 
 
 
 causal_discovery_from_time_series_algorithms = tigramite_algorithms
+
+causal_discovery_from_time_series_metrics = ["F1", "AUROC", "SHD"]
 
 def runCausalDiscoveryFromTimeSeries(algorithm: str):
     """

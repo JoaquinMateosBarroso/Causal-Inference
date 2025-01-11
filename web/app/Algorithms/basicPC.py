@@ -1,8 +1,8 @@
-from app.parametersDefinition import BasicPC_parameters
+from app.parametersDefinition import Parameters_CausalDiscoveryBase
 from fastapi import UploadFile, Response
 import pandas as pd
 
-async def callBasicPC(datasetFile: UploadFile, parameters: BasicPC_parameters) -> Response:
+async def callBasicPC(datasetFile: UploadFile, parameters: Parameters_CausalDiscoveryBase) -> Response:
     data = pd.read_csv(datasetFile.file)
     
     # Eliminate unwanted columns

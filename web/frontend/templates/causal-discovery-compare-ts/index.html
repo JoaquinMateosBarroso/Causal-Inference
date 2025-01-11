@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Inference</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link rel="stylesheet" href="/frontend/static/style.css">
+    <link rel="stylesheet" href="/frontend/static/causal-discovery/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Compare different Causal Discovery methods for Time Series</h1>
+    </div>
+    
+    <div class="container">
+        <div id="columns" class="column-container">
+            <div class="column" id="exogeneous-column">
+            <h2>Algorithms</h2>
+            <form>
+                {% for algorithm in algorithms %}
+                <div class="checkbox-item">
+                    <input type="checkbox" id="{{ algorithm }}" name="algorithm" value="{{ algorithm }}">
+                    <label for="{{ algorithm }}">{{ algorithm }}</label>
+                </div>
+                {% endfor %}
+            </form>
+            </div>
+
+            <div class="column" id="exogeneous-column" ondrop="drop(event, 'exogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Datasets</h2>
+            </div>
+
+            <div class="column" id="exogeneous-column" ondrop="drop(event, 'exogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Metrics</h2>
+            </div>
+        </div>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/frontend/static/causal-discovery/script.js"></script>
+
+    <div class="calling-container">
+        <button onclick="callBasicPC()" class="calling-button" id="obtain-causalities-button">Obtain causalities</button>
+        <div id="loading-container">
+            <img src="/frontend/static/images/loading.gif" alt="Loading..." class="loading-gif">
+        </div>
+    </div>
+
+    <div id="graph-container"></div>
+
+</body>
+</html>

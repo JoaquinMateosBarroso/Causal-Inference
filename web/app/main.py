@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.algorithms.tigramiteAlgorithms import tigramite_algorithms
+from app.Algorithms.timeSeries import causal_discovery_from_time_series_algorithms
 
 app = FastAPI()
 favicon_path = "frontend/static/favicon.ico"
@@ -17,7 +17,7 @@ async def readIndex(request: Request):
     response = templates.TemplateResponse("index.html",
                     {"request": request,
                     "causal_discovery_base_algorithms": ["basic-pc"],
-                    "causal_discovery_from_time_series_algorithms": tigramite_algorithms})
+                    "causal_discovery_from_time_series_algorithms": causal_discovery_from_time_series_algorithms})
     return response
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -34,8 +34,8 @@ async def read_causal_discovery_base(algorithm: str,
     
     return response
 
-from app.parametersDefinition import BasicPC_parameters
-from app.algorithms.basicPC import callBasicPC  
+from app.parametersDefinition import Parameters_CausalDiscoveryBase
+from app.Algorithms.basicPC import callBasicPC  
 @app.put("/basic-pc")
 async def executeBasicPC(request: Request,
                 defaultFeatures: str,
@@ -43,7 +43,7 @@ async def executeBasicPC(request: Request,
                 exogeneousFeatures: str,
                 datasetFile: UploadFile = File(...)):
     
-    pcParameters = BasicPC_parameters(
+    pcParameters = Parameters_CausalDiscoveryBase(
             # I use the list comprehension to avoid empty strings
             defaultFeatures=[feature for feature in defaultFeatures.split(",") if feature],
             endogeneousFeatures=[feature for feature in endogeneousFeatures.split(",") if feature],
@@ -70,6 +70,6 @@ async def read_causal_discovery_base(algorithm: str,
 async def read_causal_discovery_compare_ts(request: Request):
     response = templates.TemplateResponse("causal-discovery-compare-ts/index.html",
                                 {"request": request,
-                                 "causal_discovery_from_time_series_algorithms": tigramite_algorithms})
+                                 "algorithms": causal_discovery_from_time_series_algorithms})
     
     return response
