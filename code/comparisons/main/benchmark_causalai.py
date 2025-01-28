@@ -17,9 +17,6 @@ from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI
 
 
 
-
-
-
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
             'LPCMCI': partial(Extractor_LPCMCI),
@@ -46,9 +43,10 @@ for num_vars in [5, 10, 20, 50]:
                                 data_max_lag=3,
                                 fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
-    for algo in algo_dict.keys():
-        times_taken = [results[algo]['time_taken'] for results in b.results_full]
-        times_per_vars[algo] = np.mean(times_taken)
+    
+    b.aggregate_results('time_taken')
+    
+    times_per_vars[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
 
 
 with open('results_50vars.txt', 'w') as f:
