@@ -95,6 +95,36 @@ class Extractor_LPCMCI():
 
         return graph_parents
 
+class Extractor_FullCI():
+    def __init__(self, data: TimeSeriesData, cond_ind_test: str = 'parcorr'):
+        '''
+        :param data: this is a TabularData object and contains attributes likes data.data_arrays, which is a
+            list of numpy array of shape (observations N, variables D).
+        :type data: TabularData object
+        '''
+        self.data = data
+        self.dataframe = convert_to_tigramite_format(data)
+        
+        self.cond_ind_test = {'parcorr': ParCorr(significance='analytic')}[cond_ind_test]
+        
+        self.pcmci = PCMCI(dataframe=self.dataframe,
+                           cond_ind_test=self.cond_ind_test)
+        
+
+    def run(self, **kargs):
+        '''
+        Get the parents graph
+        '''
+        tau_max = kargs['tau_max']
+        pc_alpha = kargs['pc_alpha']
+        
+        results = self.pcmci.run_fullci(tau_min=1, tau_max=tau_max, pc_alpha=pc_alpha)
+        
+        parents_graph = self.pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
+        
+        result = convert_to_causalai_format(parents_graph, self.data.var_names)
+        
+        return result
 
 def extract_parents_lpcmci(dataframe) -> tuple[dict, float]:
     '''

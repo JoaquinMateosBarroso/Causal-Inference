@@ -13,13 +13,14 @@ from causalai.models.time_series.var_lingam import VARLINGAM
 from functools import partial
 import numpy as np
 
-from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI
+from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI
 
 
 
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
             'LPCMCI': partial(Extractor_LPCMCI),
+            'FullCI': partial(Extractor_FullCI),
             'PC-PartialCorr':partial(PC, CI_test=PartialCorrelation(), use_multiprocessing=False,
                                       prior_knowledge=None),
             'Granger':partial(Granger, use_multiprocessing=False, prior_knowledge=None),
@@ -28,6 +29,7 @@ algo_dict = {
 kargs_dict = {
             'PCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
             'LPCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
+            'FullCI': {'pc_alpha': 0.01},
             'PC-PartialCorr': {'max_condition_set_size': 4, 'pvalue_thres': 0.01, 'max_lag': 3},
             'Granger': {'pvalue_thres': 0.01, 'max_lag': 3},
             'VARLINGAM': {'pvalue_thres': 0.01, 'max_lag': 3}}
@@ -38,8 +40,8 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [5, 10, 20, 50]:
-    b.benchmark_sample_complexity(T_list=[100, 500, 2000], num_vars=num_vars, graph_density=0.2,\
+for num_vars in [5, 10, 20, 20]:
+    b.benchmark_sample_complexity(T_list=[200, 800, 2000], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
