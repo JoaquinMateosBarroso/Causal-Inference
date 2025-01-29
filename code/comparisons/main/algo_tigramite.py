@@ -118,7 +118,7 @@ class Extractor_FullCI():
         tau_max = kargs['tau_max']
         pc_alpha = kargs['pc_alpha']
         
-        results = self.pcmci.run_fullci(tau_min=1, tau_max=tau_max, pc_alpha=pc_alpha)
+        results = self.pcmci.run_fullci(tau_min=1, tau_max=tau_max, alpha_level=pc_alpha)
         
         parents_graph = self.pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
         
