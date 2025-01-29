@@ -29,7 +29,7 @@ algo_dict = {
 kargs_dict = {
             'PCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
             'LPCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
-            'FullCI': {'pc_alpha': 0.01},
+            'FullCI': {'tau_max': 3, 'pc_alpha': 0.01},
             'PC-PartialCorr': {'max_condition_set_size': 4, 'pvalue_thres': 0.01, 'max_lag': 3},
             'Granger': {'pvalue_thres': 0.01, 'max_lag': 3},
             'VARLINGAM': {'pvalue_thres': 0.01, 'max_lag': 3}}
