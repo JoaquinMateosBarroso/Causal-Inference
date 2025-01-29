@@ -61,15 +61,19 @@ with open('times_per_vars.txt', 'w') as f:
 plt=b.plot('f1_score', xaxis_mode=1)
 plt.savefig('f1_score.pdf')
 plt.show()
+plt.clf()
 
 plt=b.plot('precision', xaxis_mode=1)
 plt.savefig('precision.pdf')
 plt.show()
+plt.clf()
 
 plt=b.plot('recall', xaxis_mode=1)
 plt.savefig('recall.pdf')
 plt.show()
+plt.clf()
 
 plt=b.plot('time_taken', xaxis_mode=1)
 plt.savefig('time_taken.pdf')
 plt.show()
+plt.clf()
