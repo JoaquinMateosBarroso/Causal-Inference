@@ -40,7 +40,7 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [5, 10, 20]:
+for num_vars in [10]:
     b.benchmark_sample_complexity(T_list=[200, 800, 2000], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
@@ -50,6 +50,7 @@ for num_vars in [5, 10, 20]:
     
     times_per_vars[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
 
+    print(f'Finished {num_vars} variables')
 
 with open('results_50vars.txt', 'w') as f:
     f.write(str(b.results_full))
@@ -58,9 +59,17 @@ with open('times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))
 
 plt=b.plot('f1_score', xaxis_mode=1)
-plt.savefig('f1_score_50vars.pdf')
+plt.savefig('f1_score.pdf')
+plt.show()
+
+plt=b.plot('precision', xaxis_mode=1)
+plt.savefig('precision.pdf')
+plt.show()
+
+plt=b.plot('recall', xaxis_mode=1)
+plt.savefig('recall.pdf')
 plt.show()
 
 plt=b.plot('time_taken', xaxis_mode=1)
-plt.savefig('time_taken_50vars.pdf')
+plt.savefig('time_taken.pdf')
 plt.show()
