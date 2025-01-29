@@ -35,12 +35,12 @@ kargs_dict = {
             'VARLINGAM': {'pvalue_thres': 0.01, 'max_lag': 3}}
 
 b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
-                             num_exp=10, custom_metric_dict=None)
+                             num_exp=5, custom_metric_dict=None)
 
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [5, 10, 20, 20]:
+for num_vars in [5, 10, 20]:
     b.benchmark_sample_complexity(T_list=[200, 800, 2000], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
