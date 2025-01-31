@@ -5,6 +5,7 @@ import tigramite
 import tigramite.data_processing
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.independence_tests.cmisymb import CMIsymb
+from tigramite.independence_tests.gsquared import Gsquared
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
 
@@ -136,12 +137,21 @@ class Extractor_FullCI():
 
 
 class Extractor_DiscretizedPC():
-    def __init__(self, data: TimeSeriesData, cond_ind_test: str = 'CMIsymb',
+    def __init__(self, data: TimeSeriesData, cond_ind_test: str = 'CMIsymb_fixed_thres',
                             n_symbs: int = 5):
         '''
         :param data: this is a TabularData object and contains attributes likes data.data_arrays, which is a
             list of numpy array of shape (observations N, variables D).
         :type data: TabularData object
+        
+        :param cond_ind_test: the conditional independence test to use
+        Possible values are:
+        - 'CMIsymb_fixed_thres'
+        - 'CMIsymb_analytic'
+        - 'Gsquared'
+        :type cond_ind_test: str
+        
+        :param n_symbs: the number of symbols to use for discretization
         '''
         self.data = data
         
@@ -159,7 +169,9 @@ class Extractor_DiscretizedPC():
         
         self.discretized_data = convert_to_tigramite_format(discretized_data)
         
-        cond_ind_test = {'CMIsymb': CMIsymb(significance='fixed_thres')}[cond_ind_test]
+        cond_ind_test = {'CMIsymb_fixed_thres': CMIsymb(significance='fixed_thres', n_symbs=n_symbs),
+                         'CMIsymb_analytic': CMIsymb(significance='analytic', n_symbs=n_symbs),
+                         'Gsquared': Gsquared(n_symbs=n_symbs)}[cond_ind_test]
         self.pcmci = PCMCI(dataframe=self.discretized_data,
                            cond_ind_test=cond_ind_test)
 
@@ -168,7 +180,6 @@ class Extractor_DiscretizedPC():
         '''
         Generate the parents graph
         '''
-        print('started DPC')
         tau_max = kargs['tau_max']
         pc_alpha = kargs['pc_alpha']
         
@@ -178,7 +189,6 @@ class Extractor_DiscretizedPC():
         
         result = convert_to_causalai_format(parents_graph, self.data.var_names)
         
-        print(result)
         
         return result
 

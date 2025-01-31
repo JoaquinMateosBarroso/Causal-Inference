@@ -52,10 +52,10 @@ for num_vars in [10, 20]:
     
     times_per_vars[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
 
-    print(f'Finished {num_vars} variables')
-
     with open(f'results_{num_vars}vars.txt', 'w') as f:
         f.write(str(b.results_full))
+    
+    print(f'Finished {num_vars} variables')
         
 with open('times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))

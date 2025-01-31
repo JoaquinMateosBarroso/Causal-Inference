@@ -233,3 +233,32 @@ def pla_segmentation(time_series: np.ndarray, window_size: int, threshold: float
     # If not using labels, return the reconstructed series
     return reconstructed
 
+
+
+if __name__ == '__main__':
+    # Example usage of the discretization methods
+    time_series = np.random.randn(100)
+    bins = 10
+    window_size = 10
+
+    # # Equal-width binning
+    # equal_width_discrete = equal_width_binning(time_series, bins=bins, use_labels=False)
+    # print(f"Equal-width discretization: {equal_width_discrete[:10]}")
+
+    # # Equal-frequency binning
+    # equal_freq_discrete = equal_frequency_binning(time_series, bins=bins, use_labels=False)
+    # print(f"Equal-frequency discretization: {equal_freq_discrete[:10]}")
+
+    # # Piecewise Aggregate Approximation (PAA)
+    # paa_result = paa_method(time_series, window_size=window_size, expand=False)
+    # print(f"PAA result: {paa_result[:10]}")
+
+    # Symbolic Aggregate Approximation (SAX)
+    sax_result = sax_method(time_series, n_bins=bins, window_size=window_size, expand=False, use_labels=True)
+    print(f"SAX result: {sax_result}")
+
+    # # Piecewise Linear Approximation (PLA)
+    # pla_result = pla_segmentation(time_series, window_size=window_size, expand=False, use_labels=False)
+    # print(f"PLA result: {pla_result[:10]}")
+    # Output:
+    # Equal-width discretization: [
