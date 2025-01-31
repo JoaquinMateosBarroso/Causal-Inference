@@ -138,7 +138,7 @@ class Extractor_FullCI():
 
 class Extractor_DiscretizedPC():
     def __init__(self, data: TimeSeriesData, cond_ind_test: str = 'CMIsymb_fixed_thres',
-                            n_symbs: int = 5):
+                            n_bins: int = 5):
         '''
         :param data: this is a TabularData object and contains attributes likes data.data_arrays, which is a
             list of numpy array of shape (observations N, variables D).
@@ -151,7 +151,7 @@ class Extractor_DiscretizedPC():
         - 'Gsquared'
         :type cond_ind_test: str
         
-        :param n_symbs: the number of symbols to use for discretization
+        :param n_bins: the number of symbols to use for discretization
         '''
         self.data = data
         
@@ -159,7 +159,7 @@ class Extractor_DiscretizedPC():
         discretized_data = np.zeros_like(data_array, dtype=np.int32)
         discretized_datas = []
         for i in range(data_array.shape[1]):
-            discretized_datas.append( sax_method(data_array[:, i], n_bins=n_symbs,
+            discretized_datas.append( sax_method(data_array[:, i], n_bins=n_bins,
                                           expand=False, use_labels=True) )
             # Convert str array to int array
             discretized_datas[-1] = np.unique(discretized_datas[-1],
@@ -169,9 +169,9 @@ class Extractor_DiscretizedPC():
         
         self.discretized_data = convert_to_tigramite_format(discretized_data)
         
-        cond_ind_test = {'CMIsymb_fixed_thres': CMIsymb(significance='fixed_thres', n_symbs=n_symbs),
-                         'CMIsymb_analytic': CMIsymb(significance='analytic', n_symbs=n_symbs),
-                         'Gsquared': Gsquared(n_symbs=n_symbs)}[cond_ind_test]
+        cond_ind_test = {'CMIsymb_fixed_thres': CMIsymb(significance='fixed_thres', n_symbs=n_bins),
+                         'CMIsymb_analytic': CMIsymb(significance='analytic', n_symbs=n_bins),
+                         'Gsquared': Gsquared(n_symbs=n_bins)}[cond_ind_test]
         self.pcmci = PCMCI(dataframe=self.discretized_data,
                            cond_ind_test=cond_ind_test)
 
