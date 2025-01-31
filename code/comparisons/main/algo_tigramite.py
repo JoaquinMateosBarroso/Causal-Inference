@@ -101,7 +101,6 @@ class Extractor_LPCMCI():
                     current_parents.append((str(i), lag_i))
             graph_parents[str(j)] = {'parents': current_parents}
 
-        print(f'{graph_parents=}')
         return graph_parents
 
 class Extractor_FullCI():
