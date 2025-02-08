@@ -16,13 +16,13 @@ import numpy as np
 from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, Extractor_DiscretizedPC
 from utils import save_results
 
-folder = 'linear_results/'
+folder = 'results_base/'
 
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
             'LPCMCI': partial(Extractor_LPCMCI),
             'FullCI': partial(Extractor_FullCI),
-            'DiscretizedPC': partial(Extractor_DiscretizedPC),
+            # 'DiscretizedPC': partial(Extractor_DiscretizedPC), # Takes too much time
             'PC-PartialCorr':partial(PC, CI_test=PartialCorrelation(), use_multiprocessing=False,
                                       prior_knowledge=None),
             'Granger':partial(Granger, use_multiprocessing=False, prior_knowledge=None),
@@ -32,7 +32,7 @@ kargs_dict = {
             'PCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
             'LPCMCI': {'tau_max': 3, 'pc_alpha': 0.01},
             'FullCI': {'tau_max': 3, 'pc_alpha': 0.01},
-            'DiscretizedPC': {'tau_max': 3, 'pc_alpha': 0.01, 'n_symbs': 10},
+            # 'DiscretizedPC': {'tau_max': 3, 'pc_alpha': 0.01, 'n_symbs': 10}, # Takes too much time
             'PC-PartialCorr': {'max_condition_set_size': 4, 'pvalue_thres': 0.01, 'max_lag': 3},
             'Granger': {'pvalue_thres': 0.01, 'max_lag': 3},
             'VARLINGAM': {'pvalue_thres': 0.01, 'max_lag': 3}}
@@ -46,7 +46,7 @@ times_per_vars = dict()
 for num_vars in [10]:
     b.benchmark_sample_complexity(T_list=[100, 200, 300, 400, 500], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
-                                fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
+                                fn = lambda x:np.arctanh(np.sin(x)) + np.sin(np.log(x)), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
     
     b.aggregate_results('time_taken')

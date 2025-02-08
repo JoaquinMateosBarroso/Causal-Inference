@@ -16,7 +16,7 @@ import numpy as np
 from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, Extractor_DiscretizedPC
 from utils import save_results
 
-folder = 'discrete_ind_tests_results/'
+folder = 'results_discrete_ind_tests/'
 
 n_bins = 10
 

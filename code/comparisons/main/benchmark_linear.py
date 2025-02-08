@@ -17,7 +17,7 @@ from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, 
 
 from utils import save_results
 
-folder = 'linear_results/'
+folder = 'results_linear/'
 children_function = lambda x: x
 
 algo_dict = {
@@ -61,7 +61,7 @@ for num_vars in [10, 20]:
     print(f'Finished {num_vars} variables')
        
 
-with open(f'{folder}/times_per_vars.txt', 'w') as f:
+with open(f'{folder}times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))
 
 save_results(benchmark=b, folder=folder)
