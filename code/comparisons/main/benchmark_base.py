@@ -14,7 +14,7 @@ from functools import partial
 import numpy as np
 
 from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, Extractor_DiscretizedPC
-from utils import save_results
+from utils import save_benchmark_results, save_score_result
 
 folder = 'results_base/'
 
@@ -43,22 +43,37 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [10]:
+f1_scores = dict()
+precision_scores = dict()
+recall_scores = dict()
+for num_vars in [10, 20, 30, 40, 50]:
     b.benchmark_sample_complexity(T_list=[100, 200, 300, 400, 500], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
-                                fn = lambda x:np.arctanh(np.sin(x)) + np.sin(np.log(x)), # Non-linearity
+                                fn = lambda x:np.arctanh(np.sin(x)) + np.sin(np.log(abs(x))), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
     
     b.aggregate_results('time_taken')
-    
     times_per_vars[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
-
-    with open(f'{folder}results_{num_vars}vars.txt', 'w') as f:
-        f.write(str(b.results_full))
-
+    b.aggregate_results('f1_score')
+    f1_scores[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
+    b.aggregate_results('precision')
+    precision_scores[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
+    b.aggregate_results('recall')
+    recall_scores[num_vars] = {algo: np.mean(results) for algo, results in zip(algo_dict.keys(), b.results_mean)}
+    
     print(f'Finished {num_vars} variables')
-        
+
+
+
+save_benchmark_results(benchmark=b, folder=folder)
+
 with open(f'{folder}times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))
+    
+    
+algorithms = list(algo_dict.keys())
 
-save_results(benchmark=b, folder=folder)
+save_score_result(score=times_per_vars, algorithms=algorithms, folder=folder, name_y='time_taken', name_x='num_vars')
+save_score_result(score=f1_scores, algorithms=algorithms, folder=folder, name_y='f1_score', name_x='num_vars')
+save_score_result(score=precision_scores, algorithms=algorithms, folder=folder, name_y='precision', name_x='num_vars')
+save_score_result(score=recall_scores, algorithms=algorithms, folder=folder, name_y='recall', name_x='num_vars')

@@ -15,7 +15,7 @@ import numpy as np
 
 from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, Extractor_DiscretizedPC
 
-from utils import save_results
+from utils import save_benchmark_results
 
 folder = 'results_linear/'
 children_function = lambda x: x
@@ -64,4 +64,4 @@ for num_vars in [10, 20]:
 with open(f'{folder}times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))
 
-save_results(benchmark=b, folder=folder)
+save_benchmark_results(benchmark=b, folder=folder)
