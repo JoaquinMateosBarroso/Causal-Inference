@@ -46,8 +46,6 @@ def extract_parents_pcmciplus(dataframe):
     results = pcmci.run_pcmciplus(tau_min=1, tau_max=tau_max, pc_alpha=pc_alpha)
     end_time = time.time()
     execution_time = end_time - start_time
-
-    
     
     parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
     return parents, execution_time

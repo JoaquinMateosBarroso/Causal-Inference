@@ -1,5 +1,5 @@
 # %%
-from create_toy_datasets import generate_toy_data
+from modified_pcmci.create_toy_datasets import generate_toy_data
 from functions_test_toy_data import test_toy_data, extract_parents_pcmci, extract_parents_pcmciplus, extract_parents_lpcmci
 
 import pandas as pd
