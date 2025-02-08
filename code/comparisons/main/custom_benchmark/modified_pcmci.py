@@ -183,13 +183,13 @@ class PCMCI_Modified(PCMCI):
 
 if __name__ == '__main__':
     for N_vars in [10, 20, 30, 40, 50]:
-        dataset = generate_toy_data(name='1', T=2500, N=N_vars)
+        dataset = generate_toy_data(name='1', T=500, N=N_vars, dependency_funcs=['linear'], max_lag=10)
         
         dataframe = DataFrame(dataset.values, var_names=dataset.columns)
         
         pcmci = PCMCI_Modified(dataframe=dataframe, cond_ind_test=ParCorr(significance='analytic'))
         
-        results, times = pcmci.run_pcmciplus_getting_times(tau_max=3, pc_alpha=0.01)
+        results, times = pcmci.run_pcmciplus_getting_times(tau_max=10, pc_alpha=0.01, max_combinations=100)
         
         parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
         
@@ -197,3 +197,5 @@ if __name__ == '__main__':
         print(f'{N_vars} Variables ')
         print(times)
 
+        
+        
