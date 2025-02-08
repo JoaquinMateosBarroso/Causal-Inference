@@ -101,7 +101,7 @@ class Extractor_LPCMCI():
                 if len(link) > 0 and (lag_i < 0 or i < j):
                     current_parents.append((str(i), lag_i))
             graph_parents[str(j)] = {'parents': current_parents}
-
+        
         return graph_parents
 
 class Extractor_FullCI():

@@ -15,7 +15,8 @@ import numpy as np
 
 from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, Extractor_DiscretizedPC
 
-
+folder = 'linear_results/'
+children_function = lambda x: x
 
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
@@ -43,9 +44,9 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
 for num_vars in [10, 20]:
-    b.benchmark_sample_complexity(T_list=[100, 500, 2000, 5000], num_vars=num_vars, graph_density=0.2,\
+    b.benchmark_sample_complexity(T_list=[250, 500, 1000], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
-                                fn = lambda x:x,
+                                fn = children_function,
                                 coef=0.1, noise_fn=np.random.randn)
     
     b.aggregate_results('time_taken')
@@ -56,26 +57,27 @@ for num_vars in [10, 20]:
         f.write(str(b.results_full))
     
     print(f'Finished {num_vars} variables')
-        
+       
+ 
 with open('times_per_vars.txt', 'w') as f:
     f.write(str(times_per_vars))
 
 plt=b.plot('f1_score', xaxis_mode=1)
-plt.savefig('f1_score.pdf')
+plt.savefig(f'{folder}f1_score.pdf')
 plt.show()
 plt.clf()
 
 plt=b.plot('precision', xaxis_mode=1)
-plt.savefig('precision.pdf')
+plt.savefig(f'{folder}precision.pdf')
 plt.show()
 plt.clf()
 
 plt=b.plot('recall', xaxis_mode=1)
-plt.savefig('recall.pdf')
+plt.savefig(f'{folder}recall.pdf')
 plt.show()
 plt.clf()
 
 plt=b.plot('time_taken', xaxis_mode=1)
-plt.savefig('time_taken.pdf')
+plt.savefig(f'{folder}time_taken.pdf')
 plt.show()
 plt.clf()
