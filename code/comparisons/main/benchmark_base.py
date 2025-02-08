@@ -43,8 +43,8 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [10, 20]:
-    b.benchmark_sample_complexity(T_list=[100, 500, 2000, 5000], num_vars=num_vars, graph_density=0.2,\
+for num_vars in [10]:
+    b.benchmark_sample_complexity(T_list=[100, 200, 300, 400, 500], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = lambda x:np.log(abs(x)) + np.sin(x), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
