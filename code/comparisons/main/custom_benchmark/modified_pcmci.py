@@ -180,22 +180,50 @@ class PCMCI_Modified(PCMCI):
         
         return return_dict, times
 
+from functions_test_toy_data import get_f1
+
+def join_times(times_list: list[dict[str, float]]):
+    """
+    Join the times from the list of dictionaries
+    """
+    times = dict()
+    for key in times_list[0].keys():
+        times[key] = sum([times_dict[key] for times_dict in times_list]) / len(times_list)
+    return times
+
 
 if __name__ == '__main__':
-    for N_vars in [10, 20, 30, 40, 50]:
-        dataset = generate_toy_data(name='1', T=500, N=N_vars, dependency_funcs=['linear'], max_lag=10)
+    N_vars = 20
+    
+    for max_lag in [3, 5, 10, 20, 30, 40]:
+        # Repeat 5 times and get the average time and F1 score
+        times_list = []
+        f1_list = []
+        for i in range(5):
+            # Generate toy data
+            total_posible_edges = N_vars**2 * (max_lag - 1)
+            dataset, ground_truth_parents = generate_toy_data(name='1', T=500, N=N_vars,
+                                                              dependency_funcs=[lambda x: np.exp(-x**2)], max_lag=max_lag,
+                                                              L=int(total_posible_edges * 0.1))
+            dataframe = DataFrame(dataset.values, var_names=dataset.columns)
+            
+            pcmci = PCMCI_Modified(dataframe=dataframe, cond_ind_test=ParCorr(significance='analytic'))
+            
+            # Get times
+            results, times = pcmci.run_pcmciplus_getting_times(tau_max=max_lag)
+            times_list.append(times)
+            
+            # Get F1 score
+            predicted_parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
+            f1_list.append( get_f1(ground_truth_parents, predicted_parents) )
         
-        dataframe = DataFrame(dataset.values, var_names=dataset.columns)
-        
-        pcmci = PCMCI_Modified(dataframe=dataframe, cond_ind_test=ParCorr(significance='analytic'))
-        
-        results, times = pcmci.run_pcmciplus_getting_times(tau_max=10, pc_alpha=0.01, max_combinations=100)
-        
-        parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
+        average_times = join_times(times_list)
+        average_f1 = sum(f1_list) / len(f1_list)
         
         print('******************************')
-        print(f'{N_vars} Variables ')
-        print(times)
+        print(f'{max_lag} max_lag ')
+        print(f'{average_times=}')
+        print(f'F1 score: {average_f1}')
 
         
         

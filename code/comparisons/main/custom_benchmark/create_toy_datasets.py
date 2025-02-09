@@ -40,7 +40,7 @@ def generate_toy_data(name, T=100, N=10, L=10, max_lag=3, dependency_funcs=['non
     df = pd.DataFrame(time_series)
     df.to_csv(f'toy_data/data{name}.csv', index=False, header=False)
     
-    return df
+    return df, actual_dict
 
 if __name__ == '__main__':
     generate_toy_data(1)
