@@ -193,7 +193,7 @@ def join_times(times_list: list[dict[str, float]]):
 
 
 if __name__ == '__main__':
-    N_vars = 20
+    N_vars = 25
     
     for max_lag in [3, 5, 10, 20, 30, 40]:
         # Repeat 5 times and get the average time and F1 score
