@@ -192,38 +192,76 @@ def join_times(times_list: list[dict[str, float]]):
     return times
 
 
-if __name__ == '__main__':
-    N_vars = 25
+def test_on_toy_data(T, N_vars, max_lag):
+    # Repeat 5 times and get the average time and F1 score
+    times_list = []
+    f1_list = []
+    for i in range(iters_per_parameter):
+        # Generate toy data
+        total_posible_edges = N_vars**2 * (max_lag - 1)
+        dataset, ground_truth_parents = generate_toy_data(name='1', T=T, N=N_vars,
+                                                        dependency_funcs=[lambda x: np.exp(-x**2)], max_lag=max_lag,
+                                                        L=int(total_posible_edges * 0.1))
+        dataframe = DataFrame(dataset.values, var_names=dataset.columns)
+        
+        pcmci = PCMCI_Modified(dataframe=dataframe, cond_ind_test=ParCorr(significance='analytic'))
+        
+        # Get times
+        results, times = pcmci.run_pcmciplus_getting_times(tau_max=max_lag)
+        times_list.append(times)
+        
+        # Get F1 score
+        predicted_parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
+        f1_list.append( get_f1(ground_truth_parents, predicted_parents) )
+
+    average_times = join_times(times_list)
+    average_f1 = sum(f1_list) / len(f1_list)
     
-    for max_lag in [3, 5, 10, 20, 30, 40]:
-        # Repeat 5 times and get the average time and F1 score
-        times_list = []
-        f1_list = []
-        for i in range(5):
-            # Generate toy data
-            total_posible_edges = N_vars**2 * (max_lag - 1)
-            dataset, ground_truth_parents = generate_toy_data(name='1', T=500, N=N_vars,
-                                                              dependency_funcs=[lambda x: np.exp(-x**2)], max_lag=max_lag,
-                                                              L=int(total_posible_edges * 0.1))
-            dataframe = DataFrame(dataset.values, var_names=dataset.columns)
+    return average_times, average_f1
+    
+import matplotlib.pyplot as plt
+if __name__ == '__main__':
+    N_vars_list = [10, 25, 50, 100]
+    max_lag_list = [3, 5, 10, 30]
+    T = 100
+    iters_per_parameter = 1
+    
+    results = dict() # keys are (N_vars, max_lag) and values are dicts
+    for N_vars in N_vars_list:
+        for max_lag in max_lag_list:
+            average_times, average_f1 = test_on_toy_data(T, N_vars, max_lag)
+            results[(N_vars, max_lag)] = {'average_times': average_times, 'average_f1': average_f1}
             
-            pcmci = PCMCI_Modified(dataframe=dataframe, cond_ind_test=ParCorr(significance='analytic'))
-            
-            # Get times
-            results, times = pcmci.run_pcmciplus_getting_times(tau_max=max_lag)
-            times_list.append(times)
-            
-            # Get F1 score
-            predicted_parents = pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
-            f1_list.append( get_f1(ground_truth_parents, predicted_parents) )
-        
-        average_times = join_times(times_list)
-        average_f1 = sum(f1_list) / len(f1_list)
-        
-        print('******************************')
-        print(f'{max_lag} max_lag ')
-        print(f'{average_times=}')
-        print(f'F1 score: {average_f1}')
+            print('******************************')
+            print(f'{N_vars} N_vars ')
+            print(f'{max_lag} max_lag ')
+            print(f'{average_times=}')
+            print(f'F1 score: {average_f1}')
+    
+    # Save the results
+    with open('complete_search_results.txt', 'w') as f:
+        f.write(results.__str__())
+    
+    # Show 3d plot of times
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for (N_vars, max_lag), result in results.items():
+        total_times = {key: sum(times.values()) for key, times in result['average_times'].items()}
+        ax.scatter(N_vars, max_lag, total_times, c='r')
+    ax.set_xlabel('N_vars')
+    ax.set_ylabel('max_lag')
+    ax.set_zlabel('Time')
+    
+    plt.savefig('times_plot.pdf')
+    
+    # Show 3d plot of F1 scores
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for (N_vars, max_lag), result in results.items():
+        ax.scatter(N_vars, max_lag, result['average_f1'], c='r')
+    ax.set_xlabel('N_vars')
+    ax.set_ylabel('max_lag')
+    ax.set_zlabel('F1 score')
 
         
         
