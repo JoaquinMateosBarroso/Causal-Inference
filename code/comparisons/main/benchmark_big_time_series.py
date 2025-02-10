@@ -17,7 +17,7 @@ from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, 
 
 from utils import save_benchmark_results
 
-folder = 'results_big_time_series/'
+folder = 'results_big_time_series/20vars/'
 children_function = lambda x: x + 5. * x**2  + np.sin(x) + np.exp(-x**2 / 20.)
 
 algo_dict = {
@@ -45,7 +45,7 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [5]:
+for num_vars in [20]:
     b.benchmark_sample_complexity(T_list=[200, 500, 1500, 3000, 10000], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = children_function,
