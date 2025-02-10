@@ -48,7 +48,7 @@ f1_scores = dict()
 precision_scores = dict()
 recall_scores = dict()
 for num_vars in [5, 10, 20, 30]:
-    b.benchmark_sample_complexity(T_list=[100, 200, 300, 400, 500], num_vars=num_vars, graph_density=0.2,\
+    b.benchmark_sample_complexity(T_list=[100, 150, 200], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = lambda x: nonlinear_fn(x), # Non-linearity
                                 coef=0.1, noise_fn=np.random.randn)
