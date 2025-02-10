@@ -17,8 +17,8 @@ from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, 
 
 from utils import save_benchmark_results
 
-folder = 'results_linear/'
-children_function = lambda x: x + 5. * x**2 * np.exp(-x**2 / 20.)
+folder = 'results_big_time_series/'
+children_function = lambda x: x + 5. * x**2  + np.sin(x) + np.exp(-x**2 / 20.)
 
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
@@ -61,7 +61,7 @@ for num_vars in [5]:
     print(f'Finished {num_vars} variables')
        
 
-with open(f'{folder}times_per_vars.txt', 'w') as f:
+with open(f'{folder}times_per_vars_nonlinear.txt', 'w') as f:
     f.write(str(times_per_vars))
 
 save_benchmark_results(benchmark=b, folder=folder)
