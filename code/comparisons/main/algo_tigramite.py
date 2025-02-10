@@ -180,6 +180,8 @@ class Extractor_DiscretizedPC():
         '''
         Generate the parents graph
         '''
+        print('Started discretized PC')
+        
         tau_max = kargs['tau_max']
         pc_alpha = kargs['pc_alpha']
         
@@ -190,5 +192,6 @@ class Extractor_DiscretizedPC():
         result = convert_to_causalai_format(parents_graph, self.data.var_names)
         
         
+        print('Finished discretized PC')
         return result
 
