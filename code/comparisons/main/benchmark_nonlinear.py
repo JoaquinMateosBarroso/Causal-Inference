@@ -18,7 +18,7 @@ from algo_tigramite import Extractor_LPCMCI, Extractor_PCMCI, Extractor_FullCI, 
 from utils import save_benchmark_results
 
 folder = 'results_nonlinear/'
-children_function = lambda x: x + 5. * x**2 * np.exp(-x**2 / 20.)
+children_function = lambda x: x + 5. * x**2 + np.exp(-x**2 / 20.)
 
 algo_dict = {
             'PCMCI': partial(Extractor_PCMCI),
@@ -45,7 +45,7 @@ b = BenchmarkContinuousTimeSeries(algo_dict=algo_dict, kargs_dict=kargs_dict,
 
 # Obtain the times taken for each algorithm, at each number of variables
 times_per_vars = dict()
-for num_vars in [20]:
+for num_vars in [10]:
     b.benchmark_sample_complexity(T_list=[200, 300, 400, 500], num_vars=num_vars, graph_density=0.2,\
                                 data_max_lag=3,
                                 fn = children_function,

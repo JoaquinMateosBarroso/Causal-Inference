@@ -11,7 +11,8 @@ def get_parents_dict(causal_process):
             parents_dict[key].append(causal_process[key][i][0])
     return parents_dict
 
-def generate_toy_data(name, T=100, N=10, L=10, max_lag=3, dependency_funcs=['nonlinear']):
+def generate_toy_data(name, T=100, N=10, L=10,
+                      max_lag=3, dependency_funcs=['nonlinear']):
     """
     Generate a toy dataset with a causal process and time series data
     :param name: Name of the dataset
