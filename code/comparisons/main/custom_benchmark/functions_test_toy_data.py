@@ -10,7 +10,6 @@ from tigramite import data_processing as pp
 
 
 
-# %%
 '''
     EVALUATION METRICS
 '''
@@ -53,32 +52,3 @@ def get_false_positive_ration(ground_truth_parents: dict, predicted_parents: dic
     return false_positives / (false_positives + true_negatives) if false_positives != 0 else 0
 
 
-
-
-# %%
-def test_toy_data(name: str, parents_extractor, verbose=0):
-    # Load causal process dictionary
-    with open(f'toy_data/causal_process{name}.txt') as f:
-        line = f.readline()
-        causal_process = eval(line)
-    # Load example data
-    df = pd.read_csv(f'toy_data/data{name}.csv', header=None)
-    dataframe = pp.DataFrame(df.values, var_names=df.columns)
-    dataframe.values[0].shape
-    
-    
-    parents, time = parents_extractor(dataframe)
-    
-    precision = get_precision(parents, causal_process)
-    recall = get_recall(parents, causal_process)
-    f1 = get_f1(parents, causal_process)
-    if verbose>0:
-        # Compare results
-        print(f'Predicted parents: {parents}')
-        print(f'Causal process: {causal_process}')
-        
-        print(f'Precision: {precision}')
-        print(f'Recall: {recall}')
-        print(f'F1: {f1}')
-    
-    return {'precision': precision, 'recall': recall, 'f1': f1, 'time': time}

@@ -1,6 +1,10 @@
 # A library I have in local and I have modified
 code/libs/
 
+# Results obtained in pdf and csv
+results*/
+toy_data/
+
 # A paper I have in local
 tigramite-example/Runge_Causal_Inference_for_Time_Series_NREE.pdf
 
@@ -173,3 +177,4 @@ cython_debug/
 # Folders with datasets
 datasets/
 data/
+code/comparisons/main/custom_benchmark/benchmark_causal_discovery.py

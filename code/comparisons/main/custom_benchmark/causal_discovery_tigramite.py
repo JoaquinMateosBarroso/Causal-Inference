@@ -2,7 +2,7 @@
 from typing import Union
 import numpy as np
 import tigramite
-from custom_benchmark.causal_discovery_base import CausalDiscoveryBase
+from causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
@@ -38,15 +38,15 @@ class PCMCIWrapper(CausalDiscoveryBase):
             verbosity=0
         )
     
-    def __extract_parents(self) -> dict[int, list[int]]:
+    def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
         
         :param data: np.array with the data, shape (n_samples, n_features)
         '''
-        
-        results = self.pcmci.run_pcmciplus(tau_min=self.min_lag, tau_max=self.max_lag, pc_alpha=self.max_lag)
+        results = self.pcmci.run_pcmciplus(tau_min=self.min_lag, tau_max=self.max_lag, pc_alpha=self.pc_alpha)
         parents = self.pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
+        
         
         return parents
 
@@ -79,7 +79,7 @@ class LPCMCIWrapper(CausalDiscoveryBase):
             verbosity=0
         )
     
-    def __extract_parents(self) -> dict[int, list[int]]:
+    def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
         '''
