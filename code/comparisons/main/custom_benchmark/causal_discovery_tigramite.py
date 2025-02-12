@@ -4,6 +4,7 @@ import numpy as np
 import tigramite
 from causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
+from tigramite.independence_tests.robust_parcorr import RobustParCorr
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
 
@@ -25,11 +26,12 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
-        self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
+        self.cond_ind_test = {'parcorr': RobustParCorr(significance='analytic'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
         self.pc_alpha = pc_alpha
+        self.extra_args = kwargs
         
         dataframe = convert_to_tigramite_dataframe(data)
         self.pcmci = PCMCI(
@@ -44,7 +46,8 @@ class PCMCIWrapper(CausalDiscoveryBase):
         
         :param data: np.array with the data, shape (n_samples, n_features)
         '''
-        results = self.pcmci.run_pcmciplus(tau_min=self.min_lag, tau_max=self.max_lag, pc_alpha=self.pc_alpha)
+        results = self.pcmci.run_pcmciplus(tau_min=self.min_lag, tau_max=self.max_lag,
+                                           pc_alpha=self.pc_alpha, **self.extra_args)
         parents = self.pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
         
         

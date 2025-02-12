@@ -3,13 +3,17 @@ from typing import Any, Iterator, Union
 from matplotlib import pyplot as plt
 import numpy as np
 
-from custom_benchmark.benchmark_causal_discovery import BenchmarkCausalDiscovery
-from custom_benchmark.causal_discovery_tigramite import PCMCIWrapper
+from benchmark_causal_discovery import BenchmarkCausalDiscovery
+from causal_discovery_tigramite import PCMCIWrapper, LPCMCIWrapper
+from causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
 
 
 algorithms = {
     'pcmci': PCMCIWrapper,
+    'fullpcmci': PCMCIWrapper,
     # 'lpcmci': LPCMCIWrapper,
+    # 'granger': GrangerWrapper,
+    # 'varlingam': VARLINGAMWrapper,
 }
 def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
     '''
@@ -19,30 +23,39 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         parameters_iterator: function[dict[str, Any], dict[str, Any]]. A function that returns the parameters for the algorithms and the data generation.
     '''
     algorithms_parameters = {
-        'pcmci': {'pc_alpha': 0.01, 'tau_max': 3},
-        'lpcmci': {'pc_alpha': 0.01, 'tau_max': 3},
+        # pc_alpha to None performs a search for the best alpha
+        'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
+        'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': np.inf},
+        'lpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
+        'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
+        'varlingam': {'min_lag': 1, 'max_lag': 3},
     }
     options = {
-        'max_lag': 3,
+        'max_lag': 5,
         'dependency_funcs': [ lambda x: x, # linear
-                                lambda x: x + np.exp(-(x**2)), # asymptotically linear
+                              lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
+                              lambda x: np.log(abs(x)) + np.sin(x),
+                              lambda x: np.cos(x),
+                              lambda x: 2*np.tanh(x),
                             ],
-        'L': 10, # Number of cross-links in the dataset
-        'T': 200, # N time points in the dataset
-        'N': 20, # Number of variables in the dataset
+        'L': 25, # Number of cross-links in the dataset
+        'T': 2000, # Number of time points in the dataset
+        'N': 25, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
-        'dependency_coeffs': [-0.5, 0.5], # default: [-0.5, 0.5]
-        'auto_coeffs': [0.5], # default: [0.5, 0.7]
+        'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
+        'auto_coeffs': [0.6], # default: [0.5, 0.7]
         'noise_dists': ['gaussian'], # deafult: ['gaussian']
-        'noise_sigmas': [1], # default: [0.5, 2]
+        'noise_sigmas': [0.5], # default: [0.5, 2]
     }
-    for max_lag in [2, 4, 6]:
+    for max_lag in [5, 10, 25]:
+        # Increase cross-links in the same proportion as max_lag 
+        options['L'] *= int(max_lag / options['max_lag'])
+        
         options['max_lag'] = max_lag
-        algorithms_parameters['pcmci']['tau_max'] = max_lag
-        algorithms_parameters['lpcmci']['tau_max'] = max_lag
+        for parameters in algorithms_parameters.values():
+            parameters['max_lag'] = max_lag
         
         yield algorithms_parameters, options
-
 
 
 if __name__ == '__main__':

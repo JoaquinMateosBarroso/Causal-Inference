@@ -26,7 +26,7 @@ algo_dict = {
             # 'DiscretizedPC': partial(Extractor_DiscretizedPC), # Takes too much time
             'PC-PartialCorr':partial(PC, CI_test=PartialCorrelation(), use_multiprocessing=False,
                                       prior_knowledge=None),
-            'Granger':partial(Granger, use_multiprocessing=False, prior_knowledge=None),
+            'Granger':partial(Granger, use_multiprocessing=True, prior_knowledge=None),
             'VARLINGAM':partial(VARLINGAM, use_multiprocessing=True, prior_knowledge=None)}
 
 kargs_dict = {

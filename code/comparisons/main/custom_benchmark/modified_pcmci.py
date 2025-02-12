@@ -180,7 +180,7 @@ class PCMCI_Modified(PCMCI):
         
         return return_dict, times
 
-from functions_test_toy_data import get_f1
+from custom_benchmark.functions_test_data import get_f1
 
 def join_times(times_list: list[dict[str, float]]):
     """

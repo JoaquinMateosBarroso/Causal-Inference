@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from create_toy_datasets import CausalDataset
-from functions_test_toy_data import get_f1, get_precision, get_recall
+from functions_test_data import get_f1, get_precision, get_recall
 from causal_discovery_base import CausalDiscoveryBase
 from causal_discovery_tigramite import PCMCIWrapper, LPCMCIWrapper
 from typing import Any, Callable, Iterator, Union
@@ -56,20 +56,27 @@ class BenchmarkCausalDiscovery:
                     lists with dictionaries containing the results of the benchmark for each algorithm.
         '''
         self.verbose = verbose
-
+        self.results_folder = results_folder
+        self.algorithms = algorithms
+        
         # A list whose items are the lists of dictionaries of results and parameters of the different executions
         self.results = {alg: list() for alg in algorithms.keys()}
         
         if datasets is None:
             self._benchmark_dataset_with_toy_data(algorithms, parameters_iterator, n_executions, datasets_folder)
         
-        if results_folder is not None:
-            # Save the results in a csv file
-            for name in algorithms.keys():
-                df = pd.DataFrame(self.results[name])
-                df.to_csv(f'{results_folder}/results_{name}.csv', index=False)
 
         return self.results                        
+    
+    def save_results(self):    
+        if self.results_folder is not None:
+            # If the folder does not exist, create it
+            if not os.path.exists(self.results_folder):
+                os.makedirs(self.results_folder)
+            # Save the results in a csv file
+            for name in self.algorithms.keys():
+                df = pd.DataFrame(self.results[name])
+                df.to_csv(f'{self.results_folder}/results_{name}.csv', index=False)
     
     def _benchmark_dataset_with_toy_data(self, algorithms: dict[str, type[CausalDiscoveryBase]],
                                          parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
@@ -96,6 +103,7 @@ class BenchmarkCausalDiscovery:
                 # Include current result in the list of result
                 self.results[name].append(algorithm_result)
             
+            self.save_results()
             if self.verbose > 0:
                 print(f'{iteration+1} combinations executed')
             
@@ -164,15 +172,22 @@ class BenchmarkCausalDiscovery:
         actual_parents = causal_dataset.parents_dict
         
         algorithm = causalDiscovery(data=time_series, **algorithm_parameters)
-        predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+        try:
+            predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+        except Exception as e:
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+            predicted_parents = {}
+            time = np.nan
+            memory = np.nan
         
-        result = {'time': time, 'memory': memory}
+        finally:
+            result = {'time': time, 'memory': memory}
+            
+            result['precision'] = get_precision(predicted_parents, actual_parents)
+            result['recall'] = get_recall(predicted_parents, actual_parents)
+            result['f1'] = get_f1(predicted_parents, actual_parents)
         
-        result['precision'] = get_precision(predicted_parents, actual_parents)
-        result['recall'] = get_recall(predicted_parents, actual_parents)
-        result['f1'] = get_f1(predicted_parents, actual_parents)
-        
-        return result
+            return result
     
     def plot_ts_datasets(self, folder_name):
         files = os.listdir(folder_name)

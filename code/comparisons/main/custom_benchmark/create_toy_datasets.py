@@ -1,5 +1,6 @@
 # %%
 import json
+import os
 import numpy as np
 import pandas as pd
 from tigramite.toymodels.structural_causal_processes import generate_structural_causal_process, structural_causal_process
@@ -58,6 +59,10 @@ class CausalDataset:
         self.time_series = structural_causal_process(causal_process, T=T, noises=noise)[0]
         
         if datasets_folder is not None:
+            # If the folder does not exist, create it
+            if not os.path.exists(datasets_folder):
+                os.makedirs(datasets_folder)
+            # Save the dataset
             self.save(name, datasets_folder)
                 
         return self
