@@ -77,6 +77,11 @@ class BenchmarkCausalDiscovery:
             for name in self.algorithms.keys():
                 df = pd.DataFrame(self.results[name])
                 df.to_csv(f'{self.results_folder}/results_{name}.csv', index=False)
+        else:
+            # If it does exist, delete previous results
+            for filename in os.listdir(self.results_folder):
+                if filename.endswith('.csv'):
+                    os.remove(f'{self.results_folder}/{filename}')
     
     def _benchmark_dataset_with_toy_data(self, algorithms: dict[str, type[CausalDiscoveryBase]],
                                          parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
@@ -119,13 +124,15 @@ class BenchmarkCausalDiscovery:
         '''
         result = dict() # keys are score names and values are the score values
         for name, algorithm in algorithms.items():
-            algorithm_result = self.test_particular_algorithm(causal_datasets,
-                                    algorithm, algorithms_parameters[name])
+            algorithm_result = self.test_particular_algorithm(algorithm_name=name,
+                                    causal_datasets=causal_datasets, causalDiscovery=algorithm,
+                                    algorithm_parameters=algorithms_parameters[name])
             result[name] = (algorithm_result)
 
         return result
     
-    def test_particular_algorithm(self, causal_datasets: list[CausalDataset],
+    def test_particular_algorithm(self, algorithm_name: str,
+                                causal_datasets: list[CausalDataset],
                                 causalDiscovery: type[CausalDiscoveryBase],
                                 algorithm_parameters: dict[str, Any]) -> dict[str, Any]:
         '''
@@ -135,7 +142,7 @@ class BenchmarkCausalDiscovery:
             return []
         
         if self.verbose > 0:
-            print(GREEN, 'Executing algorithm', causalDiscovery.__name__, RESET)
+            print(GREEN, 'Executing algorithm', algorithm_name, RESET)
         # Execute the algorithm n_executions times
         results_per_exection = []
         for causal_dataset in tqdm(  causal_datasets ): # tqdm is used to show a progress bar
@@ -175,7 +182,7 @@ class BenchmarkCausalDiscovery:
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
         except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e.with_traceback()}')
             predicted_parents = {}
             time = np.nan
             memory = np.nan

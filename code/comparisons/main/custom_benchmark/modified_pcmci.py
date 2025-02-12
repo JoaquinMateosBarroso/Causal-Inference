@@ -4,11 +4,10 @@ import numpy as np
 from tigramite.pcmci import PCMCI
 from tigramite.data_processing import DataFrame
 from tigramite.independence_tests.parcorr import ParCorr
-from create_toy_datasets import generate_toy_data
-
+from statsmodels.tsa.stattools import grangercausalitytests
 
 class PCMCI_Modified(PCMCI):
-    def run_pcmciplus_getting_times(self,
+    def run_pcmciplus(self,
                       selected_links=None,
                       link_assumptions=None,
                       tau_min=0,
@@ -58,7 +57,15 @@ class PCMCI_Modified(PCMCI):
         self._check_tau_limits(tau_min, tau_max)
         # Set the link assumption
         _int_link_assumptions = self._set_link_assumptions(link_assumptions, tau_min, tau_max)
-
+        
+        #
+        # Phase 0: Delete links from variables j that have no information about i
+        
+        link_assumptions = self._delete_uninformative_variable_links(
+                            link_assumptions=_int_link_assumptions,
+                            tau_min=tau_min,
+                            tau_max=tau_max)
+        
         times = dict()
         
         tic = time.time()
@@ -178,9 +185,32 @@ class PCMCI_Modified(PCMCI):
         # Return the dictionary
         self.results = return_dict
         
-        return return_dict, times
+        return return_dict
+    
+    def _delete_uninformative_variable_links(self,
+                            link_assumptions=None,
+                            tau_min=1,
+                            tau_max=3):
+        _int_link_assumptions = self._set_link_assumptions(link_assumptions,
+                                    tau_min=tau_min, tau_max=tau_max, remove_contemp=True)
 
-from custom_benchmark.functions_test_data import get_f1
+        covariances = np.cov(self.dataframe.values[0].T)
+        
+        # Delete the 50% of the links with the lowest correlation
+        n_links_to_delete = int(0.5 * covariances.size)
+        links_to_delete = np.argsort(covariances.flatten())[:n_links_to_delete]
+
+        for link in links_to_delete:
+            i = link // covariances.shape[1]
+            j = link % covariances.shape[1]
+            for tau in range(tau_min, tau_max + 1):
+                _int_link_assumptions[i].pop((j, -tau), None)
+                _int_link_assumptions[j].pop((i, -tau), None)
+
+        return _int_link_assumptions
+
+
+from functions_test_data import get_f1
 
 def join_times(times_list: list[dict[str, float]]):
     """

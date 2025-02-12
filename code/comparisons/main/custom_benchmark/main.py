@@ -4,14 +4,15 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from benchmark_causal_discovery import BenchmarkCausalDiscovery
-from causal_discovery_tigramite import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
 
 
 algorithms = {
     'pcmci': PCMCIWrapper,
     'fullpcmci': PCMCIWrapper,
-    'pc_stable': PCStableWrapper,
+    'pcmci-modified': PCMCIModifiedWrapper,
+    'pc-stable': PCStableWrapper,
     # 'lpcmci': LPCMCIWrapper,
     'granger': GrangerWrapper,
     'varlingam': VARLINGAMWrapper,
@@ -26,23 +27,24 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     algorithms_parameters = {
         # pc_alpha to None performs a search for the best alpha
         'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
-        'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
-        'pc_stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
+        'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 3},
+        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
+        'pc-stable': {'pc_alpha': 0.1, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
     }
     options = {
-        'max_lag': 5,
+        'max_lag': 10,
         'dependency_funcs': [ lambda x: x, # linear
                               lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
                               lambda x: np.log(abs(x)) + np.sin(x),
                               lambda x: np.cos(x),
                               lambda x: 2*np.tanh(x),
                             ],
-        'L': 10, # Number of cross-links in the dataset
-        'T': 200, # Number of time points in the dataset
-        'N': 10, # Number of variables in the dataset
+        'L': 100, # Number of cross-links in the dataset
+        'T': 1000, # Number of time points in the dataset
+        'N': 50, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
         'auto_coeffs': [0.6], # default: [0.5, 0.7]
@@ -50,7 +52,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for max_lag in [5, 10, 15, 20, 25]:
+    for max_lag in [10, 20, 30, 40, 50]:
         # Increase cross-links and data points in the same proportion as max_lag 
         options['L'] *= int(max_lag / options['max_lag'])
         options['T'] *= int(max_lag / options['max_lag'])
