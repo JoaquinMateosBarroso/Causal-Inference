@@ -97,8 +97,42 @@ class LPCMCIWrapper(CausalDiscoveryBase):
         
         return parents
     
-    
-    
+class PCStableWrapper(CausalDiscoveryBase):
+    '''
+    Wrapper for PC Stable algorithm
+    '''
+    def __init__(self, data: np.ndarray, cond_ind_test='parcorr', 
+                 min_lag=1, max_lag=3, pc_alpha=0.05, **kwargs):
+        '''
+        Initialize the PCStable object
+        
+        :param data: np.array with the data, shape (n_samples, n_features)
+        :param cond_ind_test: string with the name of the conditional independence test
+        :param min_lag: minimum lag to consider
+        :param max_lag: maximum lag to consider
+        :param pc_alpha: alpha value for the conditional independence test
+        '''
+        self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
+                              }[cond_ind_test]
+        self.min_lag = min_lag
+        self.max_lag = max_lag
+        self.pc_alpha = pc_alpha
+        
+        dataframe = convert_to_tigramite_dataframe(data)
+        self.pcmci = PCMCI(
+            dataframe=dataframe,
+            cond_ind_test=self.cond_ind_test,
+            verbosity=0
+        )
+
+    def extract_parents(self) -> dict[int, list[int]]:
+        '''
+        Returns the parents dict
+        '''
+        parents = self.pcmci.run_pc_stable(tau_min=self.min_lag, tau_max=self.max_lag, pc_alpha=self.pc_alpha)
+        
+        
+        return parents
 
 def convert_to_tigramite_dataframe(data: Union[TimeSeriesData, np.ndarray]) -> tigramite.data_processing.DataFrame:
     '''
