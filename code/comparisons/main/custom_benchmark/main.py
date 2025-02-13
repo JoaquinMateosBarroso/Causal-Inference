@@ -43,7 +43,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
                               lambda x: 2*np.tanh(x),
                             ],
         'L': 50, # Number of cross-links in the dataset
-        'T': 200, # Number of time points in the dataset
+        'T': 1000, # Number of time points in the dataset
         'N': 20, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
