@@ -182,7 +182,7 @@ class BenchmarkCausalDiscovery:
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
         except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e.with_traceback()}')
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
             predicted_parents = {}
             time = np.nan
             memory = np.nan
@@ -232,7 +232,7 @@ class BenchmarkCausalDiscovery:
             axs[i].set_title(f'$X^{{{i}}}_t$ - Parents: {parents_str}')
         
         plt.subplots_adjust(hspace=0.5)
-        
+    
     
     def plot_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):
@@ -263,4 +263,3 @@ class BenchmarkCausalDiscovery:
 
 
 
-    
