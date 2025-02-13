@@ -27,24 +27,24 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     algorithms_parameters = {
         # pc_alpha to None performs a search for the best alpha
         'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
-        'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 3},
-        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
-        'pc-stable': {'pc_alpha': 0.1, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
+        'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
+        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
+        'pc-stable': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
     }
     options = {
-        'max_lag': 10,
+        'max_lag': 5,
         'dependency_funcs': [ lambda x: x, # linear
                               lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
                               lambda x: np.log(abs(x)) + np.sin(x),
                               lambda x: np.cos(x),
                               lambda x: 2*np.tanh(x),
                             ],
-        'L': 50, # Number of cross-links in the dataset
-        'T': 1000, # Number of time points in the dataset
-        'N': 25, # Number of variables in the dataset
+        'L': 10, # Number of cross-links in the dataset
+        'T': 200, # Number of time points in the dataset
+        'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
         'auto_coeffs': [0.6], # default: [0.5, 0.7]
@@ -52,14 +52,12 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for max_lag in [10, 20, 30, 40, 50]:
+    for N_variables in [10]:
         # Increase cross-links and data points in the same proportion as max_lag 
-        options['L'] *= int(max_lag / options['max_lag'])
-        options['T'] *= int(max_lag / options['max_lag'])
+        options['L'] *= int(N_variables / options['N'])
+        options['T'] *= int(N_variables / options['N'])
         
-        options['max_lag'] = max_lag
-        for parameters in algorithms_parameters.values():
-            parameters['max_lag'] = max_lag
+        options['N'] = N_variables
         
         yield algorithms_parameters, options
 
@@ -76,4 +74,4 @@ if __name__ == '__main__':
     
     plt.style.use('ggplot')
     benchmark.plot_ts_datasets('toy_data')
-    benchmark.plot_results('results')
+    benchmark.plot_results('results', x_axis='N')
