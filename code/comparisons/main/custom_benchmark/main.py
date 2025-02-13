@@ -52,7 +52,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for N_variables in [10]:
+    for N_variables in [10, 25, 50, 100]:
         # Increase cross-links and data points in the same proportion as max_lag 
         options['L'] *= int(N_variables / options['N'])
         options['T'] *= int(N_variables / options['N'])
