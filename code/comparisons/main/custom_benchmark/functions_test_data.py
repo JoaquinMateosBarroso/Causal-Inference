@@ -51,4 +51,31 @@ def get_false_positive_ration(ground_truth_parents: dict, predicted_parents: dic
     
     return false_positives / (false_positives + true_negatives) if false_positives != 0 else 0
 
+def get_shd(graph1: dict, graph2: dict):
+    """Calculate the Structural Hamming Distance between two graphs."""
+    def dict_to_adjacency_matrix(graph_dict, nodes):
+        """Convert a graph dictionary to an adjacency matrix."""
+        size = len(nodes)
+        index = {node: i for i, node in enumerate(nodes)}
+        adj_matrix = np.zeros((size, size), dtype=int)
+        for child, parents in graph_dict.items():
+            for parent in parents:
+                adj_matrix[index[parent], index[child]] = 1
+        return adj_matrix
+    
+    nodes = set(graph1.keys()).union(set(graph2.keys()))
+    for parents in graph1.values():
+        nodes.update(parents)
+    for parents in graph2.values():
+        nodes.update(parents)
+    nodes = list(nodes)
+    
+    adj_matrix1 = dict_to_adjacency_matrix(graph1, nodes)
+    adj_matrix2 = dict_to_adjacency_matrix(graph2, nodes)
+    
+    # Calculate the number of differing edges
+    diff = np.abs(adj_matrix1 - adj_matrix2)
+    shd = np.sum(diff)
+    
+    return shd
 

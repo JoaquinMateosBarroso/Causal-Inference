@@ -35,16 +35,16 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'varlingam': {'min_lag': 1, 'max_lag': 3},
     }
     options = {
-        'max_lag': 5,
+        'max_lag': 20,
         'dependency_funcs': [ lambda x: x, # linear
                               lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
                               lambda x: np.log(abs(x)) + np.sin(x),
                               lambda x: np.cos(x),
                               lambda x: 2*np.tanh(x),
                             ],
-        'L': 10, # Number of cross-links in the dataset
+        'L': 50, # Number of cross-links in the dataset
         'T': 200, # Number of time points in the dataset
-        'N': 10, # Number of variables in the dataset
+        'N': 20, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
         'auto_coeffs': [0.6], # default: [0.5, 0.7]
@@ -52,7 +52,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for N_variables in [10, 25, 50, 100]:
+    for N_variables in [20, 30, 40, 50]:
         # Increase cross-links and data points in the same proportion as max_lag 
         options['L'] *= int(N_variables / options['N'])
         options['T'] *= int(N_variables / options['N'])

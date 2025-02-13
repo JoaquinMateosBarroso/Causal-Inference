@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from create_toy_datasets import CausalDataset
-from functions_test_data import get_f1, get_precision, get_recall
+from functions_test_data import get_f1, get_precision, get_recall, get_shd
 from causal_discovery_base import CausalDiscoveryBase
 from causal_discovery_tigramite import PCMCIWrapper, LPCMCIWrapper
 from typing import Any, Callable, Iterator, Union
@@ -193,6 +193,7 @@ class BenchmarkCausalDiscovery:
             result['precision'] = get_precision(predicted_parents, actual_parents)
             result['recall'] = get_recall(predicted_parents, actual_parents)
             result['f1'] = get_f1(predicted_parents, actual_parents)
+            result['shd'] = get_shd(predicted_parents, actual_parents)
         
             return result
     
@@ -233,7 +234,7 @@ class BenchmarkCausalDiscovery:
         plt.subplots_adjust(hspace=0.5)
         
     
-    def plot_results(self, results_folder, scores=['f1', 'precision', 'recall', 'time', 'memory'],
+    def plot_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):
         '''
         Function to plot the results of the benchmark
