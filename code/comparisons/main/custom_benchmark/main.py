@@ -39,16 +39,16 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     options = {
         'max_lag': 5,
         'dependency_funcs': [ lambda x: x, # linear
-                              lambda x: x + 0.5*x**2 * np.exp(-(x**2 / 20.)), # asymptotically linear
-                              lambda x: np.log(1 + abs(x)),
-                              lambda x: 2*np.tanh(x),
+                              lambda x: np.tanh(x), # 
+                              lambda x: 1 / (1 + np.exp(-x)), # logistic
+                              lambda x: np.sin(x) + np.log(1+np.abs(x)), # sin + log
                             ],
-        'graph_density': 0.05, # Percentage of posible cross-links to generate
+        'graph_density': 0.01, # Portion of posible cross-links to generate
         'T': 500, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
-        'auto_coeffs': [0.6], # default: [0.5, 0.7]
+        'auto_coeffs': [0.5], # default: [0.5, 0.7]
         'noise_dists': ['gaussian'], # deafult: ['gaussian']
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
