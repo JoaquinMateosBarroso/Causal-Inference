@@ -44,7 +44,7 @@ class CausalDataset:
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
         Returns:
             time_series : np.ndarray with shape (n_samples, n_variables)
-            parents_dict: dictionary whose keys are each node, and values are the lists of parents.
+            parents_dict: dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         """
         # Number of cross-links
         L = int((N * (N - 1)  * max_lag)* graph_density)

@@ -1,5 +1,3 @@
-
-import itertools
 import json
 import os
 import matplotlib.pyplot as plt
@@ -8,12 +6,9 @@ import pandas as pd
 from create_toy_datasets import CausalDataset
 from functions_test_data import get_f1, get_precision, get_recall, get_shd
 from causal_discovery_base import CausalDiscoveryBase
-from causal_discovery_tigramite import PCMCIWrapper, LPCMCIWrapper
-from typing import Any, Callable, Iterator, Union
-from tigramite import data_processing as pp
-from itertools import product
+from typing import Any, Iterator
+from tigramite import plotting as tp
 from tqdm import tqdm
-import networkx as nx
 
 # For printings
 BLUE = '\033[34m'
@@ -162,15 +157,14 @@ class BenchmarkCausalDiscovery:
         return aggregated_result
         
     
-    def base_test_particular_algorithm(self, causal_dataset,
+    def base_test_particular_algorithm(self, causal_dataset: CausalDataset,
                       causalDiscovery: type[CausalDiscoveryBase],
                       algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
         '''
         Execute the algorithm one single time and calculate the necessary scores.
         
         Parameters:
-            time_series : np.ndarray with the data, shape (n_samples, n_variables)
-            actual_parents : dictionary with the actual parents of each node
+            causal_dataset : CausalDataset with the time series and the parents
             causalDiscovery : class of the algorithm to be executed
             algorithm_parameters : dictionary with the parameters for the algorithm
         Returns:
@@ -212,9 +206,9 @@ class BenchmarkCausalDiscovery:
             plt.clf()
             
             # Plot the graph structure
-            # self.__plot_ts_graph(parents_dict)
-            # plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
-            # plt.clf()
+            self.__plot_ts_graph(parents_dict)
+            plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
+            plt.clf()
         
     def __plot_ts_dataset(self, dataset_name, parents_dict):
         '''
@@ -244,13 +238,17 @@ class BenchmarkCausalDiscovery:
         '''
         Function to plot the graph structure of the time series
         '''
-        graph = nx.DiGraph()
-        for child, parents in parents_dict.items():
-            for parent in parents:
-                graph.add_edge(f'$X^{{{parent[0]}}}_{{{parent[1]}}}$', f'$X^{{{child[0]}}}_{{{child[1]}}}$')
-
-        pos = nx.spring_layout(graph)
-        nx.draw(graph, pos, with_labels=True, node_size=3000, node_color='skyblue', font_size=10, font_weight='bold', arrowsize=20)
+        max_lag = max([max([-tau for _, tau in parents_dict[i]]) for i in parents_dict])
+        graph = np.array([[[(1 if (j, tau) in parents_dict[i] else 0 for j in parents_dict)]\
+                            for i in parents_dict] for tau in range(1, max_lag+1)])
+        print(f'{max_lag=}')
+        print(f'{graph.shape=}')
+        
+        tp.plot_time_series_graph(
+            graph=graph,
+            var_names=list(parents_dict.keys()),
+            link_colorbar_label='cross-MCI (edges)'
+        )
     
     def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):

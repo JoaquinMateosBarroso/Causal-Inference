@@ -65,14 +65,15 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
 if __name__ == '__main__':
     benchmark = BenchmarkCausalDiscovery()
     plt.style.use('ggplot')
-    results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
-                                         parameters_iterator=generate_parameters_iterator(),
-                                         datasets_folder='toy_data',
-                                         results_folder='results',
-                                         n_executions=3,
-                                         scores=['f1', 'precision', 'recall', 'time', 'memory'],
-                                         verbose=1)
+    # results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+    #                                      parameters_iterator=generate_parameters_iterator(),
+    #                                      datasets_folder='toy_data',
+    #                                      results_folder='results',
+    #                                      n_executions=3,
+    #                                      scores=['f1', 'precision', 'recall', 'time', 'memory'],
+    #                                      verbose=1)
     
     benchmark.plot_ts_datasets('toy_data')
-    benchmark.plot_moving_results('results', x_axis='N')
-    benchmark.plot_particular_result('results')
+    
+    # benchmark.plot_moving_results('results', x_axis='N')
+    # benchmark.plot_particular_result('results')
