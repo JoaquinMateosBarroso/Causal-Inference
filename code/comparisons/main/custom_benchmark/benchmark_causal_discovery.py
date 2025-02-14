@@ -13,6 +13,7 @@ from typing import Any, Callable, Iterator, Union
 from tigramite import data_processing as pp
 from itertools import product
 from tqdm import tqdm
+import networkx as nx
 
 # For printings
 BLUE = '\033[34m'
@@ -204,10 +205,16 @@ class BenchmarkCausalDiscovery:
             data_name = filename.split('_')[0]
             with open(f'{folder_name}/{data_name}_parents.json', 'r') as f:
                 parents_dict = json.load(f)
-                
+            
+            # Plot the time series dataset
             self.__plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_plot.pdf')
             plt.clf()
+            
+            # Plot the graph structure
+            # self.__plot_ts_graph(parents_dict)
+            # plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
+            # plt.clf()
         
     def __plot_ts_dataset(self, dataset_name, parents_dict):
         '''
@@ -233,6 +240,17 @@ class BenchmarkCausalDiscovery:
         
         plt.subplots_adjust(hspace=0.5)
     
+    def __plot_ts_graph(self, parents_dict):
+        '''
+        Function to plot the graph structure of the time series
+        '''
+        graph = nx.DiGraph()
+        for child, parents in parents_dict.items():
+            for parent in parents:
+                graph.add_edge(f'$X^{{{parent[0]}}}_{{{parent[1]}}}$', f'$X^{{{child[0]}}}_{{{child[1]}}}$')
+
+        pos = nx.spring_layout(graph)
+        nx.draw(graph, pos, with_labels=True, node_size=3000, node_color='skyblue', font_size=10, font_weight='bold', arrowsize=20)
     
     def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):

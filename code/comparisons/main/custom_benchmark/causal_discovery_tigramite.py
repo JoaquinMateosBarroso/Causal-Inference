@@ -4,6 +4,7 @@ import numpy as np
 import tigramite
 from causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
+from tigramite.independence_tests.cmiknn import CMIknn
 from tigramite.independence_tests.robust_parcorr import RobustParCorr
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
@@ -28,7 +29,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
-        self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
+        self.cond_ind_test = {'parcorr': CMIknn(),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
