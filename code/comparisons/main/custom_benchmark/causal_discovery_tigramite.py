@@ -28,7 +28,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
-        self.cond_ind_test = {'parcorr': RobustParCorr(significance='analytic'),
+        self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag

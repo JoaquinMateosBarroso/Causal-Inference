@@ -11,6 +11,7 @@ from causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
 algorithms = {
     'pcmci': PCMCIWrapper,
     'fullpcmci': PCMCIWrapper,
+    'fastpcmci': PCMCIWrapper,
     'pcmci-modified': PCMCIModifiedWrapper,
     'pc-stable': PCStableWrapper,
     # 'lpcmci': LPCMCIWrapper,
@@ -28,23 +29,23 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         # pc_alpha to None performs a search for the best alpha
         'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
+        'fastpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5},
         'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'pc-stable': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 10, 'max_conds_dim': 5},
+        'pc-stable': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
     }
     options = {
-        'max_lag': 20,
+        'max_lag': 5,
         'dependency_funcs': [ lambda x: x, # linear
                               lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
-                              lambda x: np.log(abs(x)) + np.sin(x),
-                              lambda x: np.cos(x),
+                              lambda x: np.log(abs(x)),
                               lambda x: 2*np.tanh(x),
                             ],
-        'L': 50, # Number of cross-links in the dataset
-        'T': 5000, # Number of time points in the dataset
-        'N': 20, # Number of variables in the dataset
+        'graph_density': 0.05, # Percentage of posible cross-links to generate
+        'T': 500, # Number of time points in the dataset
+        'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
         'auto_coeffs': [0.6], # default: [0.5, 0.7]
@@ -52,9 +53,8 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for N_variables in [20, 30, 40, 50]:
-        # Increase cross-links and data points in the same proportion as max_lag 
-        options['L'] *= int(N_variables / options['N'])
+    for N_variables in [50]:
+        # Increase data points in the same proportion as max_lag 
         options['T'] *= int(N_variables / options['N'])
         
         options['N'] = N_variables
@@ -64,6 +64,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
 
 if __name__ == '__main__':
     benchmark = BenchmarkCausalDiscovery()
+    plt.style.use('ggplot')
     results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                          parameters_iterator=generate_parameters_iterator(),
                                          datasets_folder='toy_data',
@@ -72,6 +73,6 @@ if __name__ == '__main__':
                                          scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                          verbose=1)
     
-    plt.style.use('ggplot')
     benchmark.plot_ts_datasets('toy_data')
-    benchmark.plot_results('results', x_axis='N')
+    benchmark.plot_moving_results('results', x_axis='N')
+    benchmark.plot_particular_result('results')

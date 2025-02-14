@@ -28,7 +28,7 @@ class CausalDataset:
         with open(f'{dataset_folder}/{name}_parents.json', 'w') as f:
             json.dump(self.parents_dict, f)
     
-    def generate_toy_data(self, name, T=100, N=10, L=10,
+    def generate_toy_data(self, name, T=100, N=10, graph_density=0.1,
                       max_lag=3, dependency_funcs=['nonlinear'],
                       datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
@@ -38,7 +38,7 @@ class CausalDataset:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
-            L : Number of cross-links between two different variables.
+            graph_density : Percentage of possible cross-links to generate
             max_lag : Maximum lag of the causal process
             dependency_funcs : List of dependency functions (in {'linear', 'nonlinear'}, or a function f:R->R)
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
@@ -46,6 +46,8 @@ class CausalDataset:
             time_series : np.ndarray with shape (n_samples, n_variables)
             parents_dict: dictionary whose keys are each node, and values are the lists of parents.
         """
+        # Number of cross-links
+        L = int((N * (N - 1)  * max_lag)* graph_density)
         # Generate random causal process
         causal_process, noise = generate_structural_causal_process(N=N,
                                                             L=L,

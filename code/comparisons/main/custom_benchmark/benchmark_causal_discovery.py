@@ -234,10 +234,10 @@ class BenchmarkCausalDiscovery:
         plt.subplots_adjust(hspace=0.5)
     
     
-    def plot_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
+    def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):
         '''
-        Function to plot the results of the benchmark
+        Function to plot the results of the benchmark in when a parameter is varied
         '''
         files = os.listdir(results_folder)
         results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
@@ -258,8 +258,34 @@ class BenchmarkCausalDiscovery:
             ax.set_ylabel(score)
             ax.legend()
             
-            plt.savefig(f'{results_folder}/{score}_plot.pdf')
+            plt.savefig(f'{results_folder}/plot_{score}.pdf')
             plt.close(fig)
 
-
+    def plot_particular_result(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory']):
+        '''
+        Function to plot the result of the benchmark in a particular configuration (in case 
+            the csv files has more than one configuration, the first one is shown)
+        '''
+        files = os.listdir(results_folder)
+        results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
+        get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
+        results_dataframes = {get_algo_name(filename): pd.read_csv(f'{results_folder}/{filename}')\
+                                for filename in results_files}
+        
+        for score in scores:
+            fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+            for iteration, df_results in enumerate(results_dataframes.values()):
+                result = df_results.iloc[0, :]
+                x = iteration
+                y = result[score + '_avg']
+                std = result[score + '_std']
+                ax.errorbar(x, y, yerr=std, fmt='.-', linewidth=1, capsize=3)
+                ax.grid()
+                
+            algorithms_names = list(results_dataframes.keys())
+            ax.set_xticks(range(len(algorithms_names)), algorithms_names)
+            ax.set_ylabel(score)
+            
+            plt.savefig(f'{results_folder}/comparison_{score}.pdf')
+            plt.close(fig)
 
