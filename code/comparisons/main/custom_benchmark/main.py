@@ -39,8 +39,8 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     options = {
         'max_lag': 5,
         'dependency_funcs': [ lambda x: x, # linear
-                              lambda x: x + 0.5*x**2 * np.exp(-x**2 / 20.), # asymptotically linear
-                              lambda x: np.log(abs(x)+1),
+                              lambda x: x + 0.5*x**2 * np.exp(-(x**2 / 20.)), # asymptotically linear
+                              lambda x: np.log(1 + abs(x)),
                               lambda x: 2*np.tanh(x),
                             ],
         'graph_density': 0.05, # Percentage of posible cross-links to generate
