@@ -30,7 +30,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param pc_alpha: alpha value for the conditional independence test
         '''
         self.cond_ind_test = {'parcorr': ParCorr(),
-                              'cmiknn': CMIknn(k=0.1),
+                              'cmiknn': CMIknn(),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
