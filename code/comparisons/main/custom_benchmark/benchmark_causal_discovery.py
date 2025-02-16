@@ -8,6 +8,7 @@ from functions_test_data import get_f1, get_precision, get_recall, get_shd
 from causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
 from tigramite import plotting as tp
+from tigramite.graphs import Graphs
 from tqdm import tqdm
 
 # For printings
@@ -60,7 +61,6 @@ class BenchmarkCausalDiscovery:
         
         if datasets is None:
             self._benchmark_dataset_with_toy_data(algorithms, parameters_iterator, n_executions, datasets_folder)
-        
 
         return self.results                        
     
@@ -84,7 +84,6 @@ class BenchmarkCausalDiscovery:
                                          n_executions: int,
                                          datasets_folder: str,\
                                         )  -> dict[str, list[ dict[str, Any] ]]:
-        
         for iteration, current_parameters in enumerate(parameters_iterator):
             algorithms_parameters, data_option = current_parameters
             # Generate the datasets, with graph structure and time series
@@ -177,7 +176,7 @@ class BenchmarkCausalDiscovery:
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
         except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e.with_traceback()}')
             predicted_parents = {}
             time = np.nan
             memory = np.nan
@@ -197,20 +196,20 @@ class BenchmarkCausalDiscovery:
         data_files = filter(lambda x: x.endswith('.csv'), files)
         for filename in data_files:
             data_name = filename.split('_')[0]
-            with open(f'{folder_name}/{data_name}_parents.json', 'r') as f:
-                parents_dict = json.load(f)
+            with open(f'{folder_name}/{data_name}_parents.txt', 'r') as f:
+                parents_dict = eval(f.read())
             
             # Plot the time series dataset
-            self.__plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
+            self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_plot.pdf')
             plt.clf()
             
             # Plot the graph structure
-            self.__plot_ts_graph(parents_dict)
+            self._plot_ts_graph(parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
             plt.clf()
         
-    def __plot_ts_dataset(self, dataset_name, parents_dict):
+    def _plot_ts_dataset(self, dataset_name, parents_dict):
         '''
         Function to plot the time series dataset and the causal graph
         '''
@@ -234,20 +233,16 @@ class BenchmarkCausalDiscovery:
         
         plt.subplots_adjust(hspace=0.5)
     
-    def __plot_ts_graph(self, parents_dict):
+    def _plot_ts_graph(self, parents_dict):
         '''
         Function to plot the graph structure of the time series
         '''
-        max_lag = max([max([-tau for _, tau in parents_dict[i]]) for i in parents_dict])
-        graph = np.array([[[(1 if (j, tau) in parents_dict[i] else 0 for j in parents_dict)]\
-                            for i in parents_dict] for tau in range(1, max_lag+1)])
-        print(f'{max_lag=}')
-        print(f'{graph.shape=}')
+        graph = Graphs.get_graph_from_dict(parents_dict)
         
         tp.plot_time_series_graph(
             graph=graph,
             var_names=list(parents_dict.keys()),
-            link_colorbar_label='cross-MCI (edges)'
+            link_colorbar_label='cross-MCI (edges)',
         )
     
     def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
@@ -297,6 +292,8 @@ class BenchmarkCausalDiscovery:
                 std = result[score + '_std']
                 ax.errorbar(x, y, yerr=std, fmt='.-', linewidth=1, capsize=3)
                 ax.grid()
+                if score in ['f1', 'precision', 'recall']:
+                    ax.set_ylim(0, 1)
                 
             algorithms_names = list(results_dataframes.keys())
             ax.set_xticks(range(len(algorithms_names)), algorithms_names)

@@ -1,12 +1,17 @@
+from collections import defaultdict
+from copy import deepcopy
 import time
+from bayes_opt import BayesianOptimization
 import numpy as np
 
-from tigramite.pcmci import PCMCI
+from tigramite.pcmci import PCMCI, _nested_to_normal, _create_nested_dictionary
 from tigramite.data_processing import DataFrame
 from tigramite.independence_tests.parcorr import ParCorr
 from statsmodels.tsa.stattools import grangercausalitytests
 
+
 class PCMCI_Modified(PCMCI):
+    
     def run_pcmciplus(self,
                       selected_links=None,
                       link_assumptions=None,
@@ -23,12 +28,8 @@ class PCMCI_Modified(PCMCI):
                       max_conds_px_lagged=None,
                       fdr_method='none',
                       ):
-        """Runs PCMCIplus time-lagged and contemporaneous causal discovery for
-        time series.
-        This function extracts the times taken at each step.
-        Complete documentation in parent function.
         """
-
+        """
         if selected_links is not None:
             raise ValueError("selected_links is DEPRECATED, use link_assumptions instead.")
 
@@ -57,18 +58,8 @@ class PCMCI_Modified(PCMCI):
         self._check_tau_limits(tau_min, tau_max)
         # Set the link assumption
         _int_link_assumptions = self._set_link_assumptions(link_assumptions, tau_min, tau_max)
-        
-        #
-        # Phase 0: Delete links from variables j that have no information about i
-        
-        link_assumptions = self._delete_uninformative_variable_links(
-                            link_assumptions=_int_link_assumptions,
-                            tau_min=tau_min,
-                            tau_max=tau_max)
-        
-        times = dict()
-        
-        tic = time.time()
+
+
         #
         # Phase 1: Get a superset of lagged parents from run_pc_stable
         #
@@ -82,11 +73,6 @@ class PCMCI_Modified(PCMCI):
         p_matrix = self.p_matrix
         val_matrix = self.val_matrix
 
-        toc = time.time()
-        times['phase_1'] = toc - tic
-        
-        tic = time.time()
-        
         #
         # Phase 2: PC algorithm with contemp. conditions and MCI tests
         #
@@ -127,11 +113,6 @@ class PCMCI_Modified(PCMCI):
                             val_matrix=val_matrix,
                             )
 
-        toc = time.time()
-        times['phase_2'] = toc - tic
-        
-        tic = time.time()
-        
         #
         # Phase 3: Collider orientations (with MCI tests for default majority collider rule)
         #
@@ -148,11 +129,6 @@ class PCMCI_Modified(PCMCI):
                             conflict_resolution=conflict_resolution, 
                             contemp_collider_rule=contemp_collider_rule)
         
-        toc = time.time()
-        times['phase_3'] = toc - tic
-        
-        tic = time.time()
-        
         #
         # Phase 4: Meek rule orientations
         #
@@ -161,9 +137,6 @@ class PCMCI_Modified(PCMCI):
                             ambiguous_triples=colliders_step_results['ambiguous_triples'], 
                             conflict_resolution=conflict_resolution)
 
-        toc = time.time()
-        times['phase_4'] = toc - tic
-        
         # Store the parents in the pcmci member
         self.all_lagged_parents = lagged_parents
 
@@ -186,28 +159,194 @@ class PCMCI_Modified(PCMCI):
         self.results = return_dict
         
         return return_dict
-    
-    def _delete_uninformative_variable_links(self,
-                            link_assumptions=None,
-                            tau_min=1,
-                            tau_max=3):
-        _int_link_assumptions = self._set_link_assumptions(link_assumptions,
-                                    tau_min=tau_min, tau_max=tau_max, remove_contemp=True)
 
-        covariances = np.cov(self.dataframe.values[0].T)
+    def _run_pc_stable_single(self, j,
+                              link_assumptions_j=None,
+                              tau_min=1,
+                              tau_max=1,
+                              save_iterations=False,
+                              pc_alpha=0.2,
+                              max_conds_dim=None,
+                              max_combinations=1):
+        if pc_alpha < 0. or pc_alpha > 1.:
+            raise ValueError("Choose 0 <= pc_alpha <= 1")
+
+        # Initialize the dictionaries for the pval_max, val_dict, val_min
+        # results
+        pval_max = dict()
+        val_dict = dict()
+        val_min = dict()
+        # Initialize the parents values from the selected links, copying to
+        # ensure this initial argument is unchanged.
+        parents = []
+        for itau in link_assumptions_j:
+            link_type = link_assumptions_j[itau]
+            if itau != (j, 0) and link_type not in ['<--', '<?-']:
+                parents.append(itau)
+
+        val_dict = {(p[0], p[1]): None for p in parents}
+        pval_max = {(p[0], p[1]): None for p in parents}
+
+        # Define a nested defaultdict of depth 4 to save all information about
+        # iterations
+        iterations = _create_nested_dictionary(4)
+        # Ensure tau_min is at least 1
+        tau_min = max(1, tau_min)
+
+        # Loop over all possible condition dimensions
+        max_conds_dim = self._set_max_condition_dim(max_conds_dim,
+                                                    tau_min, tau_max)
+        # Iteration through increasing number of conditions, i.e. from 
+        # [0, max_conds_dim] inclusive
+        converged = False
+        for conds_dim in range(max_conds_dim + 1):
+            # (Re)initialize the list of non-significant links
+            nonsig_parents = list()
+            # Check if the algorithm has converged
+            if len(parents) - 1 < conds_dim:
+                converged = True
+                break
+            # Print information about
+            if self.verbosity > 1:
+                print("\nTesting condition sets of dimension %d:" % conds_dim)
+                            
+            
+            # Iterate through all possible pairs (that have not converged yet)
+            
+            for index_parent, parent in enumerate(parents):
+                # Print info about this link
+                if self.verbosity > 1:
+                    self._print_link_info(j, index_parent, parent, len(parents))
+                # Iterate through all possible combinations
+                nonsig = False
+                
+                
+                
+                Z = self._optimize_cond_set(parent, parents, j, conds_dim, pc_alpha)
+                
+                # Perform independence test
+                if link_assumptions_j[parent] == '-->':
+                    val = 1.
+                    pval = 0.
+                    dependent = True
+                else:
+                    val, pval, dependent = self.cond_ind_test.run_test(X=[parent],
+                                                Y=[(j, 0)],
+                                                Z=Z,
+                                                tau_max=tau_max,
+                                                alpha_or_thres=pc_alpha,
+                                                )
+                
+                # Keep track of maximum p-value and minimum estimated value
+                # for each pair (across any condition)
+                val_min[parent] = \
+                    min(np.abs(val), val_min.get(parent,
+                                                        float("inf")))
+
+                if pval_max[parent] is None or pval > pval_max[parent]:
+                    pval_max[parent] = pval
+                    val_dict[parent] = val
+
+                # Delete link later and break while-loop if non-significant
+                if not dependent: # pval > pc_alpha:
+                    nonsig_parents.append((j, parent))
+                    nonsig = True
+                    break
+
+                # Print the results if needed
+                if self.verbosity > 1:
+                    self._print_a_pc_result(nonsig,
+                                            conds_dim, max_combinations)
+
+            # Remove non-significant links
+            for _, parent in nonsig_parents:
+                del val_min[parent]
+            # Return the parents list sorted by the test metric so that the
+            # updated parents list is given to the next cond_dim loop
+            parents = self._sort_parents(val_min)
+            # Print information about the change in possible parents
+            if self.verbosity > 1:
+                print("\nUpdating parents:")
+                self._print_parents_single(j, parents, val_min, pval_max)
+
+        # Print information about if convergence was reached
+        if self.verbosity > 1:
+            self._print_converged_pc_single(converged, j, max_conds_dim)
+        # Return the results
+        return {'parents': parents,
+                'val_min': val_min,
+                'val_dict': val_dict,
+                'pval_max': pval_max,
+                'iterations': _nested_to_normal(iterations)}
+     
+    def _optimize_cond_set(self, parent, parents, j, cond_dim, pc_alpha, tau_max=1):
+        # Define the objective function
+        def objective_function(lag, i):
+            # Discretize the lag and i
+            lag, i = int(lag), int(i)
+            Z = [(i, -lag)]
+            pval, val, dependent = self.cond_ind_test.run_test(X=[parent],
+                                                                Y=[(j, 0)],
+                                                                Z=Z,
+                                                                tau_max=tau_max,
+                                                                alpha_or_thres=pc_alpha,
+                                                                )
+            return -val
         
-        # Delete the 50% of the links with the lowest correlation
-        n_links_to_delete = int(0.5 * covariances.size)
-        links_to_delete = np.argsort(covariances.flatten())[:n_links_to_delete]
+        # Define parameter bounds
+        pbounds = {
+            'lag': (1, tau_max + 1),
+            'i': (0, max([p[0] for p in parents]) + 1),
+        }
 
-        for link in links_to_delete:
-            i = link // covariances.shape[1]
-            j = link % covariances.shape[1]
-            for tau in range(tau_min, tau_max + 1):
-                _int_link_assumptions[i].pop((j, -tau), None)
-                _int_link_assumptions[j].pop((i, -tau), None)
+        # Initialize the optimizer
+        optimizer = BayesianOptimization(
+            f=objective_function,  # We'll define the function during optimization
+            pbounds=pbounds,
+            verbose=0,
+            random_state=1,
+        )
 
-        return _int_link_assumptions
+        # Custom function to suggest a batch of points
+        def suggest_batch(optimizer, batch_size):
+            suggested_points = []
+            for _ in range(batch_size):
+                next_point = optimizer.suggest()
+                suggested_points.append(next_point)
+                # Temporarily add the suggested point with a dummy value to avoid repetition
+                optimizer.register(params=next_point, target=-1)
+            # Remove the dummy points after suggestion
+            for point in suggested_points:
+                optimizer._space._cache.pop(point)
+            return suggested_points
+
+        # Custom optimization loop with batch processing
+        def batch_optimize(optimizer, init_points=5, n_iter=25, batch_size=3):
+            # Initial random exploration
+            optimizer.maximize(init_points=init_points, n_iter=0)
+            # Optimization loop
+            for _ in range(n_iter):
+                # Suggest a batch of points
+                batch = suggest_batch(optimizer, batch_size)
+                # Evaluate the objective function for each point in the batch
+                for point in batch:
+                    target = objective_function(**point)
+                    optimizer.register(params=point, target=target)
+        
+        # batch_optimize(optimizer, init_points=20, n_iter=20, batch_size=cond_dim)
+        
+        # Run the optimization
+        optimizer.maximize(init_points=10, n_iter=5)
+
+        best_cond_set = optimizer.max
+        
+        i = int(best_cond_set['params']['i'])
+        lag = int(best_cond_set['params']['lag'])
+        
+        return [(i, -lag)]
+
+
+    
 
 
 from functions_test_data import get_f1
