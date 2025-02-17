@@ -88,8 +88,9 @@ class BenchmarkCausalDiscovery:
             algorithms_parameters, data_option = current_parameters
             # Generate the datasets, with graph structure and time series
             causal_datasets = [CausalDataset() for _ in range(n_executions)]
-            for causal_dataset in causal_datasets: 
-                causal_dataset.generate_toy_data(iteration, datasets_folder=datasets_folder, **data_option)
+            for current_dataset_index, causal_dataset in enumerate(causal_datasets):
+                dataset_index = iteration * n_executions + current_dataset_index
+                causal_dataset.generate_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
             
             if self.verbose > 0:
                 print('\n' + '-'*50)
@@ -227,7 +228,7 @@ class BenchmarkCausalDiscovery:
             
             
             # Include the parents in the title
-            parents = parents_dict.get(variable_name, [])
+            parents = parents_dict.get(int(variable_name), [])
             parents_str = ', '.join([f'$X^{{{p[0]}}}_{{{p[1]}}}$' for p in parents])
             axs[i].set_title(f'$X^{{{i}}}_t$ - Parents: {parents_str}')
         

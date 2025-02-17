@@ -30,7 +30,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param pc_alpha: alpha value for the conditional independence test
         '''
         self.cond_ind_test = {'parcorr': ParCorr(),
-                              'cmiknn': CMIknn(),
+                              'cmiknn': CMIknn(significance='fixed_thres'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
@@ -70,6 +70,7 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
         :param pc_alpha: alpha value for the conditional independence test
         '''
         self.cond_ind_test = {'parcorr': RobustParCorr(significance='analytic'),
+                              'cmiknn': CMIknn(significance='shuffle test'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
@@ -85,7 +86,7 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
 
 class LPCMCIWrapper(CausalDiscoveryBase):
     '''
-    Wrapper for PCMCI algorithm
+    Wrapper for LPCMCI algorithm
     '''
     def __init__(self, data, cond_ind_test='parcorr',
                  min_lag=1, max_lag=3, pc_alpha=0.05, **kwargs):

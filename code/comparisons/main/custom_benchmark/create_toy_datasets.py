@@ -29,7 +29,7 @@ class CausalDataset:
             parents_representation = repr(self.parents_dict)
             f.write(parents_representation)
     
-    def generate_toy_data(self, name, T=100, N=10, graph_density=0.1,
+    def generate_toy_data(self, name, T=100, N=10, crosslinks_density=0.1,
                       max_lag=3, dependency_funcs=['nonlinear'],
                       datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
@@ -39,7 +39,7 @@ class CausalDataset:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
-            graph_density : Percentage of possible links to generate
+            crosslinks_density : Percentage of possible links to generate
             max_lag : Maximum lag of the causal process
             dependency_funcs : List of dependency functions (in {'linear', 'nonlinear'}, or a function f:R->R)
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
@@ -47,12 +47,8 @@ class CausalDataset:
             time_series : np.ndarray with shape (n_samples, n_variables)
             parents_dict: dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         """
-        density_default = 1 / (N * max_lag) # Density when X_{t-1}->X_t
-        density_left = max(0, graph_density - density_default) # Density that is left to distribute
         
-        L = int(N * max_lag * density_left) # density_left portion of total posible links
-        
-        print(f'{L=}, {density_left=}')
+        L = int(N * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
         
         # Generate random causal process
         causal_process, noise = generate_structural_causal_process(N=N,
