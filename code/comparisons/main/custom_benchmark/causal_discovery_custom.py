@@ -41,7 +41,7 @@ def create_lag_matrix(X, lags):
         rows.append(row)
     return np.array(rows)
 
-def multivariate_granger_causality(X, maxlag=5, alpha=0.05):
+def multivariate_granger_causality(X, max_lag=5, alpha=0.05):
     """
     Implements the multivariate Granger causality algorithm.
     
@@ -63,9 +63,9 @@ def multivariate_granger_causality(X, maxlag=5, alpha=0.05):
 
     # Use VAR to select optimal lag (using AIC)
     var_model = VAR(X)
-    order_selection = var_model.select_order(maxlags=maxlag)
+    order_selection = var_model.select_order(maxlags=max_lag)
     # Use the AIC-selected order; if not found, default to lag 1.
-    optimal_lag = order_selection.selected_orders.get('aic', 1)
+    optimal_lag = order_selection.selected_orders.get('aic', max_lag)
     if optimal_lag < 1:
         optimal_lag = 1
     print("Optimal lag selected:", optimal_lag)
@@ -133,6 +133,6 @@ if __name__ == "__main__":
     print(X)
 
     # Run the multivariate Granger causality procedure
-    G = multivariate_granger_causality(X, maxlag=5, alpha=0.05)
+    G = multivariate_granger_causality(X, max_lag=5, alpha=0.05)
     print("Edges in the Granger causality graph (p -> q):")
     print(list(G.edges()))

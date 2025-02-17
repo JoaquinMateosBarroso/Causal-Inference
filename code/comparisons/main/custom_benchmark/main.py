@@ -13,11 +13,11 @@ import os
 
 algorithms = {
     # 'dynotears': DynotearsWrapper,
+    'pcmci-modified': PCMCIModifiedWrapper,
     'pcmci': PCMCIWrapper,
     # 'fullpcmci': PCMCIWrapper,
     # 'fastpcmci': PCMCIWrapper,
     # 'pcmci-cmiknn': PCMCIWrapper,
-    'pcmci-modified': PCMCIModifiedWrapper,
     # 'pc-stable': PCStableWrapper,
     # 'lpcmci': LPCMCIWrapper,
     'granger': GrangerWrapper,
@@ -53,11 +53,11 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
                               lambda x: 1 if x > 0 else 0, # step function
                             ],
         'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t
-        'T': 600, # Number of time points in the dataset
+        'T': 2000, # Number of time points in the dataset
         'N': 30, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
-        'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
-        'auto_coeffs': [0.6], # default: [0.5, 0.7]
+        'dependency_coeffs': [-0.2, 0.2], # default: [-0.5, 0.5]
+        'auto_coeffs': [0.3], # default: [0.5, 0.7]
         'noise_dists': ['gaussian'], # deafult: ['gaussian']
         'noise_sigmas': [2], # default: [0.5, 2]
     }
