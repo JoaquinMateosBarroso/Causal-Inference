@@ -9,7 +9,7 @@ from tigramite.data_processing import DataFrame
 from tigramite.independence_tests.parcorr import ParCorr
 from statsmodels.tsa.stattools import grangercausalitytests
 
-from causal_discovery_custom import multivariate_granger_causality
+from causal_discovery_custom import multivariate_granger_causality, univariate_granger_causality
 
 
 class PCMCI_Modified(PCMCI):
@@ -353,6 +353,7 @@ class PCMCI_Modified(PCMCI):
 
     def _remove_dependent_links(self, tau_max):
         '''
+        TODO
         Set the link assumptions from an independence test.
         '''
         link_assumptions = dict()
