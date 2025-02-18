@@ -48,8 +48,8 @@ def insert_top_k_edges(G, p_values, max_crosslinks_density):
     """
     # We force density = keeping_number / (keeping_number + n)
     #   Because there are n "autolinks"
-    keeping_number = max_crosslinks_density * len(G.nodes()) /\
-                        (1 - max_crosslinks_density)
+    keeping_number = int (max_crosslinks_density * len(G.nodes()) /\
+                        (1 - max_crosslinks_density) )
     
     # Sort the p-values in ascending order
     sorted_p_values = sorted(p_values.items(), key=lambda x: x[1])
