@@ -53,7 +53,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
                               lambda x: 1 if x > 0 else 0, # step function
                             ],
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
-        'T': 400, # Number of time points in the dataset
+        'T': 1000, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
