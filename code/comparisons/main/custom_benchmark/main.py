@@ -47,7 +47,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'max_lag': 5,
         'dependency_funcs': [
                               lambda x: np.exp(-abs(x)) + np.tanh(x),
-                              lambda x: x + x**2 * np.exp(-(x**2) / 2), # logistic
+                            #   lambda x: x + x**2 * np.exp(-(x**2) / 2), # logistic
                               lambda x: np.sin(x), # + np.log(1+np.abs(x)), # sin + log
                               lambda x: np.cos(x),
                               lambda x: 1 if x > 0 else 0, # step function
