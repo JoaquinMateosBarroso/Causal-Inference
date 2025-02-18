@@ -361,20 +361,20 @@ class PCMCI_Modified(PCMCI):
         data_matrix = self.dataframe.values[0]
         # Obtain the Granger causality graph
         granger_graph = multivariate_granger_causality(self.dataframe.values[0], tau_max)
-    
-        if self.verbosity > 1:
+
+        if self.verbosity > -1:
             print(f'{granger_graph.edges()=}')
         
-        for i in range(data_matrix.shape[1]):
-            for j in range(data_matrix.shape[1]):
-                # Assume autocausal links always exist
-                link_assumptions[j] = {(j, -1): '-->'}
+        for j in range(data_matrix.shape[1]):
+            # Assume autocausal links always exist
+            link_assumptions[j] = {(j, -1): '-->'}
+            for i in range(data_matrix.shape[1]):
                 if granger_graph.has_edge(i, j):
                     for tau in range(1, tau_max):
                         # Test other cross-links
                         link_assumptions[j][(i, -tau)] = '-->'
         
         return link_assumptions
-    
-    
+
+
 

@@ -32,7 +32,7 @@ class DynotearsWrapper(CausalDiscoveryBase):
         '''
         graph_structure = dynotears.from_pandas_dynamic(time_series=self.df,
                                                         p=self.max_lag,
-                                                        max_iter=1000,
+                                                        max_iter=100,
                                                         **self.kwargs)
         
         parents_dict = get_parents_from_causalnex_edges(graph_structure.edges)

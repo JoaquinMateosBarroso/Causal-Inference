@@ -177,7 +177,7 @@ class BenchmarkCausalDiscovery:
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
         except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e.with_traceback()}')
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
             predicted_parents = {}
             time = np.nan
             memory = np.nan

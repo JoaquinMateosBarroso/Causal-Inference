@@ -41,7 +41,7 @@ def create_lag_matrix(X, lags):
         rows.append(row)
     return np.array(rows)
 
-def multivariate_granger_causality(X, max_lag=5, alpha=0.05):
+def multivariate_granger_causality(X, max_lag=5, alpha=0.01):
     """
     Implements the multivariate Granger causality algorithm.
     
@@ -119,6 +119,7 @@ def multivariate_granger_causality(X, max_lag=5, alpha=0.05):
                 G.add_edge(p, q)
 
     return G
+
 
 # Example usage:
 if __name__ == "__main__":
