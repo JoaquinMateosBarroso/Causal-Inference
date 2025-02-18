@@ -66,7 +66,7 @@ class PCMCI_Modified(PCMCI):
         # Phase 0: Get as selected_links those that have a granger-lagged connection
         #
         if not link_assumptions:
-            link_assumptions = self._set_link_assumptions_from_granger(tau_max)
+            link_assumptions = self._remove_nongranger_summarized_links(tau_max)
         #
         # Phase 1: Get a superset of lagged parents from run_pc_stable
         #
@@ -351,8 +351,15 @@ class PCMCI_Modified(PCMCI):
                 'pval_max': pval_max,
                 'iterations': _nested_to_normal(iterations)}
 
+    def _remove_dependent_links(self, tau_max):
+        '''
+        Set the link assumptions from an independence test.
+        '''
+        link_assumptions = dict()
+        
+        
 
-    def _set_link_assumptions_from_granger(self, tau_max):
+    def _remove_nongranger_summarized_links(self, tau_max):
         """
         Set the link assumptions from the Granger causality test.
         """

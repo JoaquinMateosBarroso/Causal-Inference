@@ -63,11 +63,13 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for N_variables in [30, 40, 50]:
-        # Increase data points in the same proportion as max_lag 
+    for N_variables in [5, 10, 20]:
+        # Increase data points in the same proportion as N_vars 
         options['T'] = int(options['T'] * (N_variables / options['N'])**2)
         
         options['N'] = N_variables
+        
+        # options['max_lag'] = max_lag
         
         for algorithm_paramters in algorithms_parameters.values():
             algorithm_paramters['max_lag'] = options['max_lag']
@@ -90,7 +92,7 @@ if __name__ == '__main__':
     
     benchmark.plot_ts_datasets('toy_data')
     
-    benchmark.plot_moving_results('results', x_axis='N')
+    benchmark.plot_moving_results('results', x_axis='max_lag')
     benchmark.plot_particular_result('results')
 
 

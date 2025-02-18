@@ -8,11 +8,6 @@ import scipy.stats as stats
 
 
 
-
-
-
-
-
 def check_stationarity(X, significance=0.05):
     """
     Check covariance stationarity for each series in X using the Augmented Dickey-Fuller test.
