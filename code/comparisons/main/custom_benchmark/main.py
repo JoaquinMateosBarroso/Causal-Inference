@@ -63,7 +63,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'noise_sigmas': [0.2], # default: [0.5, 2]
     }
     
-    for N_variables in [10, 20, 30, 40, 50]:
+    for N_variables in [30, 40, 50]:
         # Increase data points in the same proportion as max_lag 
         options['T'] = int(options['T'] * (N_variables / options['N'])**2)
         

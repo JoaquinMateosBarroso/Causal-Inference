@@ -42,12 +42,14 @@ def create_lag_matrix(X, lags):
     return np.array(rows)
 
 
-def insert_top_k_edges(G, p_values, keeping_density):
+def insert_top_k_edges(G, p_values, max_crosslinks_density):
     """
     Insert in G the top k% edges with the lowest p-values.
     """
-    total_posible_edges = len(G.nodes) * (len(G.nodes) - 1)
-    keeping_number = int(total_posible_edges * keeping_density)
+    # We force density = keeping_number / (keeping_number + n)
+    #   Because there are n "autolinks"
+    keeping_number = max_crosslinks_density * len(G.nodes()) /\
+                        (1 - max_crosslinks_density)
     
     # Sort the p-values in ascending order
     sorted_p_values = sorted(p_values.items(), key=lambda x: x[1])
@@ -57,7 +59,7 @@ def insert_top_k_edges(G, p_values, keeping_density):
         G.add_edge(p, q)
 
 
-def multivariate_granger_causality(X, max_lag=5, keeping_density=0.2,
+def multivariate_granger_causality(X, max_lag=5, max_crosslinks_density=0.2,
                                    alpha=0.025):
     """
     Implements the multivariate Granger causality algorithm.
@@ -67,7 +69,7 @@ def multivariate_granger_causality(X, max_lag=5, keeping_density=0.2,
     Parameters:
       X      : np.array of shape (T, d) containing the time series data.
       maxlag : Maximum lag to consider for lag order selection.
-      keeping_density: Fraction of all posible edges to keep - at maximum.
+      keeping_density: Maximum fraction of edges that we should supose are going to be cross-links.
       alpha  : Significance level for the F-test - if an edge reaches a lower density, it isn't considered.
       
     Returns:
@@ -138,7 +140,7 @@ def multivariate_granger_causality(X, max_lag=5, keeping_density=0.2,
             if p_value < alpha:
                 p_values[p, q] = p_value
         
-        insert_top_k_edges(G, p_values, keeping_density)
+        insert_top_k_edges(G, p_values, max_crosslinks_density)
         
     return G
 
