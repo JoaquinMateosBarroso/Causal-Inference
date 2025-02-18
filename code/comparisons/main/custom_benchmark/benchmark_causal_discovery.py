@@ -201,14 +201,16 @@ class BenchmarkCausalDiscovery:
                 parents_dict = eval(f.read())
             
             # Plot the time series dataset
-            self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
+            fig, axs = self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_plot.pdf')
             plt.clf()
+            plt.close(fig)
             
             # Plot the graph structure
             self._plot_ts_graph(parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
             plt.clf()
+            
         
     def _plot_ts_dataset(self, dataset_name, parents_dict):
         '''
@@ -233,6 +235,8 @@ class BenchmarkCausalDiscovery:
             axs[i].set_title(f'$X^{{{i}}}_t$ - Parents: {parents_str}')
         
         plt.subplots_adjust(hspace=0.5)
+        
+        return fig, axs
     
     def _plot_ts_graph(self, parents_dict):
         '''

@@ -23,7 +23,6 @@ class DynotearsWrapper(CausalDiscoveryBase):
         self.max_lag = max_lag
         self.kwargs = kwargs
         
-
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
@@ -38,6 +37,7 @@ class DynotearsWrapper(CausalDiscoveryBase):
         parents_dict = get_parents_from_causalnex_edges(graph_structure.edges)
         
         return parents_dict
+
 
 def get_parents_from_causalnex_edges(edges: list[tuple[str, str]]) -> dict[int, list[int]]:
     '''
@@ -54,8 +54,7 @@ def get_parents_from_causalnex_edges(edges: list[tuple[str, str]]) -> dict[int, 
         child = origin.split('_lag')
         child = (int(child[0]), -int(child[1]))
         parent = int(destiny.split('_lag')[0])
-        
-        if child[1] > 0: # Do not include contemporaneous edges
+        if child[1] <  0: # Include just lagged edges
             parents[parent] = parents.get(parent, []) + [child]
         
     return parents

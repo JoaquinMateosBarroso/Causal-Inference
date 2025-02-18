@@ -258,7 +258,6 @@ class PCMCI_Modified(PCMCI):
         # Iteration through increasing number of conditions, i.e. from 
         # [0, max_conds_dim] inclusive
         converged = False
-        times = dict()
         for conds_dim in range(max_conds_dim + 1):
             tic = time.time()
             

@@ -81,7 +81,7 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
         self.pcmci = PCMCI_Modified(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,
-            verbosity=0
+            verbosity=0,
         )
 
 class LPCMCIWrapper(CausalDiscoveryBase):
