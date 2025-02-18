@@ -185,10 +185,10 @@ class BenchmarkCausalDiscovery:
         finally:
             result = {'time': time, 'memory': memory}
             
-            result['precision'] = get_precision(predicted_parents, actual_parents)
-            result['recall'] = get_recall(predicted_parents, actual_parents)
-            result['f1'] = get_f1(predicted_parents, actual_parents)
-            result['shd'] = get_shd(predicted_parents, actual_parents)
+            result['precision'] = get_precision(actual_parents, predicted_parents)
+            result['recall'] = get_recall(actual_parents, predicted_parents)
+            result['f1'] = get_f1(actual_parents, predicted_parents)
+            result['shd'] = get_shd(actual_parents, predicted_parents)
         
             return result
     

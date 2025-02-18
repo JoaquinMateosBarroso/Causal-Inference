@@ -12,7 +12,7 @@ import os
 
 
 algorithms = {
-    # 'dynotears': DynotearsWrapper,
+    'dynotears': DynotearsWrapper,
     'pcmci-modified': PCMCIModifiedWrapper,
     'pcmci': PCMCIWrapper,
     # 'fullpcmci': PCMCIWrapper,
@@ -56,13 +56,13 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'T': 2000, # Number of time points in the dataset
         'N': 30, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
-        'dependency_coeffs': [-0.2, 0.2], # default: [-0.5, 0.5]
-        'auto_coeffs': [0.3], # default: [0.5, 0.7]
+        'dependency_coeffs': [-0.4, 0.3], # default: [-0.5, 0.5]
+        'auto_coeffs': [0.8], # default: [0.5, 0.7]
         'noise_dists': ['gaussian'], # deafult: ['gaussian']
         'noise_sigmas': [2], # default: [0.5, 2]
     }
     
-    for N_variables in [30]:
+    for N_variables in [5, 10, 20, 40, 60]:
         # Increase data points in the same proportion as max_lag 
         options['T'] = int(options['T'] * (N_variables / options['N']))
         

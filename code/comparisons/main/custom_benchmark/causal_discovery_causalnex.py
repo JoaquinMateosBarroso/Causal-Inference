@@ -23,7 +23,6 @@ class DynotearsWrapper(CausalDiscoveryBase):
         self.max_lag = max_lag
         self.kwargs = kwargs
         
-        self.model = dynotears
 
     def extract_parents(self) -> dict[int, list[int]]:
         '''
@@ -31,7 +30,32 @@ class DynotearsWrapper(CausalDiscoveryBase):
         Parameters:
             data : np.array with the data, shape (n_samples, n_features)
         '''
-        graph_structure = self.model.from_pandas_dynamic(time_series=self.df, p=self.max_lag, **self.kwargs)
-        print(f'{graph_structure.graph=}')
+        graph_structure = dynotears.from_pandas_dynamic(time_series=self.df,
+                                                        p=self.max_lag,
+                                                        max_iter=1000,
+                                                        **self.kwargs)
         
-        return {}
+        parents_dict = get_parents_from_causalnex_edges(graph_structure.edges)
+        
+        return parents_dict
+
+def get_parents_from_causalnex_edges(edges: list[tuple[str, str]]) -> dict[int, list[int]]:
+    '''
+    Function to extract the parents from the edges list.
+    Parameters:
+        edges : list of tuples with the edges, where each tuple is (parent, child),
+                being a node represented by '{origin}_lag{lag}'. E.g. '0_lag1'.
+    Returns:
+        parents : dict with the parents of each node.
+    '''
+    parents = {}
+    for edge in edges:
+        origin, destiny = edge
+        child = origin.split('_lag')
+        child = (int(child[0]), -int(child[1]))
+        parent = int(destiny.split('_lag')[0])
+        
+        if child[1] > 0: # Do not include contemporaneous edges
+            parents[parent] = parents.get(parent, []) + [child]
+        
+    return parents
