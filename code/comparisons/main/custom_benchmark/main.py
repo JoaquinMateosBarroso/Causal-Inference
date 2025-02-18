@@ -12,16 +12,16 @@ import os
 
 
 algorithms = {
-    'dynotears': DynotearsWrapper,
     'pcmci-modified': PCMCIModifiedWrapper,
     'pcmci': PCMCIWrapper,
+    'dynotears': DynotearsWrapper,
+    'granger': GrangerWrapper,
+    'varlingam': VARLINGAMWrapper,
     # 'fullpcmci': PCMCIWrapper,
     # 'fastpcmci': PCMCIWrapper,
     # 'pcmci-cmiknn': PCMCIWrapper,
     # 'pc-stable': PCStableWrapper,
     # 'lpcmci': LPCMCIWrapper,
-    'granger': GrangerWrapper,
-    'varlingam': VARLINGAMWrapper,
 }
 def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
     '''
@@ -36,15 +36,15 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'fastpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 3},
         'pcmci-cmiknn': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'cond_ind_test': 'cmiknn'},
-        'pcmci-modified': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
+        'pcmci-modified': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5},
         'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 3},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
-        'dynotears': {'max_lag': 3},
+        'dynotears': {'max_lag': 3, 'max_iter': 10000},
     }
     options = {
-        'max_lag': 5,
+        'max_lag': 20,
         'dependency_funcs': [
                                 lambda x: 0.5*x, # linear with 
                                 lambda x: np.exp(-abs(x)) - 1 + np.tanh(x),

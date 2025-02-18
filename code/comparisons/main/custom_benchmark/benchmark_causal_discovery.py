@@ -96,6 +96,7 @@ class BenchmarkCausalDiscovery:
                 print('\n' + '-'*50)
                 print(BLUE, 'Executing the datasets with option:', data_option, RESET)
             
+            
             current_results = self.test_algorithms(causal_datasets, algorithms,
                                                    algorithms_parameters)
             
@@ -178,6 +179,7 @@ class BenchmarkCausalDiscovery:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
         except Exception as e:
             print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+            print('Returning nan values for this algorithm')
             predicted_parents = {}
             time = np.nan
             memory = np.nan

@@ -41,7 +41,24 @@ def create_lag_matrix(X, lags):
         rows.append(row)
     return np.array(rows)
 
-def multivariate_granger_causality(X, max_lag=5, alpha=0.025):
+
+def insert_top_k_edges(G, p_values, keeping_density):
+    """
+    Insert in G the top k% edges with the lowest p-values.
+    """
+    total_posible_edges = len(G.nodes) * (len(G.nodes) - 1)
+    keeping_number = int(total_posible_edges * keeping_density)
+    
+    # Sort the p-values in ascending order
+    sorted_p_values = sorted(p_values.items(), key=lambda x: x[1])
+    
+    # Insert the top k% edges
+    for (p, q), p_values in sorted_p_values[:keeping_number]:
+        G.add_edge(p, q)
+
+
+def multivariate_granger_causality(X, max_lag=5, keeping_density=0.2,
+                                   alpha=0.025):
     """
     Implements the multivariate Granger causality algorithm.
     
@@ -50,7 +67,8 @@ def multivariate_granger_causality(X, max_lag=5, alpha=0.025):
     Parameters:
       X      : np.array of shape (T, d) containing the time series data.
       maxlag : Maximum lag to consider for lag order selection.
-      alpha  : Significance level for the F-test.
+      keeping_density: Fraction of all posible edges to keep - at maximum.
+      alpha  : Significance level for the F-test - if an edge reaches a lower density, it isn't considered.
       
     Returns:
       G      : A networkx.DiGraph where an edge p -> q indicates that series p
@@ -79,6 +97,8 @@ def multivariate_granger_causality(X, max_lag=5, alpha=0.025):
     d = X.shape[1]
     G.add_nodes_from(range(d))
 
+    # Generate a dictionary with p-values of each predictor variable
+    p_values = {}
     # Loop over each target variable q
     for q in range(d):
         # Response: values of series q, starting from time optimal_lag
@@ -116,8 +136,10 @@ def multivariate_granger_causality(X, max_lag=5, alpha=0.025):
 
             # If p-value is significant, add edge from p to q
             if p_value < alpha:
-                G.add_edge(p, q)
-
+                p_values[p, q] = p_value
+        
+        insert_top_k_edges(G, p_values, keeping_density)
+        
     return G
 
 

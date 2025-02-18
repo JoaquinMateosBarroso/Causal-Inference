@@ -6,6 +6,7 @@ from causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.independence_tests.cmiknn import CMIknn
 from tigramite.independence_tests.robust_parcorr import RobustParCorr
+from tigramite.independence_tests.gpdc import GPDC
 from tigramite.pcmci import PCMCI
 from tigramite.lpcmci import LPCMCI
 
@@ -30,7 +31,8 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param pc_alpha: alpha value for the conditional independence test
         '''
         self.cond_ind_test = {'parcorr': ParCorr(),
-                              'cmiknn': CMIknn(significance='fixed_thres'),
+                              'gpdc': GPDC(),
+                              'cmiknn': CMIknn(significance='fixed_thres'), # Very slow
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
