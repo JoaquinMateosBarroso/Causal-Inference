@@ -79,3 +79,31 @@ def get_shd(graph1: dict, graph2: dict):
     
     return shd
 
+
+
+'''
+TIME SERIES GRAPHS UTILITIES
+'''
+def window_to_summary_graph(window_graph: dict[int, list[tuple[int, int]]]
+                            )-> dict[int, list[int]]:
+    '''
+    Convert a window graph, in the way X^i_t' -> X^j_t
+        to a summary graph, X^i_- ->X^j_t
+    
+    Parameters:
+    -----------
+    window_graph : dict[int, list[tuple[int, int]]]
+        A dictionary where the keys are the time points and the values are lists of parents.
+        Each parent is a tuple (node, lag).
+    
+    Returns:
+    --------
+    summary_graph : dict[int, list[int]]
+        A dictionary where the keys are the time points and the values are lists of parents.
+        Each parent is a node.
+    '''
+    summary_graph = {}
+    for t, parents in window_graph.items():
+        summary_graph[t] = [parent[0] for parent in parents]
+        
+    return summary_graph

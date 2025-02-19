@@ -1,7 +1,6 @@
 from typing import Any
 import numpy as np
-import tigramite
-from causal_discovery_base import CausalDiscoveryBase
+from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from causalai.models.time_series.granger import Granger
 from causalai.models.time_series.var_lingam import VARLINGAM
 

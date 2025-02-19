@@ -1,13 +1,12 @@
 import pandas as pd
 from typing import Any
 import numpy as np
-import tigramite
 from causalnex.structure import dynotears
 
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from causal_discovery_base import CausalDiscoveryBase
+from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 
 
 class DynotearsWrapper(CausalDiscoveryBase):

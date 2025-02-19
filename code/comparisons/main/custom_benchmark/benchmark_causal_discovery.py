@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from create_toy_datasets import CausalDataset
-from functions_test_data import get_f1, get_precision, get_recall, get_shd
-from causal_discovery_base import CausalDiscoveryBase
+from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
+from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
 from tigramite import plotting as tp
 from tigramite.graphs import Graphs
@@ -35,6 +35,7 @@ class BenchmarkCausalDiscovery:
         Function to execute a series of algorithms for causal discovery over time series datasets,
             using a series of parameters for algorithms and options in the creation of the datasets.
         Parameters:
+        -----------
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             algorithms_parameters : dict[str, Any]
@@ -48,6 +49,7 @@ class BenchmarkCausalDiscovery:
             datasets_folder : str, optional
                 The name of the folder in which datasets will be saved. If not specified, datasets are not saved.
         Returns:
+        --------
             results: dict[str, list[ dict[str, Any] ]]
                 A dictionary where keys are the names of the algorithms and values are 
                     lists with dictionaries containing the results of the benchmark for each algorithm.
@@ -173,6 +175,7 @@ class BenchmarkCausalDiscovery:
         '''
         time_series = causal_dataset.time_series
         actual_parents = causal_dataset.parents_dict
+        actual_parents_summary = window_to_summary_graph(actual_parents)
         
         algorithm = causalDiscovery(data=time_series, **algorithm_parameters)
         try:
@@ -191,7 +194,14 @@ class BenchmarkCausalDiscovery:
             result['recall'] = get_recall(actual_parents, predicted_parents)
             result['f1'] = get_f1(actual_parents, predicted_parents)
             result['shd'] = get_shd(actual_parents, predicted_parents)
-        
+            
+            # Obtain the same metrics in the summary graph
+            predicted_parents_summary = window_to_summary_graph(predicted_parents)
+            result['precision_summary'] = get_precision(actual_parents_summary, predicted_parents_summary)
+            result['recall_summary'] = get_recall(actual_parents_summary, predicted_parents_summary)
+            result['f1_summary'] = get_f1(actual_parents_summary, predicted_parents_summary)
+            result['shd_summary'] = get_shd(actual_parents_summary, predicted_parents_summary)
+            
             return result
     
     def plot_ts_datasets(self, folder_name):

@@ -9,7 +9,7 @@ from tigramite.data_processing import DataFrame
 from tigramite.independence_tests.parcorr import ParCorr
 from statsmodels.tsa.stattools import grangercausalitytests
 
-from causal_discovery_custom import multivariate_granger_causality, univariate_granger_causality
+from causal_discovery_algorithms.causal_discovery_custom import multivariate_granger_causality, univariate_granger_causality
 
 
 class PCMCI_Modified(PCMCI):
@@ -29,6 +29,7 @@ class PCMCI_Modified(PCMCI):
                       max_conds_px=None,
                       max_conds_px_lagged=None,
                       fdr_method='none',
+                      **kwargs,
                       ):
         """
         """
@@ -65,8 +66,9 @@ class PCMCI_Modified(PCMCI):
         #
         # Phase 0: Get as selected_links those that have a granger-lagged connection
         #
-        if not link_assumptions:
-            link_assumptions = self._remove_nongranger_summarized_links(tau_max)
+        if link_assumptions is not None:
+            link_assumptions = self._remove_nongranger_summarized_links(tau_max, **kwargs)
+        
         #
         # Phase 1: Get a superset of lagged parents from run_pc_stable
         #
@@ -360,14 +362,18 @@ class PCMCI_Modified(PCMCI):
         
         
 
-    def _remove_nongranger_summarized_links(self, tau_max):
+    def _remove_nongranger_summarized_links(self,
+                                            tau_max,
+                                            max_crosslink_density,
+                                            preselection_alpha):
         """
         Set the link assumptions from the Granger causality test.
         """
         link_assumptions = dict()
         data_matrix = self.dataframe.values[0]
         # Obtain the Granger causality graph
-        granger_graph = multivariate_granger_causality(self.dataframe.values[0], tau_max)
+        granger_graph = multivariate_granger_causality(self.dataframe.values[0], tau_max,
+                                                       max_crosslink_density, preselection_alpha)
 
         if self.verbosity > -1:
             print(f'{granger_graph.edges()=}')

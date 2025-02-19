@@ -64,7 +64,7 @@ def multivariate_granger_causality(X, max_lag=5, max_crosslinks_density=0.2,
     Parameters:
       X      : np.array of shape (T, d) containing the time series data.
       maxlag : Maximum lag to consider for lag order selection.
-      keeping_density: Maximum fraction of edges that we should supose are going to be cross-links.
+      max_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
       alpha  : Significance level for the F-test - if an edge reaches a lower density, it isn't considered.
       
     Returns:
