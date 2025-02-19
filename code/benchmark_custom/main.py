@@ -95,13 +95,13 @@ if __name__ == '__main__':
     datasets_folder = 'toy_data'
     results_folder = 'results'
     
-    # results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
-    #                                      parameters_iterator=generate_parameters_iterator(),
-    #                                      datasets_folder=datasets_folder,
-    #                                      results_folder=results_folder,
-    #                                      n_executions=3,
-    #                                      scores=['f1', 'precision', 'recall', 'time', 'memory'],
-    #                                      verbose=1)
+    results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+                                         parameters_iterator=generate_parameters_iterator(),
+                                         datasets_folder=datasets_folder,
+                                         results_folder=results_folder,
+                                         n_executions=3,
+                                         scores=['f1', 'precision', 'recall', 'time', 'memory'],
+                                         verbose=1)
     
     benchmark.plot_ts_datasets(datasets_folder)
     
