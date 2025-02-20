@@ -58,7 +58,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
     }
     data_generation_options = {
-        'max_lag': 20,
+        'max_lag': 50,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
         'T': 500, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     benchmark = BenchmarkCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results'
-    execute_benchmark = True
+    execute_benchmark = False
 
     if execute_benchmark:
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
