@@ -4,7 +4,6 @@ import os
 import numpy as np
 import pandas as pd
 from tigramite.toymodels.structural_causal_processes import generate_structural_causal_process, structural_causal_process
-from functions_test_data import dependency_funcs_dict
 
 def get_parents_dict(causal_process):
     parents_dict = dict()
@@ -14,6 +13,15 @@ def get_parents_dict(causal_process):
         for i in range(len(causal_process[key])):
             parents_dict[key].append(causal_process[key][i][0])
     return parents_dict
+
+dependency_funcs_dict = {
+    'linear': lambda x: 0.5*x,
+    'negative-exponential': lambda x: 1 - np.exp(-abs(x)),
+    'sin': lambda x: np.sin(x),
+    'cos': lambda x: np.cos(x),
+    'step': lambda x: 1 if x > 0 else -1,
+}
+
 
 class CausalDataset:
     def __init__(self):

@@ -45,23 +45,23 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
 
     algorithms_parameters = {
         # pc_alpha to None performs a search for the best alpha
-        'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'cond_ind_test': 'parcorr'},
+        'pcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'cond_ind_test': 'parcorr'},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
         'dynotears': {'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
         'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5,
-                           'max_crosslink_density': 0.2, 'preselection_alpha': 0.01},
+        'pcmci-modified': {'pc_alpha': 0.02, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5,
+                           'max_summarized_crosslinks_density': 0.05, 'preselection_alpha': 0.025},
         
         
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'lpcmci': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 3},
+        'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
     }
     data_generation_options = {
         'max_lag': 20,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
         'T': 500, # Number of time points in the dataset
-        'N': 20, # Number of variables in the dataset
+        'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
         'auto_coeffs': [0.7], # default: [0.5, 0.7]
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     
     benchmark.plot_ts_datasets(datasets_folder)
     
-    benchmark.plot_moving_results(results_folder, x_axis='preselection_alpha')
+    benchmark.plot_moving_results(results_folder, x_axis='N')
     benchmark.plot_particular_result(results_folder)
 
 

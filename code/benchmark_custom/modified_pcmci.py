@@ -5,17 +5,12 @@ import time
 import numpy as np
 
 from tigramite.pcmci import PCMCI, _nested_to_normal, _create_nested_dictionary
-from tigramite.data_processing import DataFrame
-from tigramite.independence_tests.parcorr import ParCorr
-from statsmodels.tsa.stattools import grangercausalitytests
 
-from causal_discovery_algorithms.causal_discovery_custom import multivariate_granger_causality, univariate_granger_causality
+from causal_discovery_algorithms.causal_discovery_custom import summarized_causality_multivariate_granger, summarized_causality_univariate_granger
 
 
 class PCMCI_Modified(PCMCI):
-    
     def run_pcmciplus(self,
-                      selected_links=None,
                       link_assumptions=None,
                       tau_min=0,
                       tau_max=1,
@@ -33,8 +28,6 @@ class PCMCI_Modified(PCMCI):
                       ):
         """
         """
-        if selected_links is not None:
-            raise ValueError("selected_links is DEPRECATED, use link_assumptions instead.")
 
         # Check if pc_alpha is chosen to optimze over a list
         if pc_alpha is None or isinstance(pc_alpha, (list, tuple, np.ndarray)):
@@ -364,7 +357,7 @@ class PCMCI_Modified(PCMCI):
 
     def _remove_nongranger_summarized_links(self,
                                             tau_max,
-                                            max_crosslink_density,
+                                            max_summarized_crosslinks_density,
                                             preselection_alpha):
         """
         Set the link assumptions from the Granger causality test.
@@ -372,8 +365,8 @@ class PCMCI_Modified(PCMCI):
         link_assumptions = dict()
         data_matrix = self.dataframe.values[0]
         # Obtain the Granger causality graph
-        granger_graph = multivariate_granger_causality(self.dataframe.values[0], tau_max,
-                                                       max_crosslink_density, preselection_alpha)
+        granger_graph = summarized_causality_univariate_granger(self.dataframe.values[0], tau_max,
+                                                       max_summarized_crosslinks_density, preselection_alpha)
 
         if self.verbosity > -1:
             print(f'{granger_graph.edges()=}')

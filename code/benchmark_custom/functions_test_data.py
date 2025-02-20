@@ -14,7 +14,7 @@ PARAMETERS GENERATIONS
 def changing_N_variables(options, algorithms_parameters,
                          list_N_variables=None):
     if list_N_variables is None:
-        list_N_variables = [20]
+        list_N_variables = [10]
         
     for N_variables in list_N_variables:
         # Increase data points in the same proportion as N_vars 
@@ -39,13 +39,6 @@ def changing_preselection_alpha(options, algorithms_parameters,
         
         yield algorithms_parameters, options
 
-dependency_funcs_dict = {
-    'linear': lambda x: x,
-    'negative-exponential': lambda x: np.exp(-abs(x)),
-    'sin': lambda x: np.sin(x),
-    'cos': lambda x: np.cos(x),
-    'step': lambda x: 1 if x > 0 else 0,
-}
 
 
 

@@ -7,7 +7,6 @@ from statsmodels.tsa.api import VAR
 import scipy.stats as stats
 
 
-
 def check_stationarity(X, significance=0.05):
     """
     Check covariance stationarity for each series in X using the Augmented Dickey-Fuller test.
@@ -37,14 +36,13 @@ def create_lag_matrix(X, lags):
     return np.array(rows)
 
 
-def insert_top_k_edges(G, p_values, max_crosslinks_density):
+def insert_top_k_edges(G, p_values, max_summarized_crosslinks_density):
     """
     Insert in G the top k% edges with the lowest p-values.
     """
     # We force density = keeping_number / (keeping_number + n)
     #   Because there are n "autolinks"
-    keeping_number = int (max_crosslinks_density * len(G.nodes()) /\
-                        (1 - max_crosslinks_density) )
+    keeping_number = int( max_summarized_crosslinks_density * len(G.nodes()) / (1 - max_summarized_crosslinks_density) )
     
     # Sort the p-values in ascending order
     sorted_p_values = sorted(p_values.items(), key=lambda x: x[1])
@@ -54,7 +52,7 @@ def insert_top_k_edges(G, p_values, max_crosslinks_density):
         G.add_edge(p, q)
 
 
-def multivariate_granger_causality(X, max_lag=5, max_crosslinks_density=0.2,
+def summarized_causality_multivariate_granger(X, max_lag=5, max_summarized_crosslinks_density=0.2,
                                    alpha=0.025):
     """
     Implements the multivariate Granger causality algorithm.
@@ -64,7 +62,7 @@ def multivariate_granger_causality(X, max_lag=5, max_crosslinks_density=0.2,
     Parameters:
       X      : np.array of shape (T, d) containing the time series data.
       maxlag : Maximum lag to consider for lag order selection.
-      max_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
+      max_summarized_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
       alpha  : Significance level for the F-test - if an edge reaches a lower density, it isn't considered.
       
     Returns:
@@ -136,13 +134,14 @@ def multivariate_granger_causality(X, max_lag=5, max_crosslinks_density=0.2,
             if p_value < alpha:
                 p_values[p, q] = p_value
         
-        insert_top_k_edges(G, p_values, max_crosslinks_density)
+        insert_top_k_edges(G, p_values, max_summarized_crosslinks_density)
         
     return G
 
 
 
-def univariate_granger_causality(X, max_lag=5, alpha=0.025):
+def summarized_causality_univariate_granger(X, max_lag=5, max_summarized_crosslinks_density=0.2,
+                                            alpha=0.025):
     """
     Implements the univariate Granger causality algorithm.
     
@@ -152,6 +151,7 @@ def univariate_granger_causality(X, max_lag=5, alpha=0.025):
     Parameters:
       X      : np.array of shape (T, d) containing the time series data.
       max_lag: Maximum lag to consider for lag order selection.
+      max_summarized_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
       alpha  : Significance level for the F-test.
       
     Returns:
@@ -166,6 +166,7 @@ def univariate_granger_causality(X, max_lag=5, alpha=0.025):
     d = X.shape[1]
     G = nx.DiGraph()
     G.add_nodes_from(range(d))
+    p_values = {}
     
     # Loop over each target series q
     for q in range(d):
@@ -212,7 +213,9 @@ def univariate_granger_causality(X, max_lag=5, alpha=0.025):
             
             # If significant, add a directed edge from p to q
             if p_value < alpha:
-                G.add_edge(p, q, p_value=p_value)
+                p_values[p, q] = p_value
+        
+        insert_top_k_edges(G, p_values, max_summarized_crosslinks_density)
     
     return G
 
@@ -241,6 +244,14 @@ def select_order_univariate(series, max_lag):
 
 
 
+def summarized_causality_ind_test(X, max_lag, max_summarized_crosslinks_density, alpha):
+    '''
+    Obtain the summarized causality graph, using independence test with the whole lags of each variable.
+    '''
+    
+
+
+
 
 # Example usage:
 if __name__ == "__main__":
@@ -255,6 +266,6 @@ if __name__ == "__main__":
     print(X)
 
     # Run the multivariate Granger causality procedure
-    G = multivariate_granger_causality(X, max_lag=5, alpha=0.05)
+    G = summarized_causality_multivariate_granger(X, max_lag=5, alpha=0.05)
     print("Edges in the Granger causality graph (p -> q):")
     print(list(G.edges()))
