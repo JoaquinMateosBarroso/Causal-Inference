@@ -14,7 +14,7 @@ PARAMETERS GENERATIONS
 def changing_N_variables(options, algorithms_parameters,
                          list_N_variables=None):
     if list_N_variables is None:
-        list_N_variables = [10]
+        list_N_variables = [10, 20, 30, 40, 50]
         
     for N_variables in list_N_variables:
         # Increase data points in the same proportion as N_vars 

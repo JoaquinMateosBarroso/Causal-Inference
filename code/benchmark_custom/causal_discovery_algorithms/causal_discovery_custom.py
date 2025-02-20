@@ -175,7 +175,6 @@ def summarized_causality_univariate_granger(X, max_lag=5, max_summarized_crossli
         optimal_lag = select_order_univariate(series_q, max_lag)
         if optimal_lag < 1:
             optimal_lag = 1
-        print(f"Optimal lag for series {q} selected: {optimal_lag}")
         
         # Create lagged matrix for series q (for the restricted model)
         # (Assumes create_lag_matrix returns a matrix of lagged predictors)

@@ -59,7 +59,7 @@ class PCMCI_Modified(PCMCI):
         #
         # Phase 0: Get as selected_links those that have a granger-lagged connection
         #
-        if link_assumptions is not None:
+        if link_assumptions is None:
             link_assumptions = self._remove_nongranger_summarized_links(tau_max, **kwargs)
         
         #
@@ -367,8 +367,8 @@ class PCMCI_Modified(PCMCI):
         # Obtain the Granger causality graph
         granger_graph = summarized_causality_univariate_granger(self.dataframe.values[0], tau_max,
                                                        max_summarized_crosslinks_density, preselection_alpha)
-
-        if self.verbosity > -1:
+        
+        if self.verbosity > 0:
             print(f'{granger_graph.edges()=}')
         
         for j in range(data_matrix.shape[1]):
