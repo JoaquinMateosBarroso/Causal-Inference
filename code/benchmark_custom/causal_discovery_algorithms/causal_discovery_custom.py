@@ -79,8 +79,12 @@ def summarized_causality_multivariate_granger(X, max_lag=5, max_summarized_cross
     order_selection = var_model.select_order(maxlags=max_lag)
     # Use the AIC-selected order; if not found, default to lag 1.
     optimal_lag = order_selection.selected_orders.get('aic', max_lag)
+    # Avoid having a too low optimal lag
     if optimal_lag < 1:
-        optimal_lag = 1
+        optimal_lag = max(1, max_lag//5)
+    # Avoid having a too high optimal lag
+    optimal_lag = min(optimal_lag, max_lag//2)
+    
     print("Optimal lag selected:", optimal_lag)
 
     # Construct the lagged predictor matrix (all variables, all lags)

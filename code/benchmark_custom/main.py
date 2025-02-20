@@ -30,7 +30,7 @@ algorithms = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [10]}),
+                                    {'list_N_variables': [10, 20, 30, 40, 50]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
@@ -55,16 +55,17 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'dynotears': {'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
         'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1,
-                           'max_summarized_crosslinks_density': 0.5, 'preselection_alpha': 0.1},
+                           'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
         
         
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
     }
+    
     data_generation_options = {
         'max_lag': 20,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
-        'T': 500, # Number of time points in the dataset
+        'T': 1000, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
