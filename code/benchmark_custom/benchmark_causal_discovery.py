@@ -303,11 +303,19 @@ class BenchmarkCausalDiscovery:
             plt.savefig(f'{results_folder}/plot_{score}.pdf')
             plt.close(fig)
 
-    def plot_particular_result(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory']):
+    def plot_particular_result(self, results_folder,
+                                     output_folder=None,
+                                     scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory']):
         '''
         Function to plot the result of the benchmark in a particular configuration (in case 
             the csv files has more than one configuration, the first one is shown)
         '''
+        if output_folder is None:
+            output_folder = results_folder
+        
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        
         files = os.listdir(results_folder)
         results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
         get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
@@ -323,13 +331,14 @@ class BenchmarkCausalDiscovery:
                 std = result[score + '_std']
                 ax.errorbar(x, y, yerr=std, fmt='.-', linewidth=1, capsize=3)
                 ax.grid()
-                if score in ['f1', 'precision', 'recall']:
+                if score in ['f1', 'precision', 'recall',
+                             'f1_summary', 'precision_summary', 'recall_summary']:
                     ax.set_ylim(0, 1)
                 
             algorithms_names = list(results_dataframes.keys())
             ax.set_xticks(range(len(algorithms_names)), algorithms_names)
             ax.set_ylabel(score)
             
-            plt.savefig(f'{results_folder}/comparison_{score}.pdf')
+            plt.savefig(f'{output_folder}/comparison_{score}.pdf')
             plt.close(fig)
 

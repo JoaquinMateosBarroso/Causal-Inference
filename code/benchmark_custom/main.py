@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from benchmark_causal_discovery import BenchmarkCausalDiscovery
-from causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from causal_discovery_algorithms.causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from causal_discovery_algorithms.causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
 from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
 import shutil
@@ -19,7 +19,7 @@ algorithms = {
     'dynotears': DynotearsWrapper,
     'granger': GrangerWrapper,
     'varlingam': VARLINGAMWrapper,
-    'pc-stable': PCStableWrapper,
+    # 'pc-stable': PCStableWrapper,
     
     # 'fullpcmci': PCMCIWrapper,
     # 'lpcmci': LPCMCIWrapper,
@@ -30,7 +30,7 @@ algorithms = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [25]}),
+                                    {'list_N_variables': [10]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
@@ -54,15 +54,15 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'varlingam': {'min_lag': 1, 'max_lag': 3},
         'dynotears': {'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
         'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5,
-                           'max_summarized_crosslinks_density': 0.05, 'preselection_alpha': 0.025},
+        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1,
+                           'max_summarized_crosslinks_density': 0.5, 'preselection_alpha': 0.1},
         
         
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
         'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
     }
     data_generation_options = {
-        'max_lag': 10,
+        'max_lag': 20,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
         'T': 500, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
@@ -104,8 +104,12 @@ if __name__ == '__main__':
     benchmark.plot_ts_datasets(datasets_folder)
     
     benchmark.plot_moving_results(results_folder, x_axis='N')
+    # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder)
-
+    # Save results for summary graph scores
+    benchmark.plot_particular_result(results_folder, results_folder + '/summary',
+                                     scores=[f'{score}_summary' for score in \
+                                                    ['shd', 'f1', 'precision', 'recall']])
 
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
     destination_folder = os.path.join(results_folder, datasets_folder)

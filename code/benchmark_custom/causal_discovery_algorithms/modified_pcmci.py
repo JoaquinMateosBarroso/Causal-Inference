@@ -364,7 +364,7 @@ class PCMCI_Modified(PCMCI):
         link_assumptions = dict()
         data_matrix = self.dataframe.values[0]
         # Obtain the Granger causality graph
-        granger_graph = summarized_causality_univariate_granger(self.dataframe.values[0], tau_max,
+        granger_graph = summarized_causality_multivariate_granger(self.dataframe.values[0], tau_max,
                                                        max_summarized_crosslinks_density, preselection_alpha)
         
         if self.verbosity > 0:
