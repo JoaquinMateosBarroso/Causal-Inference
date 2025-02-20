@@ -30,7 +30,7 @@ algorithms = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [50]}),
+                                    {'list_N_variables': [25]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
