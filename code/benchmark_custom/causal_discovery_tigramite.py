@@ -43,7 +43,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         self.pcmci = PCMCI(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,
-            verbosity=0
+            verbosity=0,
         )
     
     def extract_parents(self) -> dict[int, list[int]]:
@@ -56,8 +56,9 @@ class PCMCIWrapper(CausalDiscoveryBase):
                                             pc_alpha=self.pc_alpha, **self.extra_args)
         parents = self.pcmci.return_parents_dict(graph=results['graph'], val_matrix=results['val_matrix'])
         
-        
         return parents
+
+
 
 class PCMCIModifiedWrapper(PCMCIWrapper):
     def __init__(self, data: np.ndarray, cond_ind_test='parcorr',
@@ -85,6 +86,8 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
             cond_ind_test=self.cond_ind_test,
             verbosity=0,
         )
+
+
 
 class LPCMCIWrapper(CausalDiscoveryBase):
     '''

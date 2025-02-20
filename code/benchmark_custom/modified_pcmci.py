@@ -26,8 +26,6 @@ class PCMCI_Modified(PCMCI):
                       fdr_method='none',
                       **kwargs,
                       ):
-        """
-        """
 
         # Check if pc_alpha is chosen to optimze over a list
         if pc_alpha is None or isinstance(pc_alpha, (list, tuple, np.ndarray)):
@@ -45,7 +43,8 @@ class PCMCI_Modified(PCMCI):
                         max_conds_py=max_conds_py,
                         max_conds_px=max_conds_px,
                         max_conds_px_lagged=max_conds_px_lagged,
-                        fdr_method=fdr_method)
+                        fdr_method=fdr_method,
+                        **kwargs)
 
         elif pc_alpha < 0. or pc_alpha > 1:
             raise ValueError("Choose 0 <= pc_alpha <= 1")
@@ -382,5 +381,115 @@ class PCMCI_Modified(PCMCI):
         
         return link_assumptions
 
+    
+    
+    def _optimize_pcmciplus_alpha(self,
+                      link_assumptions,
+                      tau_min,
+                      tau_max,
+                      pc_alpha,
+                      contemp_collider_rule,
+                      conflict_resolution,
+                      reset_lagged_links,
+                      max_conds_dim,
+                      max_combinations,
+                      max_conds_py,
+                      max_conds_px,
+                      max_conds_px_lagged,
+                      fdr_method,
+                      **kwargs,
+                      ):
+        """Optimizes pc_alpha in PCMCIplus.
 
+        If a list or None is passed for ``pc_alpha``, the significance level is
+        optimized for every graph across the given ``pc_alpha`` values using the
+        score computed in ``cond_ind_test.get_model_selection_criterion()``
+
+        Parameters
+        ----------
+        See those for run_pcmciplus()
+
+        Returns
+        -------
+        Results for run_pcmciplus() for the optimal pc_alpha.
+        """
+
+        if pc_alpha is None:
+            pc_alpha_list = [0.001, 0.005, 0.01, 0.025, 0.05]
+        else:
+            pc_alpha_list = pc_alpha
+
+        if self.verbosity > 0:
+            print("\n##\n## Optimizing pc_alpha over " + 
+                  "pc_alpha_list = %s" % str(pc_alpha_list) +
+                  "\n##")
+
+        results = {}
+        score = np.zeros_like(pc_alpha_list)
+        for iscore, pc_alpha_here in enumerate(pc_alpha_list):
+            # Print statement about the pc_alpha being tested
+            if self.verbosity > 0:
+                print("\n## pc_alpha = %s (%d/%d):" % (pc_alpha_here,
+                                                      iscore + 1,
+                                                      score.shape[0]))
+            # Get the results for this alpha value
+            results[pc_alpha_here] = \
+                self.run_pcmciplus(link_assumptions=link_assumptions,
+                                    tau_min=tau_min,
+                                    tau_max=tau_max,
+                                    pc_alpha=pc_alpha_here,
+                                    contemp_collider_rule=contemp_collider_rule,
+                                    conflict_resolution=conflict_resolution,
+                                    reset_lagged_links=reset_lagged_links,
+                                    max_conds_dim=max_conds_dim,
+                                    max_combinations=max_combinations,
+                                    max_conds_py=max_conds_py,
+                                    max_conds_px=max_conds_px,
+                                    max_conds_px_lagged=max_conds_px_lagged,
+                                    fdr_method=fdr_method,
+                                    **kwargs)
+
+            # Get one member of the Markov equivalence class of the result
+            # of PCMCIplus, which is a CPDAG
+
+            # First create order that is based on some feature of the variables
+            # to avoid order-dependence of DAG, i.e., it should not matter
+            # in which order the variables appear in dataframe
+            # Here we use the sum of absolute val_matrix values incident at j
+            val_matrix = results[pc_alpha_here]['val_matrix']
+            variable_order = np.argsort(
+                                np.abs(val_matrix).sum(axis=(0,2)))[::-1]
+
+            dag = self._get_dag_from_cpdag(
+                            cpdag_graph=results[pc_alpha_here]['graph'],
+                            variable_order=variable_order)
+            
+
+            # Compute the best average score when the model selection
+            # is applied to all N variables
+            for j in range(self.N):
+                parents = []
+                for i, tau in zip(*np.where(dag[:,j,:] == "-->")):
+                    parents.append((i, -tau))
+                score_j = self.cond_ind_test.get_model_selection_criterion(
+                        j, parents, tau_max)
+                score[iscore] += score_j
+            score[iscore] /= float(self.N)
+
+        # Record the optimal alpha value
+        optimal_alpha = pc_alpha_list[score.argmin()]
+
+        if self.verbosity > 0:
+            print("\n##"+
+                  "\n\n## Scores for individual pc_alpha values:\n")
+            for iscore, pc_alpha in enumerate(pc_alpha_list):
+                print("   pc_alpha = %7s yields score = %.5f" % (pc_alpha, 
+                                                                score[iscore]))
+            print("\n##\n## Results for optimal " +
+                  "pc_alpha = %s\n##" % optimal_alpha)
+            self.print_results(results[optimal_alpha], alpha_level=optimal_alpha)
+
+        optimal_results = results[optimal_alpha]
+        optimal_results['optimal_alpha'] = optimal_alpha
+        return optimal_results
 
