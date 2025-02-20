@@ -328,11 +328,10 @@ class BenchmarkCausalDiscovery:
                 result = df_results.iloc[0, :]
                 x = iteration
                 y = result[score + '_avg']
-                std = result[score + '_std']
-                ax.errorbar(x, y, yerr=std, fmt='.-', linewidth=1, capsize=3)
+                ax.boxplot([y], positions=[x], widths=0.6)
                 ax.grid()
-                if score in ['f1', 'precision', 'recall',
-                             'f1_summary', 'precision_summary', 'recall_summary']:
+                if score in ['f1', 'precision', 'recall', 
+                        'f1_summary', 'precision_summary', 'recall_summary']:
                     ax.set_ylim(0, 1)
                 
             algorithms_names = list(results_dataframes.keys())

@@ -1,0 +1,85 @@
+import numpy as np
+from sklearn.decomposition import PCA
+from group_causal_discovery_base import GroupCausalDiscoveryBase
+from typing import Any, Callable
+
+
+class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
+    '''
+    Class that implements the dimension reduction algorithm for causal discovery on groups of variables.
+    '''
+    def __init__(self, data: np.ndarray,
+                    groups: list[set[int]],
+                    dimensionality_reduction: str = 'pca',
+                    node_causal_discovery_alg: str = 'pcmci',
+                    node_causal_discovery_params: list[Any] = None,
+                    **kwargs):
+        '''
+        Create an object that is able to predict over groups of time series variables.
+        The constructor prepares the groups of variables using
+        
+        Parameters
+        ---------
+            data : np.array with the data, shape (n_samples, n_variables)
+            groups : list[set[int]] list with the sets that will compound each group of variables.
+                        We will suppose that the groups are known beforehand.
+                        The index of a group will be considered as its position in groups list.
+            dimensionality_reduction : str indicating the type of dimensionality reduction technique
+                        that is applied to groups. options=['pca']. default='pca'
+        '''
+        self.data = data
+        self.groups = groups
+        self.node_causal_discovery_alg = node_causal_discovery_alg
+        self.node_causal_discovery_params = node_causal_discovery_params if node_causal_discovery_params is not None else []
+        self.extra_args = kwargs
+        
+        self.groups_data = self._prepare_groups_data(dimensionality_reduction)
+
+    def _prepare_groups_data(self, dimensionality_reduction: str) -> list[np.ndarray]:
+        '''
+        Execute the indicate dimensionality reduction algorithm to the groups of variables,
+        in order to obtain a univariate time series for each group.
+        
+        Parameters:
+        -----------
+            dimensionality_reduction : str indicating the type of dimensionality reduction technique
+                        that is applied to groups. options=['pca']. default='pca'
+        
+        Returns:
+        --------
+            groups_data : np.ndarray where each column is the univariate time series of each group
+                            of variables after the dimensionality reduction
+        '''
+        groups_data = []
+        for group in self.groups:
+            group_data = self.data[:, list(group)]
+            if dimensionality_reduction == 'pca':
+                pca = PCA(n_components=1)
+                group_data = pca.fit_transform(group_data)
+            else:
+                raise ValueError(f'Invalid dimensionality reduction technique: {dimensionality_reduction}')
+            groups_data.append(group_data)
+            
+        return np.array(groups_data, shape=(len(groups_data), self.data.shape[0]))
+        
+    def extract_parents(self) -> dict[int, list[int]]:
+        '''
+        Extract the parents of each group of variables using the dimension reduction algorithm
+        
+        Returns
+        -------
+            Dictionary with the parents of each group of variables.
+        '''
+        self.causal_discovery_alg = {}
+
+    def extract_parents_time_and_memory(self) -> tuple[dict[int, list[int]], float, float]:
+        '''
+        Execute the extract_parents method and return the parents dict, the time that took to run the algorithm
+        
+        Returns:
+        --------
+            parents : dictionary of extracted parents for each group of variables
+            execution_time : execution time in seconds
+            memory : volatile memory used by the process, in MB
+        '''
+        pass

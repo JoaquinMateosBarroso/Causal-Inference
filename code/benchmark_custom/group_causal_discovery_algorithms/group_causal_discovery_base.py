@@ -5,11 +5,11 @@ from memory_profiler import memory_usage
 
 
 
-class CausalDiscoveryBase(ABC): # Abstract class
+class GroupCausalDiscoveryBase(ABC): # Abstract class
     '''
     Base class for causal discovery on groups of variables algorithms
     '''
-    def __init__(self, data: np.array, groups: list[set[int]], **kwargs):
+    def __init__(self, data: np.ndarray, groups: list[set[int]], **kwargs):
         '''
         Create an object that is able to predict over groups of time series variables
         

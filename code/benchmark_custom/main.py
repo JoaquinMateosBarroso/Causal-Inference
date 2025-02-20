@@ -30,7 +30,7 @@ algorithms = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [10, 20, 30, 40, 50]}),
+                                    {'list_N_variables': [10]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
@@ -63,7 +63,7 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     }
     
     data_generation_options = {
-        'max_lag': 20,
+        'max_lag': 5,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
         'T': 1000, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
