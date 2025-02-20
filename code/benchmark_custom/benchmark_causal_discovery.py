@@ -1,8 +1,8 @@
-import json
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import copy
 from create_toy_datasets import CausalDataset
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
@@ -57,6 +57,7 @@ class BenchmarkCausalDiscovery:
         self.verbose = verbose
         self.results_folder = results_folder
         self.algorithms = algorithms
+        self.all_algorithms_parameters = {name: list() for name in algorithms.keys()}
         
         # A list whose items are the lists of dictionaries of results and parameters of the different executions
         self.results = {alg: list() for alg in algorithms.keys()}
@@ -66,14 +67,18 @@ class BenchmarkCausalDiscovery:
 
         return self.results                        
     
-    def save_results(self):    
+    def save_results(self):   
         if self.results_folder is not None:
             # If the folder does not exist, create it
             if not os.path.exists(self.results_folder):
                 os.makedirs(self.results_folder)
             # Save the results in a csv file
             for name in self.algorithms.keys():
-                df = pd.DataFrame(self.results[name])
+                # Create a dataframe with the results and the parameters
+                df = pd.concat([pd.DataFrame(self.results[name]),
+                                pd.DataFrame(self.all_algorithms_parameters[name]) ],
+                                axis=1)
+                               
                 df.to_csv(f'{self.results_folder}/results_{name}.csv', index=False)
         else:
             # If it does exist, delete previous results
@@ -87,8 +92,15 @@ class BenchmarkCausalDiscovery:
                                          datasets_folder: str,\
                                         )  -> dict[str, list[ dict[str, Any] ]]:
         for iteration, current_parameters in enumerate(parameters_iterator):
-            algorithms_parameters, data_option = current_parameters
-            # Generate the datasets, with graph structure and time series
+            current_algorithms_parameters, data_option = current_parameters
+            # Delete previous toy data
+            if os.path.exists(datasets_folder):
+                for filename in os.listdir(datasets_folder):
+                        os.remove(f'{datasets_folder}/{filename}')
+            else:
+                os.makedirs(datasets_folder)
+            
+            # Generate the datasets, with their graph structure and time series
             causal_datasets = [CausalDataset() for _ in range(n_executions)]
             for current_dataset_index, causal_dataset in enumerate(causal_datasets):
                 dataset_index = iteration * n_executions + current_dataset_index
@@ -98,15 +110,17 @@ class BenchmarkCausalDiscovery:
                 print('\n' + '-'*50)
                 print(BLUE, 'Executing the datasets with option:', data_option, RESET)
             
-            
+            # Generate and save results of all algorithms with current dataset options
             current_results = self.test_algorithms(causal_datasets, algorithms,
-                                                   algorithms_parameters)
+                                                   current_algorithms_parameters)
             
             for name, algorithm_result in current_results.items():
                 algorithm_result.update(data_option) # Include the parameters in the information for results
                 # Include current result in the list of result
                 self.results[name].append(algorithm_result)
-            
+                self.all_algorithms_parameters[name].\
+                            append(copy.deepcopy(current_algorithms_parameters[name]))
+                
             self.save_results()
             if self.verbose > 0:
                 print(f'{iteration+1} combinations executed')

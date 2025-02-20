@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 from tigramite.toymodels.structural_causal_processes import generate_structural_causal_process, structural_causal_process
-
+from functions_test_data import dependency_funcs_dict
 
 def get_parents_dict(causal_process):
     parents_dict = dict()
@@ -47,6 +47,10 @@ class CausalDataset:
             time_series : np.ndarray with shape (n_samples, n_variables)
             parents_dict: dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         """
+        # Convert dependency_funcs names to functions
+        dependency_funcs = [dependency_funcs_dict[func] if func in dependency_funcs_dict \
+                                else func\
+                                for func in dependency_funcs ]
         
         L = int(N * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
         

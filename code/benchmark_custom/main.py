@@ -10,19 +10,30 @@ from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrap
 import shutil
 import os
 
+from functions_test_data import changing_N_variables, changing_preselection_alpha, dependency_functions
+
 
 algorithms = {
     'pcmci-modified': PCMCIModifiedWrapper,
-    # 'pcmci': PCMCIWrapper,
-    # 'dynotears': DynotearsWrapper,
-    # 'granger': GrangerWrapper,
-    # 'varlingam': VARLINGAMWrapper,
-    # 'pc-stable': PCStableWrapper,
+    'pcmci': PCMCIWrapper,
+    'dynotears': DynotearsWrapper,
+    'granger': GrangerWrapper,
+    'varlingam': VARLINGAMWrapper,
+    'pc-stable': PCStableWrapper,
     
     # 'fullpcmci': PCMCIWrapper,
-    # 'fastpcmci': PCMCIWrapper,
     # 'lpcmci': LPCMCIWrapper,
 }
+
+
+
+
+benchmark_options = {
+'changing_N_variables': changing_N_variables,
+'changing_preselection_alpha': changing_preselection_alpha,
+}
+chosen_option = 'changing_N_variables'
+
 def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
     '''
     Function to generate the parameters for the algorithms and the data generation.
@@ -31,31 +42,23 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     --------
         parameters_iterator: function[dict[str, Any], dict[str, Any]]. A function that returns the parameters for the algorithms and the data generation.
     '''
+
     algorithms_parameters = {
         # pc_alpha to None performs a search for the best alpha
         'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'cond_ind_test': 'parcorr'},
         'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
         'varlingam': {'min_lag': 1, 'max_lag': 3},
-        'dynotears': {'max_lag': 3, 'max_iter': 10000},
+        'dynotears': {'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
         'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'pcmci-modified': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5,
-                           'max_crosslink_density': 0.5, 'preselection_alpha': 0.01},
+        'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 5,
+                           'max_crosslink_density': 0.2, 'preselection_alpha': 0.01},
         
         
         'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-        'fastpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1, 'max_conds_dim': 3},
         'lpcmci': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 3},
     }
-    options = {
-        'max_lag': 5,
-        'dependency_funcs': [
-                                lambda x: 0.5*x, # linear with 
-                                lambda x: np.exp(-abs(x)) - 1 + np.tanh(x),
-                                #   lambda x: x + x**2 * np.exp(-(x**2) / 2), # logistic
-                                lambda x: np.sin(x), # + np.log(1+np.abs(x)), # sin + log
-                                lambda x: np.cos(x),
-                                lambda x: 1 if x > 0 else 0, # step function
-                            ],
+    data_generation_options = {
+        'max_lag': 20,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
         'T': 500, # Number of time points in the dataset
         'N': 20, # Number of variables in the dataset
@@ -64,28 +67,15 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
         'auto_coeffs': [0.7], # default: [0.5, 0.7]
         'noise_dists': ['gaussian'], # deafult: ['gaussian']
         'noise_sigmas': [0.2], # default: [0.5, 2]
+        
+        'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
     }
     
-    # # To modify N variables together with the number of data points
-    # for N_variables in [10, 20, 30, 40, 50]:
-    #     # Increase data points in the same proportion as N_vars 
-    #     options['T'] = int(options['T'] * (N_variables / options['N']))
-        
-    #     options['N'] = N_variables
-        
-    #     # options['max_lag'] = max_lag
-        
-    #     for algorithm_paramters in algorithms_parameters.values():
-    #         algorithm_paramters['max_lag'] = options['max_lag']
-        
-    #     yield algorithms_parameters, options
+    for data_generation_options, algorithms_parameters in \
+            benchmark_options[chosen_option](data_generation_options,
+                                                  algorithms_parameters):
+        yield data_generation_options, algorithms_parameters
     
-    # To modify preselection_alpha
-    
-    for preselection_alpha in [0.01, 0.05, 0.1, 0.2]:
-        algorithms_parameters['pcmci-modified']['preselection_alpha'] = preselection_alpha
-        
-        yield algorithms_parameters, options
 
 
 if __name__ == '__main__':
@@ -94,18 +84,20 @@ if __name__ == '__main__':
     benchmark = BenchmarkCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results'
-    
-    results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
-                                         parameters_iterator=generate_parameters_iterator(),
-                                         datasets_folder=datasets_folder,
-                                         results_folder=results_folder,
-                                         n_executions=3,
-                                         scores=['f1', 'precision', 'recall', 'time', 'memory'],
-                                         verbose=1)
+    execute_benchmark = True
+
+    if execute_benchmark:
+        results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+                                            parameters_iterator=generate_parameters_iterator(),
+                                            datasets_folder=datasets_folder,
+                                            results_folder=results_folder,
+                                            n_executions=3,
+                                            scores=['f1', 'precision', 'recall', 'time', 'memory'],
+                                            verbose=1)
     
     benchmark.plot_ts_datasets(datasets_folder)
     
-    benchmark.plot_moving_results(results_folder, x_axis='N')
+    benchmark.plot_moving_results(results_folder, x_axis='preselection_alpha')
     benchmark.plot_particular_result(results_folder)
 
 
@@ -115,3 +107,4 @@ if __name__ == '__main__':
         shutil.rmtree(destination_folder)
     shutil.copytree(datasets_folder, destination_folder)
     
+

@@ -8,6 +8,45 @@ plt.style.use('ggplot')
 
 from tigramite import data_processing as pp
 
+'''
+PARAMETERS GENERATIONS
+'''
+def changing_N_variables(options, algorithms_parameters,
+                         list_N_variables=None):
+    if list_N_variables is None:
+        list_N_variables = [20]
+        
+    for N_variables in list_N_variables:
+        # Increase data points in the same proportion as N_vars 
+        options['T'] = int(options['T'] * (N_variables / options['N']))
+        
+        options['N'] = N_variables
+        
+        # options['max_lag'] = max_lag
+        
+        for algorithm_paramters in algorithms_parameters.values():
+            algorithm_paramters['max_lag'] = options['max_lag']
+        
+        yield algorithms_parameters, options
+        
+def changing_preselection_alpha(options, algorithms_parameters,
+                         list_preselection_alpha=None):
+    if list_preselection_alpha is None:
+        list_preselection_alpha = [0.01, 0.05, 0.1, 0.2]
+        
+    for preselection_alpha in list_preselection_alpha:
+        algorithms_parameters['pcmci-modified']['preselection_alpha'] = preselection_alpha
+        
+        yield algorithms_parameters, options
+
+dependency_funcs_dict = {
+    'linear': lambda x: x,
+    'negative-exponential': lambda x: np.exp(-abs(x)),
+    'sin': lambda x: np.sin(x),
+    'cos': lambda x: np.cos(x),
+    'step': lambda x: 1 if x > 0 else 0,
+}
+
 
 
 '''
