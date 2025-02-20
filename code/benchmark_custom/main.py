@@ -10,7 +10,7 @@ from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrap
 import shutil
 import os
 
-from functions_test_data import changing_N_variables, changing_preselection_alpha, dependency_functions
+from functions_test_data import changing_N_variables, changing_preselection_alpha
 
 
 algorithms = {
