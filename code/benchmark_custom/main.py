@@ -30,7 +30,7 @@ algorithms = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [10]}),
+                                    {'list_N_variables': [5]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
@@ -63,9 +63,9 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     }
     
     data_generation_options = {
-        'max_lag': 5,
+        'max_lag': 2,
         'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
-        'T': 1000, # Number of time points in the dataset
+        'T': 500, # Number of time points in the dataset
         'N': 10, # Number of variables in the dataset
         # These parameters are used in generate_structural_causal_process:
         'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
@@ -106,11 +106,12 @@ if __name__ == '__main__':
     
     benchmark.plot_moving_results(results_folder, x_axis='N')
     # Save results for whole graph scores
-    benchmark.plot_particular_result(results_folder)
+    benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
     # Save results for summary graph scores
     benchmark.plot_particular_result(results_folder, results_folder + '/summary',
                                      scores=[f'{score}_summary' for score in \
-                                                    ['shd', 'f1', 'precision', 'recall']])
+                                                    ['shd', 'f1', 'precision', 'recall']],
+                                     dataset_iteration_to_plot=0)
 
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
     destination_folder = os.path.join(results_folder, datasets_folder)

@@ -84,8 +84,6 @@ def summarized_causality_multivariate_granger(X, max_lag=5, max_summarized_cross
         optimal_lag = max(1, max_lag//5)
     # Avoid having a too high optimal lag
     optimal_lag = min(optimal_lag, max_lag//2)
-    
-    print("Optimal lag selected:", optimal_lag)
 
     # Construct the lagged predictor matrix (all variables, all lags)
     X_lag = create_lag_matrix(X, optimal_lag)

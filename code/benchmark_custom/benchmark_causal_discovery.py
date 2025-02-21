@@ -67,7 +67,7 @@ class BenchmarkCausalDiscovery:
 
         return self.results                        
     
-    def save_results(self):   
+    def save_results(self):
         if self.results_folder is not None:
             # If the folder does not exist, create it
             if not os.path.exists(self.results_folder):
@@ -78,6 +78,8 @@ class BenchmarkCausalDiscovery:
                 df = pd.concat([pd.DataFrame(self.results[name]),
                                 pd.DataFrame(self.all_algorithms_parameters[name]) ],
                                 axis=1)
+                # Set dataset_iteration as the first column
+                df.insert(0, 'dataset_iteration', df.pop('dataset_iteration'))
                                
                 df.to_csv(f'{self.results_folder}/results_{name}.csv', index=False)
         else:
@@ -114,12 +116,16 @@ class BenchmarkCausalDiscovery:
             current_results = self.test_algorithms(causal_datasets, algorithms,
                                                    current_algorithms_parameters)
             
-            for name, algorithm_result in current_results.items():
-                algorithm_result.update(data_option) # Include the parameters in the information for results
-                # Include current result in the list of result
-                self.results[name].append(algorithm_result)
-                self.all_algorithms_parameters[name].\
-                            append(copy.deepcopy(current_algorithms_parameters[name]))
+            for name, algorithm_results in current_results.items():
+                for particular_result in algorithm_results:
+                    particular_result.update(data_option) # Include the parameters in the information for results
+                    particular_result['dataset_iteration'] = iteration
+                
+                    # Include current result in the list of result
+                    self.results[name].append(particular_result)
+            
+            self.all_algorithms_parameters[name].\
+                        append(copy.deepcopy(current_algorithms_parameters[name]))
                 
             self.save_results()
             if self.verbose > 0:
@@ -131,23 +137,23 @@ class BenchmarkCausalDiscovery:
     def test_algorithms(self, causal_datasets: list[CausalDataset],
                             algorithms: dict[str, type[CausalDiscoveryBase]],
                             algorithms_parameters: dict[str, type[CausalDiscoveryBase]],
-                            ) -> dict[str, dict[str, Any]]:
+                            ) -> dict[str, dict[str, list[Any]]]:
         '''
         Execute the given algorithms and return the results
         '''
         result = dict() # keys are score names and values are the score values
         for name, algorithm in algorithms.items():
-            algorithm_result = self.test_particular_algorithm(algorithm_name=name,
+            algorithm_results = self.test_particular_algorithm(algorithm_name=name,
                                     causal_datasets=causal_datasets, causalDiscovery=algorithm,
                                     algorithm_parameters=algorithms_parameters[name])
-            result[name] = (algorithm_result)
+            result[name] = algorithm_results
 
         return result
     
     def test_particular_algorithm(self, algorithm_name: str,
                                 causal_datasets: list[CausalDataset],
                                 causalDiscovery: type[CausalDiscoveryBase],
-                                algorithm_parameters: dict[str, Any]) -> dict[str, Any]:
+                                algorithm_parameters: dict[str, Any]) -> dict[str, list[Any]]:
         '''
         Execute the given algorithm n_executions times and return the average and std of the results
         '''
@@ -157,21 +163,14 @@ class BenchmarkCausalDiscovery:
         if self.verbose > 0:
             print(GREEN, 'Executing algorithm', algorithm_name, RESET)
         # Execute the algorithm n_executions times
-        results_per_exection = []
+        results_per_execution = []
         for causal_dataset in tqdm(  causal_datasets ): # tqdm is used to show a progress bar
-            results_per_exection.append( self.base_test_particular_algorithm(causal_dataset, causalDiscovery, algorithm_parameters) )
-        
-        # Calculate the average and std of the results
-        aggregated_result = dict()
-        for score in results_per_exection[0].keys():
-            values = [result[score] for result in results_per_exection]
-            aggregated_result[score + '_avg'] = np.mean(values)
-            aggregated_result[score + '_std'] = np.std(values)
+            results_per_execution.append( self.base_test_particular_algorithm(causal_dataset, causalDiscovery, algorithm_parameters) )
             
         if self.verbose > 1:
-            print(f'{aggregated_result=}')
+            print(f'{results_per_execution=}')
             
-        return aggregated_result
+        return results_per_execution
         
     
     def base_test_particular_algorithm(self, causal_dataset: CausalDataset,
@@ -290,9 +289,11 @@ class BenchmarkCausalDiscovery:
         for score in scores:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             for algorithm_name, df_results in results_dataframes.items():
-                x = df_results[x_axis]
-                y = df_results[score + '_avg']
-                std = df_results[score + '_std']
+                datasets_groups = [df_results[df_results['dataset_iteration']==i] \
+                                    for i in df_results['dataset_iteration'].unique()]
+                x = [group[x_axis].mean() for group in datasets_groups]
+                std = [group[score].std() for group in datasets_groups]
+                y = [group[score].mean() for group in datasets_groups]
                 ax.errorbar(x, y, yerr=std, label=algorithm_name,
                              fmt='.-', linewidth=1, capsize=3)
                 ax.grid()
@@ -305,7 +306,8 @@ class BenchmarkCausalDiscovery:
 
     def plot_particular_result(self, results_folder,
                                      output_folder=None,
-                                     scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory']):
+                                     scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
+                                     dataset_iteration_to_plot=0):
         '''
         Function to plot the result of the benchmark in a particular configuration (in case 
             the csv files has more than one configuration, the first one is shown)
@@ -325,14 +327,18 @@ class BenchmarkCausalDiscovery:
         for score in scores:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             for iteration, df_results in enumerate(results_dataframes.values()):
-                result = df_results.iloc[0, :]
+                # We plot just the chosen dataset iteration
+                current_dataset_results = df_results[df_results['dataset_iteration'] == dataset_iteration_to_plot]
                 x = iteration
-                y = result[score + '_avg']
-                ax.boxplot([y], positions=[x], widths=0.6)
+                y = current_dataset_results[score]
+                ax.boxplot([y], positions=[x], widths=0.6, patch_artist=True,
+                           medianprops={'color': 'black', 'linewidth': 2})
                 ax.grid()
                 if score in ['f1', 'precision', 'recall', 
                         'f1_summary', 'precision_summary', 'recall_summary']:
                     ax.set_ylim(0, 1)
+                if score in ['shd', 'shd_summary']:
+                    ax.set_ylim(bottom=0, top=None)
                 
             algorithms_names = list(results_dataframes.keys())
             ax.set_xticks(range(len(algorithms_names)), algorithms_names)
