@@ -172,7 +172,6 @@ class PCMCI_Modified(PCMCI):
         """Lagged PC algorithm for estimating lagged parents of single variable.
 
         Parameters
-        ----------
         j : int
             Variable index.
         link_assumptions_j : dict
@@ -208,7 +207,6 @@ class PCMCI_Modified(PCMCI):
             to test in PC1 step.
 
         Returns
-        -------
         parents : list
             List of estimated parents.
         val_min : dict
@@ -406,11 +404,9 @@ class PCMCI_Modified(PCMCI):
         score computed in ``cond_ind_test.get_model_selection_criterion()``
 
         Parameters
-        ----------
         See those for run_pcmciplus()
 
         Returns
-        -------
         Results for run_pcmciplus() for the optimal pc_alpha.
         """
 

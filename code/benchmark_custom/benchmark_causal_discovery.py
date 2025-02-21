@@ -3,12 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import copy
-from create_toy_datasets import CausalDataset
+from create_toy_datasets import CausalDataset, _plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
-from tigramite import plotting as tp
-from tigramite.graphs import Graphs
 from tqdm import tqdm
 
 # For printings
@@ -33,9 +31,9 @@ class BenchmarkCausalDiscovery:
                                         -> dict[str, list[ dict[str, Any] ]]:
         '''
         Function to execute a series of algorithms for causal discovery over time series datasets,
-            using a series of parameters for algorithms and options in the creation of the datasets.
+        using a series of parameters for algorithms and options in the creation of the datasets.
+            
         Parameters:
-        -----------
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             algorithms_parameters : dict[str, Any]
@@ -49,7 +47,6 @@ class BenchmarkCausalDiscovery:
             datasets_folder : str, optional
                 The name of the folder in which datasets will be saved. If not specified, datasets are not saved.
         Returns:
-        --------
             results: dict[str, list[ dict[str, Any] ]]
                 A dictionary where keys are the names of the algorithms and values are 
                     lists with dictionaries containing the results of the benchmark for each algorithm.
@@ -232,7 +229,7 @@ class BenchmarkCausalDiscovery:
             plt.close(fig)
             
             # Plot the graph structure
-            self._plot_ts_graph(parents_dict)
+            _plot_ts_graph(parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
             plt.clf()
             
@@ -262,18 +259,6 @@ class BenchmarkCausalDiscovery:
         plt.subplots_adjust(hspace=0.5)
         
         return fig, axs
-    
-    def _plot_ts_graph(self, parents_dict):
-        '''
-        Function to plot the graph structure of the time series
-        '''
-        graph = Graphs.get_graph_from_dict(parents_dict)
-        
-        tp.plot_time_series_graph(
-            graph=graph,
-            var_names=list(parents_dict.keys()),
-            link_colorbar_label='cross-MCI (edges)',
-        )
     
     def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):

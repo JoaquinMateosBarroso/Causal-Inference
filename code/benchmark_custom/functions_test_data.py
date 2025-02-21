@@ -123,13 +123,11 @@ def window_to_summary_graph(window_graph: dict[int, list[tuple[int, int]]]
         to a summary graph, X^i_- ->X^j_t
     
     Parameters:
-    -----------
     window_graph : dict[int, list[tuple[int, int]]]
         A dictionary where the keys are the time points and the values are lists of parents.
         Each parent is a tuple (node, lag).
     
     Returns:
-    --------
     summary_graph : dict[int, list[int]]
         A dictionary where the keys are the time points and the values are lists of parents.
         Each parent is a node.

@@ -43,7 +43,6 @@ def generate_parameters_iterator() -> Iterator[Union[dict[str, Any], dict[str, A
     Function to generate the parameters for the algorithms and the data generation.
     
     Returns:
-    --------
         parameters_iterator: function[dict[str, Any], dict[str, Any]]. A function that returns the parameters for the algorithms and the data generation.
     '''
 

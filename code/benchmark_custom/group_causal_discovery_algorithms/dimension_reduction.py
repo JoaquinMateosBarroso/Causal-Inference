@@ -1,5 +1,8 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
+from causal_discovery_algorithms.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
 from group_causal_discovery_base import GroupCausalDiscoveryBase
 from typing import Any, Callable
 
@@ -19,13 +22,14 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
         The constructor prepares the groups of variables using
         
         Parameters
-        ---------
             data : np.array with the data, shape (n_samples, n_variables)
             groups : list[set[int]] list with the sets that will compound each group of variables.
                         We will suppose that the groups are known beforehand.
                         The index of a group will be considered as its position in groups list.
             dimensionality_reduction : str indicating the type of dimensionality reduction technique
                         that is applied to groups. options=['pca']. default='pca'
+            node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
+                        relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
         '''
         self.data = data
         self.groups = groups
@@ -41,12 +45,10 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
         in order to obtain a univariate time series for each group.
         
         Parameters:
-        -----------
             dimensionality_reduction : str indicating the type of dimensionality reduction technique
                         that is applied to groups. options=['pca']. default='pca'
         
         Returns:
-        --------
             groups_data : np.ndarray where each column is the univariate time series of each group
                             of variables after the dimensionality reduction
         '''
@@ -61,25 +63,33 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
             groups_data.append(group_data)
             
         return np.array(groups_data, shape=(len(groups_data), self.data.shape[0]))
-        
+    
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Extract the parents of each group of variables using the dimension reduction algorithm
         
         Returns
-        -------
             Dictionary with the parents of each group of variables.
         '''
-        self.causal_discovery_alg = {}
+        self.causal_discovery_alg = self._getCausalDiscoveryAlgorithm()
+        
+        group_parents = self.causal_discovery_alg.extract_parents()
+        
+        return group_parents
 
-    def extract_parents_time_and_memory(self) -> tuple[dict[int, list[int]], float, float]:
+    def _getCausalDiscoveryAlgorithm(self) -> CausalDiscoveryBase:
         '''
-        Execute the extract_parents method and return the parents dict, the time that took to run the algorithm
+        Get the causal discovery algorithm that will be used to discover the causal relationships
+        between the variables of each group.
         
         Returns:
-        --------
-            parents : dictionary of extracted parents for each group of variables
-            execution_time : execution time in seconds
-            memory : volatile memory used by the process, in MB
+            causal_discovery_alg : function that will be used to discover the causal relationships
         '''
-        pass
+        if self.node_causal_discovery_alg == 'pcmci':
+            return PCMCIWrapper(data=self.groups_data, **self.node_causal_discovery_params)
+        elif self.node_causal_discovery_alg == 'pc-stable':
+            return PCStableWrapper(data=self.groups_data, **self.node_causal_discovery_params)
+        elif self.node_causal_discovery_alg == 'dynotears':
+            return DynotearsWrapper(data=self.groups_data, **self.node_causal_discovery_params)
+        else:
+            raise ValueError(f'Invalid node causal discovery algorithm: {self.node_causal_discovery_alg}')

@@ -14,7 +14,6 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
         Create an object that is able to predict over groups of time series variables
         
         Parameters
-        ---------
             data : np.array with the data, shape (n_samples, n_variables)
             groups : list[set[int]] list with the sets that will compound each group of variables.
                         We will suppose that the groups are known beforehand.
@@ -28,7 +27,6 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
         To be implemented by subclasses
         
         Returns
-        -------
             Dictionary with the parents of each group of variables.
         '''
         pass
@@ -38,7 +36,6 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
         Execute the extract_parents method and return the parents dict, the time that took to run the algorithm
         
         Returns:
-        --------
             parents : dictionary of extracted parents for each group of variables
             execution_time : execution time in seconds
             memory : volatile memory used by the process, in MB

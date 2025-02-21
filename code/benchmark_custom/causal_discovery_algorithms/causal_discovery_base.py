@@ -14,7 +14,6 @@ class CausalDiscoveryBase(ABC): # Abstract class
         To be implemented by subclasses
         
         Parameters
-        ----------
             data : np.array with the data, shape (n_samples, n_variables)
         '''
         pass
@@ -25,7 +24,6 @@ class CausalDiscoveryBase(ABC): # Abstract class
         To be implemented by subclasses
         
         Returns
-        -------
             Dictionary with the parents of each node
         '''
         pass
@@ -35,7 +33,6 @@ class CausalDiscoveryBase(ABC): # Abstract class
         Execute the extract_parents method and return the parents dict, the time that took to run the algorithm
         
         Returns:
-        --------
             parents : dictionary of extracted parents
             execution_time : execution time in seconds
             memory : volatile memory used by the process, in MB
