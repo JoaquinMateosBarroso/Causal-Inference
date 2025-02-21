@@ -3,8 +3,8 @@ from sklearn.decomposition import PCA
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
 from causal_discovery_algorithms.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
-from group_causal_discovery_base import GroupCausalDiscoveryBase
-from typing import Any, Callable
+from group_causal_discovery_algorithms.group_causal_discovery_base import GroupCausalDiscoveryBase
+from typing import Any
 
 
 class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):

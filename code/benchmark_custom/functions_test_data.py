@@ -11,6 +11,9 @@ from tigramite import data_processing as pp
 '''
 PARAMETERS GENERATIONS
 '''
+def static_parameters(options, algorithms_parameters):
+    yield algorithms_parameters, options
+
 def changing_N_variables(options, algorithms_parameters,
                          list_N_variables=None):
     if list_N_variables is None:
@@ -18,9 +21,9 @@ def changing_N_variables(options, algorithms_parameters,
         
     for N_variables in list_N_variables:
         # Increase data points in the same proportion as N_vars 
-        options['T'] = int(options['T'] * (N_variables / options['N']))
+        options['T'] = int(options['T'] * (N_variables / options['N_vars']))
         
-        options['N'] = N_variables
+        options['N_vars'] = N_variables
         
         # options['max_lag'] = max_lag
         
@@ -38,8 +41,6 @@ def changing_preselection_alpha(options, algorithms_parameters,
         algorithms_parameters['pcmci-modified']['preselection_alpha'] = preselection_alpha
         
         yield algorithms_parameters, options
-
-
 
 
 '''

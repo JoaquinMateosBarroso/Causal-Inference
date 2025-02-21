@@ -34,7 +34,7 @@ class CausalDataset:
     }
     
     
-    def generate_toy_data(self, name, T=100, N=10, crosslinks_density=0.75,
+    def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
                       max_lag=3, dependency_funcs=['nonlinear'],
                       datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
@@ -64,10 +64,10 @@ class CausalDataset:
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func
                                 for func in dependency_funcs ]
         
-        L = int(N * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
+        L = int(N_vars * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
         
         # Generate random causal process
-        causal_process, noise = generate_structural_causal_process(N=N,
+        causal_process, noise = generate_structural_causal_process(N=N_vars,
                                                             L=L,
                                                             max_lag=max_lag,
                                                             dependency_funcs=dependency_funcs,
@@ -83,7 +83,7 @@ class CausalDataset:
             if not os.path.exists(datasets_folder):
                 os.makedirs(datasets_folder)
             # Save the dataset
-            self.save(name, datasets_folder)
+            self._save(name, datasets_folder)
                 
         return self
     
@@ -128,9 +128,9 @@ class CausalDataset:
             
         Returns:
             time_series : np.ndarray with shape (n_samples, n_variables).
-            node_parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
             group_parents_dict : dictionary whose keys are each group, and values are the lists of parent groups, [... (i, -tau) ...].
             groups : List of lists, where each list is a group of variables
+            node_parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         '''
         # Convert dependency_funcs names to functions
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func\
@@ -164,8 +164,8 @@ class CausalDataset:
         # Generate noise
         _, noise = generate_structural_causal_process(N=N_vars, **kw_generation_args)
         
-        self.parents_dict = get_parents_dict(global_causal_process)
-        self.group_parents_dict = self.extract_group_parents(self.parents_dict)
+        self.node_parents_dict = get_parents_dict(global_causal_process)
+        self.parents_dict = self.extract_group_parents(self.node_parents_dict)
         
         # Generate time series data from the causal process
         self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise)
@@ -177,9 +177,9 @@ class CausalDataset:
             # Save the dataset
             self._save_groups(name, datasets_folder)
         
-        return self.time_series, self.parents_dict, self.group_parents_dict, self.groups
+        return self.time_series, self.parents_dict, self.groups, self.node_parents_dict
     
-    def extract_group_parents(self, node_parents_dict):
+    def extract_group_parents(self, node_parents_dict: dict[int, list[tuple[tuple, int, Callable]]]) -> dict[int, list[tuple[tuple, int, Callable]]]:
         '''
         Given a dictionary with the parents of each node, return a dictionary with the parents of each group.
         
@@ -303,8 +303,8 @@ class CausalDataset:
             f.write(groups_representation)
         # Save the groups parents to a txt file
         with open(f'{dataset_folder}/{name}_group_parents.txt', 'w') as f:
-            group_parents_representation = repr(self.group_parents_dict)
-            f.write(group_parents_representation)
+            node_parents_representation = repr(self.node_parents_dict)
+            f.write(node_parents_representation)
     
 
 def _plot_ts_graph(parents_dict):
