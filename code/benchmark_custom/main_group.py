@@ -102,7 +102,7 @@ if __name__ == '__main__':
     
     benchmark.plot_ts_datasets(datasets_folder)
     
-    benchmark.plot_moving_results(results_folder, x_axis='N_vars')
+    benchmark.plot_moving_results(results_folder, x_axis='N_groups')
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
     # Save results for summary graph scores

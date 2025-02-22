@@ -80,7 +80,6 @@ def get_recall(ground_truth_parents: dict, predicted_parents: dict):
     return true_positives / ground_truth_positives if ground_truth_positives != 0 else 0
 
 def get_f1(ground_truth_parents: dict, predicted_parents: dict):
-    print(f'{ground_truth_parents=}'); print(f'{predicted_parents=}')  
     precision = get_precision(ground_truth_parents, predicted_parents)
     recall = get_recall(ground_truth_parents, predicted_parents)
     
