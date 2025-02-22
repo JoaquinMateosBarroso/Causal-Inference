@@ -284,7 +284,6 @@ class BenchmarkCausalDiscovery:
         for score in scores:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             for algorithm_name, df_results in results_dataframes.items():
-                print(f'{df_results.columns=}')
                 datasets_groups = [df_results[df_results['dataset_iteration']==i] \
                                     for i in df_results['dataset_iteration'].unique()]
                 x = [group[x_axis].mean() for group in datasets_groups]

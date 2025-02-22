@@ -12,12 +12,16 @@ from group_causal_discovery_algorithms.micro_level import MicroLevelGroupCausalD
 
 
 algorithms = {
-    'dimension-reduction': DimensionReductionGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
-    'dimension-reduction': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
+    'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
+    
+    'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
+                            'node_causal_discovery_params': {'max_lag': 2, 'lambda_w': 0.05, 'lambda_a': 0.05}},
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                     'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
@@ -49,8 +53,8 @@ benchmark_options = {
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
     
     'changing_N_groups': (changing_N_groups,
-                                    {'list_N_groups': [5, 10, 20, 50],
-                                     'relation_vars_per_group': 5}),
+                                    {'list_N_groups': [5, 10, 15, 20, 25, 30],
+                                     'relation_vars_per_group': 3}),
 }
 chosen_option = 'changing_N_groups'
 
