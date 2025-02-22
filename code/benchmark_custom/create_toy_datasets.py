@@ -26,13 +26,12 @@ class CausalDataset:
         self.parents_dict = None
     
     dependency_funcs_dict = {
-        'linear': lambda x: 0.5*x,
+        'linear': lambda x: x,
         'negative-exponential': lambda x: 1 - np.exp(-abs(x)),
         'sin': lambda x: np.sin(x),
         'cos': lambda x: np.cos(x),
         'step': lambda x: 1 if x > 0 else -1,
     }
-    
     
     def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
                       max_lag=3, dependency_funcs=['nonlinear'],
@@ -134,7 +133,7 @@ class CausalDataset:
         '''
         # Convert dependency_funcs names to functions
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func\
-                                for func in dependency_funcs ]
+                                for func in dependency_funcs]
         
         self.groups = self._generate_groups(N_vars, N_groups)
         
@@ -154,8 +153,8 @@ class CausalDataset:
         
         # Generate outer causal processes
         L = int(N_groups * outer_group_crosslinks_density / (1 - outer_group_crosslinks_density))
-        outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L,
-                                                                    max_lag=max_lag, dependency_funcs=dependency_funcs,
+        outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L, max_lag=max_lag,
+                                                                     dependency_funcs=dependency_funcs,
                                                                     **kw_generation_args)
         
         global_causal_process = self._join_processes( outer_causal_process, groups_causal_processes,
@@ -168,7 +167,7 @@ class CausalDataset:
         self.parents_dict = self.extract_group_parents(self.node_parents_dict)
         
         # Generate time series data from the causal process
-        self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise)
+        self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise, transient_fraction=.0)
         
         if datasets_folder is not None:
             # If the folder does not exist, create it

@@ -6,7 +6,7 @@ from benchmark_causal_discovery import BenchmarkGroupCausalDiscovery
 import shutil
 import os
 
-from functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
+from functions_test_data import changing_N_groups, changing_N_variables, changing_preselection_alpha, static_parameters
 from group_causal_discovery_algorithms.dimension_reduction import DimensionReductionGroupCausalDiscovery
 from group_causal_discovery_algorithms.micro_level import MicroLevelGroupCausalDiscovery
 
@@ -16,34 +16,41 @@ algorithms = {
     'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
-    'dimension-reduction': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci'},
-    'micro-level': {'node_causal_discovery_alg': 'pcmci'},
+    'dimension-reduction': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
+    
+    'micro-level': {'node_causal_discovery_alg': 'pcmci',
+                    'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
 }
 
 data_generation_options = {
     'max_lag': 2,
-    'T': 500, # Number of time points in the dataset
+    'T': 10000, # Number of time points in the dataset
     'N_vars': 20, # Number of variables in the dataset
     'N_groups': 4, # Number of groups in the dataset
-    'inner_group_crosslinks_density': 0.1,
+    'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
-    'dependency_coeffs': [-0.2, 0.2], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.6], # default: [0.5, 0.7]
+    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
+    'auto_coeffs': [0.5], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
-    'dependency_funcs': ['negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
+    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }
 
 benchmark_options = {
     'static_parameters': (static_parameters, {}),
-    'changing_N_variables': (changing_N_variables, 
+    'changing_N_variables': (changing_N_variables,
                                     {'list_N_variables': [5]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
+    
+    'changing_N_groups': (changing_N_groups,
+                                    {'list_N_groups': [5, 10, 20, 50],
+                                     'relation_vars_per_group': 5}),
 }
 chosen_option = 'static_parameters'
 

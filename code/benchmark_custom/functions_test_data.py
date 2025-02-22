@@ -33,7 +33,7 @@ def changing_N_variables(options, algorithms_parameters,
         yield algorithms_parameters, options
         
 def changing_preselection_alpha(options, algorithms_parameters,
-                         list_preselection_alpha=None):
+                         list_preselection_alpha):
     if list_preselection_alpha is None:
         list_preselection_alpha = [0.01, 0.05, 0.1, 0.2]
         
@@ -42,6 +42,10 @@ def changing_preselection_alpha(options, algorithms_parameters,
         
         yield algorithms_parameters, options
 
+def changing_N_groups(options, algorithms_parameters,
+                      list_N_groups=None, relation_vars_per_group=5):
+    if list_N_groups is None:
+        list_N_groups = [5, 10, 20, 50]
 
 '''
     EVALUATION METRICS
@@ -67,7 +71,7 @@ def get_recall(ground_truth_parents: dict, predicted_parents: dict):
     return true_positives / ground_truth_positives if ground_truth_positives != 0 else 0
 
 def get_f1(ground_truth_parents: dict, predicted_parents: dict):
-    print(ground_truth_parents, predicted_parents)    
+    print(f'{ground_truth_parents=}'); print(f'{predicted_parents=}')  
     precision = get_precision(ground_truth_parents, predicted_parents)
     recall = get_recall(ground_truth_parents, predicted_parents)
     

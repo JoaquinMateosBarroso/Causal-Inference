@@ -233,6 +233,14 @@ class BenchmarkCausalDiscovery:
             # Plot the graph structure
             _plot_ts_graph(parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
+            
+            # Plot the summary graph structure
+            summary_parents = window_to_summary_graph(parents_dict)
+            # Make the graph more beautiful by setting parents as past variables
+            for son, parents in summary_parents.items():
+                summary_parents[son] = [(p, -1) for p in parents]
+            _plot_ts_graph(summary_parents)
+            plt.savefig(f'{folder_name}/{data_name}_summary_graph.pdf')
             plt.clf()
             
         
