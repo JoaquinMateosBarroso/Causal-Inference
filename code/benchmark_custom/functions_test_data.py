@@ -46,6 +46,15 @@ def changing_N_groups(options, algorithms_parameters,
                       list_N_groups=None, relation_vars_per_group=5):
     if list_N_groups is None:
         list_N_groups = [5, 10, 20, 50]
+    
+    for N_groups in list_N_groups:
+        options['N_groups'] = N_groups
+        options['N_vars'] = N_groups * relation_vars_per_group
+        
+        for algorithm_parameters in algorithms_parameters.values():
+            algorithm_parameters['max_lag'] = options['max_lag']
+        
+        yield algorithms_parameters, options
 
 '''
     EVALUATION METRICS
