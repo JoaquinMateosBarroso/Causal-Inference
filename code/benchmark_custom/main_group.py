@@ -52,7 +52,7 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 20, 50],
                                      'relation_vars_per_group': 5}),
 }
-chosen_option = 'static_parameters'
+chosen_option = 'changing_N_groups'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
                                  benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:

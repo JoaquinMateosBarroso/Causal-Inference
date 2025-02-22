@@ -284,6 +284,7 @@ class BenchmarkCausalDiscovery:
         for score in scores:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             for algorithm_name, df_results in results_dataframes.items():
+                print(f'{df_results.columns=}')
                 datasets_groups = [df_results[df_results['dataset_iteration']==i] \
                                     for i in df_results['dataset_iteration'].unique()]
                 x = [group[x_axis].mean() for group in datasets_groups]
@@ -407,6 +408,8 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
             # Generate the datasets, with their graph structure and time series
             causal_datasets = [CausalDataset() for _ in range(n_executions)]
+            if self.verbose > 0:
+                print('Generating datasets...')
             for current_dataset_index, causal_dataset in enumerate(causal_datasets):
                 dataset_index = iteration * n_executions + current_dataset_index
                 causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
