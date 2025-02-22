@@ -198,6 +198,9 @@ class CausalDataset:
                 [parent_group] = [i for i, group in enumerate(self.groups) if parent in group]
                 # Add the parent group to the son group
                 group_parents_dict[son_group].append((parent_group, lag))
+            
+            # Remove duplicates
+            group_parents_dict[son_group] = list(set(group_parents_dict[son_group]))
         
         return group_parents_dict
         
@@ -293,6 +296,19 @@ class CausalDataset:
             for son_node, parents in causal_process.items():
                 global_causal_process[son_node].extend(parents)
         
+        # Delete duplicates
+        for key, parents in global_causal_process.items():
+            seen_parents_nodes = set()
+            seen_parents_processes = []
+            for parent in parents:
+                if parent[0] in seen_parents_nodes:
+                    parents.remove(parent)
+                else:
+                    seen_parents_nodes.add(parent[0])
+                    seen_parents_processes.append(parent)
+            # Update the global_causal_process with the new list of non-repeated parents
+            global_causal_process[key] = seen_parents_processes
+        
         return global_causal_process
     
     def _save_groups(self, name, dataset_folder):
@@ -302,7 +318,7 @@ class CausalDataset:
             groups_representation = repr(self.groups)
             f.write(groups_representation)
         # Save the groups parents to a txt file
-        with open(f'{dataset_folder}/{name}_group_parents.txt', 'w') as f:
+        with open(f'{dataset_folder}/{name}_node_parents.txt', 'w') as f:
             node_parents_representation = repr(self.node_parents_dict)
             f.write(node_parents_representation)
     

@@ -67,6 +67,7 @@ def get_recall(ground_truth_parents: dict, predicted_parents: dict):
     return true_positives / ground_truth_positives if ground_truth_positives != 0 else 0
 
 def get_f1(ground_truth_parents: dict, predicted_parents: dict):
+    print(ground_truth_parents, predicted_parents)    
     precision = get_precision(ground_truth_parents, predicted_parents)
     recall = get_recall(ground_truth_parents, predicted_parents)
     
@@ -136,5 +137,7 @@ def window_to_summary_graph(window_graph: dict[int, list[tuple[int, int]]]
     summary_graph = {}
     for t, parents in window_graph.items():
         summary_graph[t] = [parent[0] for parent in parents]
+        # Remove duplicates
+        summary_graph[t] = list(set(summary_graph[t]))
         
     return summary_graph
