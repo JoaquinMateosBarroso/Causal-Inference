@@ -29,7 +29,7 @@ algorithms_parameters = {
 
 data_generation_options = {
     'max_lag': 2,
-    'T': 10000, # Number of time points in the dataset
+    'T': 1000, # Number of time points in the dataset
     'N_vars': 20, # Number of variables in the dataset
     'N_groups': 4, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
