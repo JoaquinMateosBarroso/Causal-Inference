@@ -7,8 +7,8 @@ import shutil
 import os
 
 from functions_test_data import changing_N_groups, changing_N_variables, changing_preselection_alpha, static_parameters
-from group_causal_discovery_algorithms.dimension_reduction import DimensionReductionGroupCausalDiscovery
-from group_causal_discovery_algorithms.micro_level import MicroLevelGroupCausalDiscovery
+from group_causal_discovery.dimension_reduction import DimensionReductionGroupCausalDiscovery
+from group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
 
 
 algorithms = {
