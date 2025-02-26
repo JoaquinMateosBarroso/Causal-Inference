@@ -1,0 +1,257 @@
+import numpy as np
+from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase, EdgeDirection
+
+
+import tigramite.data_processing as pp
+from tigramite.independence_tests.parcorr import ParCorr
+from tigramite.independence_tests.gpdc_torch import GPDCtorch
+from tigramite.independence_tests.cmiknn import CMIknn
+from tigramite.pcmci import PCMCI
+from sklearn.linear_model import LinearRegression
+
+class NG_VecCI(DirectionExtractorBase):
+    '''
+    Class that implements the NG-Vector Causal Inference algorithm for direction extraction on groups of variables.
+    This is an extension of the 2G-Vector Causal Inference algorithm for groups of variables,
+    [Wahl, J., Ninad, U., & Runge, J. (2023, June). Vector causal inference between two groups of variables.]
+    '''
+    def identify_causal_direction(self,X: pp.DataFrame , Y: pp.DataFrame, alpha=0.01,
+                                    CI_test_method='ParCorr', ambiguity = None,
+                                    test = 'full', max_sep_set = None, linear = True,
+                                    fit_intercept = False, random_state = None) -> EdgeDirection:
+        '''
+        Function that executes either 2G-VecCI.PC or 2G-VecCi.Full and outputs the causal direction as well as the inference criterion
+        and details on edge counts and densities
+        
+        Parameters:
+            X : tigramite dataframe of form (T,N) where T is sample and N is group size
+            Y : tigramite dataframe of form (T,N') where T is sample and N' is group size
+            alpha : significance level of CI tests
+            CI_test_method : conditional independence test method, default ParCorr
+            ambiguity : ambiguity level as specified in submitted paper, if None chosen to be alpha
+            test : string, either 'full' for 2G-VecCI.Full or 'PC' for 2G-VecCI.PC
+            max_sep_set : maximal size of d-separation set in case 2G-VecCI.PC is used
+            linear : boolean, tests for linear or non-linear interactions
+            fit_intercept : boolean, indicates whether an intercept should be fitted in regression methods, default is False
+        
+        Returns:
+            comparison : string indicating the inferred causal direction
+            cause_criterion : Crit, as specified in the submitted paper
+            test_results : details on edge densities and counts
+        '''
+        if ambiguity == None:
+            ambiguity = alpha
+
+        if test == 'full':
+            test_results = _full_conditioning_ind_test(X,Y,alpha,CI_test_method=CI_test_method, linear = linear, fit_intercept=fit_intercept, random_state=random_state)
+        # elif test == 'PC':
+        #     test_results = conditioning_ind_test_with_PC(X, Y, alpha, CI_test_method=CI_test_method, max_sep_set=max_sep_set, linear_interactions=linear)
+        
+        X_criterion = test_results['edge density of Res X'] - test_results['edge density of X']
+        Y_criterion = test_results['edge density of Res Y'] - test_results['edge density of Y']
+        criterion = X_criterion - Y_criterion
+        # APPLY THEOREM ABOUT CRITERION TO INFER DIRECTION
+        if abs(criterion) < ambiguity:
+            direction = EdgeDirection.NONE
+        elif criterion > ambiguity:
+            direction = EdgeDirection.LEFT2RIGHT
+        elif criterion  < ambiguity:
+            direction = EdgeDirection.RIGHT2LEFT
+            
+        return direction, test_results
+        
+
+
+
+def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_test_method='ParCorr', linear = True, fit_intercept = False, random_state = None):
+    '''
+    Implementation of 2G-VecCI.Full as desribed in the submitted article [https://github.com/JonasChoice/2GVecCI], but extended to time series.
+    Runs sparsity based independent test of regions X and Y with the prescribed CI_test_method.
+    
+    Parameters:
+        X: np.ndarray containing posible origin variables, shape (T, N)
+        Y: np.ndarray containing possible target variables, shape (T, N')
+        alpha: floating number, significance level for conditional independence testing
+        CI_test_method: The conditional independence test. Options: 'ParCorr', 'GPDC', 'CMIknn', see the documentation
+            of Tigramite for details on the implementations of these tests
+        linear: string, Options: 'yes' or 'no'. If yes, conditioning on regions is handled by an OLS regression step and further
+            tests are run on the residuals . If no, X is added to all conditioning sets when testing for Y|X densities and vice versa.
+    
+    Returns:
+    dictionary describing number of detected edges on regions and their residuals as well as sparsity,
+    measured as number of detected edges/number of edges on fully connected graph
+    '''
+    if random_state == None:
+        random_state = np.random
+
+    if CI_test_method == 'ParCorr':
+        CI_test =ParCorr()
+    if CI_test_method == 'GPDC':
+        CI_test =GPDCtorch()
+    if CI_test_method == 'CMIknn':
+        CI_test =CMIknn()
+    dict = {}
+    if linear == True:
+        # OBTAIN EDGE DENSITY OF Y
+        Regression = _regression(X, Y, fit_intercept=fit_intercept)
+        residualsY = Regression['X_to_Y'].residuals
+        edgecounterY = 0
+        edgecounterResY = 0
+        max_edgenumberY = Y.shape[1] * (Y.shape[1] - 1) / 2
+        max_edgenumberX = X.shape[1] * (X.shape[1] - 1) / 2
+        # iterate over all possible pairs of variables, i.e., all possible edges
+        for var1 in range(Y.shape[1]):
+            for var2 in range(var1 + 1, Y.shape[1]):
+                removedY = np.delete(Y, (var1, var2), 1)
+                valY, pvalY = CI_test.run_test_raw(Y[:, var1:var1 + 1], Y[:, var2:var2 + 1], z=removedY)
+                
+                if pvalY < alpha: # Is current edge significant over G_Y?
+                    edgecounterY += 1
+                
+                removedResY = np.delete(residualsY, (var1, var2), 1)
+                valResY, pvalResY = CI_test.run_test_raw(residualsY[:, var1:var1 + 1], residualsY[:, var2:var2 + 1],
+                                                            z=removedResY)
+                if pvalResY < alpha: # Is current edge significant over G_{Y|X}?
+                    edgecounterResY += 1
+                    
+        dict['number of nodes Y'] = Y.shape[1]
+        dict['max number of edges Y'] = max_edgenumberY
+        dict['number of edges Y'] = edgecounterY
+        dict['number of edges Res Y'] = edgecounterResY
+        dict['edge density of Y'] = edgecounterY / max_edgenumberY
+        dict['edge density of Res Y'] = edgecounterResY / max_edgenumberY
+        
+        # OBTAIN EDGE DENSITY OF X
+        residualsX = Regression['Y_to_X'].residuals
+        edgecounterX = 0
+        edgecounterResX = 0
+        # iterate over all possible pairs of variables, i.e., all possible edges
+        for var1 in range(X.shape[1]):
+            for var2 in range(var1 + 1, X.shape[1]):
+                removedX = np.delete(X, (var1, var2), 1)
+                valX, pvalX = CI_test.run_test_raw(X[:, var1:var1 + 1], X[:, var2:var2 + 1], z=removedX)
+                
+                if pvalX < alpha: # Is current edge significant over G_X?
+                    edgecounterX += 1
+                
+                removedResX = np.delete(residualsX, (var1, var2), 1)
+                valResX, pvalResX = CI_test.run_test_raw(residualsX[:, var1:var1 + 1], residualsX[:, var2:var2 + 1],
+                                                            z=removedResX)
+                if pvalResX < alpha: # Is current edge significant over G_{X|Y}?
+                    edgecounterResX += 1
+            
+        dict['number of nodes X'] = X.shape[1]
+        dict['max number of edges X'] = max_edgenumberX
+        dict['number of edges X'] = edgecounterX
+        dict['number of edges Res X'] = edgecounterResX
+        dict['edge density of X'] = edgecounterX / max_edgenumberX
+        dict['edge density of Res X'] = edgecounterResX / max_edgenumberX
+        
+        return dict
+    
+    else:
+        edgecounterY = 0
+        edgecounterResY = 0
+        max_edgenumberY = Y.shape[1] * (Y.shape[1] - 1) / 2
+        max_edgenumberX = X.shape[1] * (X.shape[1] - 1) / 2
+        for var1 in range(Y.shape[1]):
+            for var2 in range(var1 + 1, Y.shape[1]):
+                removedY = np.delete(Y, (var1, var2), 1)
+                valY, pvalY = CI_test.run_test_raw(Y[:, var1:var1 + 1], Y[:, var2:var2 + 1], z=removedY)
+                if pvalY < alpha:
+                    edgecounterY += 1
+                cond_setY = np.concatenate((removedY,X),axis=1)
+                valResY, pvalResY = CI_test.run_test_raw(Y[:, var1:var1 + 1], Y[:, var2:var2 + 1],
+                                                            z=cond_setY)
+                if pvalResY < alpha:
+                    edgecounterResY += 1
+        dict['number of nodes Y'] = Y.shape[1]
+        dict['max number of edges Y'] = max_edgenumberY
+        dict['number of edges Y'] = edgecounterY
+        dict['number of edges Res Y'] = edgecounterResY
+        dict['edge density of Y'] = edgecounterY / max_edgenumberY
+        dict['edge density of Res Y'] = edgecounterResY / max_edgenumberY
+        edgecounterX = 0
+        edgecounterResX = 0
+        for var1 in range(X.shape[1]):
+            for var2 in range(var1 + 1, X.shape[1]):
+                removedX = np.delete(X, (var1, var2), 1)
+                valX, pvalX = CI_test.run_test_raw(X[:, var1:var1 + 1], X[:, var2:var2 + 1], z=removedX)
+                if pvalX < alpha:
+                    edgecounterX += 1
+                cond_setX = np.concatenate((removedX, Y), axis=1)
+                valResX, pvalResX = CI_test.run_test_raw(X[:, var1:var1 + 1], X[:, var2:var2 + 1],
+                                                            z=cond_setX)
+                if pvalResX < alpha:
+                    edgecounterResX += 1
+        dict['number of nodes X'] = X.shape[1]
+        dict['max number of edges X'] = max_edgenumberX
+        dict['number of edges X'] = edgecounterX
+        dict['number of edges Res X'] = edgecounterResX
+        dict['edge density of X'] = edgecounterX / max_edgenumberX
+        dict['edge density of Res X'] = edgecounterResX / max_edgenumberX
+        dict['tested regions'] = type
+        
+        return dict
+    
+    
+def _regression(X: np.ndarray, Y: np.ndarray, fit_intercept: bool=False):
+    '''
+    Regression function that regresses the random vector X linearly on Y and Y on X and returns both residuals
+    
+    Parameters:
+        X: numpy array with shape (T, N) where T is the number of samples and N the number of variables
+        Y: numpy array with shape (T, N') where T is the number of samples and N' the number of variables
+        fit_intercept: boolean, whether to fit an intercept in the regression
+    
+    Returns:
+        dictionary containing the residuals of the regression of Y on X (key 'X_to_Y') and X on Y (key 'Y_to_X').
+    '''
+    dict = {}
+    # Perform linear regression
+    reg_X_to_Y = LinearRegression(fit_intercept=False)
+    reg_Y_to_X = LinearRegression(fit_intercept=False)
+    reg_X_to_Y.fit(X, Y)
+    reg_Y_to_X.fit(Y, X)
+    
+    # Obtain residuals
+    reg_X_to_Y.residuals = Y - reg_X_to_Y.predict(X)
+    reg_Y_to_X.residuals = X - reg_Y_to_X.predict(Y)
+    dict['X_to_Y'] = reg_X_to_Y
+    dict['Y_to_X'] = reg_Y_to_X
+    
+    return dict
+
+
+if __name__ == '__main__':
+    # TEST WITH DIFFERENT KINDS OF DATA
+    
+    # # If data is random
+    # X_vec = np.random.randn(100, 5)
+    # Y_vec = np.random.randn(100, 5)
+    
+    # # If X -> Y
+    # X_vec = np.random.randn(100, 5)
+    # Y1 = X_vec[:, 0] + 0.5 * X_vec[:, 1] + np.random.normal(0, 0.1, 100)
+    # Y2 = X_vec[:, 2] + 0.5 * X_vec[:, 3] + np.random.normal(0, 0.1, 100)
+    # Y3 = X_vec[:, 4] + np.random.normal(0, 0.1, 100)
+    # Y_vec = np.column_stack((Y1, Y2, Y3))
+    
+    # If Y -> X
+    Y_vec = np.random.randn(100, 5)
+    X1 = Y_vec[:, 0] + 0.5 * Y_vec[:, 1] + np.random.normal(0, 0.1, 100)
+    X2 = Y_vec[:, 2] + 0.5 * Y_vec[:, 3] + np.random.normal(0, 0.1, 100)
+    X3 = Y_vec[:, 4] + np.random.normal(0, 0.1, 100)
+    X_vec = np.column_stack((X1, X2, X3))
+    
+    
+    
+    X_group = list(range(X_vec.shape[1]))
+    Y_group = list(range(X_vec.shape[1], X_vec.shape[1]+Y_vec.shape[1]))
+    
+    data = np.concatenate((X_vec, Y_vec), axis=1)
+    
+    ng_vecci = NG_VecCI(data, groups=[X_group, Y_group])
+    
+    direction, test_results = ng_vecci.identify_causal_direction(X_vec, Y_vec)
+    print(direction)

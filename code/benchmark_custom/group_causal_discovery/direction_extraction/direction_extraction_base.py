@@ -13,7 +13,6 @@ class EdgeDirection(Enum):
     RIGHT2LEFT = 2
     BIDIRECTED = 3
     NONE = 4
-    UNDETERMINED = 5
 
 
 class DirectionExtractorBase(ABC): # Abstract class
@@ -41,7 +40,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         self.extra_args = kwargs
 
     @abstractmethod
-    def _extract_direction(self, X: np.ndarray, Y: np.ndarray) -> EdgeDirection:
+    def identify_causal_direction(self, X: np.ndarray, Y: np.ndarray) -> EdgeDirection:
         '''
         To be implemented by subclasses
         
@@ -64,7 +63,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         X = self.groups_data[X_index]
         Y = self.groups_data[Y_index]
         
-        return self._extract_direction(X, Y)
+        return self.identify_causal_direction(X, Y)
     
     def extract_graph_directions(self) -> dict[set[int, int], EdgeDirection]:
         '''
