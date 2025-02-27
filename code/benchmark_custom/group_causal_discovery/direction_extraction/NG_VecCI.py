@@ -63,7 +63,9 @@ class NG_VecCI(DirectionExtractorBase):
 
 
 
-def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_test_method='ParCorr', linear = True, fit_intercept = False, random_state = None):
+def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0.01,
+                                CI_test_method='ParCorr', linear = True,
+                                fit_intercept = False, random_state = None):
     '''
     Implementation of 2G-VecCI.Full as desribed in the submitted article [https://github.com/JonasChoice/2GVecCI], but extended to time series.
     Runs sparsity based independent test of regions X and Y with the prescribed CI_test_method.
@@ -91,8 +93,9 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_tes
     if CI_test_method == 'CMIknn':
         CI_test =CMIknn()
     dict = {}
+    # LINEAR CASE, where we can use residuals to test for conditional independence
     if linear == True:
-        # OBTAIN EDGE DENSITY OF Y
+        # OBTAIN EDGE DENSITY OF Y AND RES Y|X
         Regression = _regression(X, Y, fit_intercept=fit_intercept)
         residualsY = Regression['X_to_Y'].residuals
         edgecounterY = 0
@@ -113,7 +116,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_tes
                                                             z=removedResY)
                 if pvalResY < alpha: # Is current edge significant over G_{Y|X}?
                     edgecounterResY += 1
-                    
+                
         dict['number of nodes Y'] = Y.shape[1]
         dict['max number of edges Y'] = max_edgenumberY
         dict['number of edges Y'] = edgecounterY
@@ -121,7 +124,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_tes
         dict['edge density of Y'] = edgecounterY / max_edgenumberY
         dict['edge density of Res Y'] = edgecounterResY / max_edgenumberY
         
-        # OBTAIN EDGE DENSITY OF X
+        # OBTAIN EDGE DENSITY OF X AND RES X|Y
         residualsX = Regression['Y_to_X'].residuals
         edgecounterX = 0
         edgecounterResX = 0
@@ -149,7 +152,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, alpha=0.01, CI_tes
         
         return dict
     
-    else:
+    else: # NON-LINEAR CASE, where we cannot use residuals
         edgecounterY = 0
         edgecounterResY = 0
         max_edgenumberY = Y.shape[1] * (Y.shape[1] - 1) / 2
@@ -225,33 +228,75 @@ def _regression(X: np.ndarray, Y: np.ndarray, fit_intercept: bool=False):
 
 if __name__ == '__main__':
     # TEST WITH DIFFERENT KINDS OF DATA
+    np.random.seed(0)
     
-    # # If data is random
-    # X_vec = np.random.randn(100, 5)
-    # Y_vec = np.random.randn(100, 5)
+    def test_2G_VecCI():
+        # # If data is random
+        # X_vec = np.random.randn(100, 5)
+        # Y_vec = np.random.randn(100, 5)
+        
+        # # If X -> Y
+        # X_vec = np.random.randn(100, 5)
+        # Y1 = X_vec[:, 0] + 0.5 * X_vec[:, 1] + np.random.normal(0, 0.1, 100)
+        # Y2 = X_vec[:, 2] + 0.5 * X_vec[:, 3] + np.random.normal(0, 0.1, 100)
+        # Y3 = X_vec[:, 4] + np.random.normal(0, 0.1, 100)
+        # Y_vec = np.column_stack((Y1, Y2, Y3))
+        
+        # If X <- Y
+        Y_vec = np.random.randn(100, 5)
+        X1 = Y_vec[:, 0] + 0.5 * Y_vec[:, 1] + np.random.normal(0, 0.1, 100)
+        X2 = Y_vec[:, 2] + 0.5 * Y_vec[:, 3] + np.random.normal(0, 0.1, 100)
+        X3 = Y_vec[:, 4] + np.random.normal(0, 0.1, 100)
+        X_vec = np.column_stack((X1, X2, X3))
+        
+        
+        X_group = list(range(X_vec.shape[1]))
+        Y_group = list(range(X_vec.shape[1], X_vec.shape[1]+Y_vec.shape[1]))
+        
+        data = np.concatenate((X_vec, Y_vec), axis=1)
+        
+        ng_vecci = NG_VecCI(data, groups=[X_group, Y_group])
+        
+        direction, test_results = ng_vecci.identify_causal_direction(X_vec, Y_vec)
+        
+        print(direction)
     
-    # # If X -> Y
-    # X_vec = np.random.randn(100, 5)
-    # Y1 = X_vec[:, 0] + 0.5 * X_vec[:, 1] + np.random.normal(0, 0.1, 100)
-    # Y2 = X_vec[:, 2] + 0.5 * X_vec[:, 3] + np.random.normal(0, 0.1, 100)
-    # Y3 = X_vec[:, 4] + np.random.normal(0, 0.1, 100)
-    # Y_vec = np.column_stack((Y1, Y2, Y3))
+    def test_NG_VecCI():
+        '''
+        I'm gonna test X -> Y <- Z, X -> Z, and see what directions we can infer
+        '''
+        X1 =      np.random.normal(0, 1, 1000).reshape(-1, 1)
+        X2 = X1 + np.random.normal(0, 1, 1000).reshape(-1, 1)
+        X3 = X2 + np.random.normal(0, 1, 1000).reshape(-1, 1)
+        X = np.column_stack((X1, X2, X3))
+        
+        Z1 = X2 +      np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Z2 = X1 + Z1 + np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Z3 = Z2 +      np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Z = np.column_stack((Z1, Z2, Z3))
+        
+        Y1 = X1 +           np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Y2 = Z2 + X3 + np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Y3 = Y2 + X1 + Z3 + np.random.normal(0, 1, 1000).reshape(-1, 1)
+        Y = np.column_stack((Y1, Y2, Y3))
+        
+        
+        X_group = list(range(X.shape[1]))
+        Y_group = list(range(X.shape[1], X.shape[1]+Y.shape[1]))
+        Z_group = list(range(X.shape[1]+Y.shape[1], X.shape[1]+Y.shape[1]+Z.shape[1]))
+        
+        data = np.concatenate((X, Y, Z), axis=1)
+        
+        ng_vecci = NG_VecCI(data, groups=[X_group, Y_group, Z_group])
+        
+        groups_dict = {0: 'X', 1: 'Y', 2: 'Z'}
+        print('Start testing')
+        for i in range(len(ng_vecci.groups)):
+            for j in range(i+1, len(ng_vecci.groups)):
+                direction, test_results = ng_vecci.extract_direction(i, j)
+                print(f'For {groups_dict[i]}, {groups_dict[j]}, we get {direction}')
+                print(test_results)
     
-    # If Y -> X
-    Y_vec = np.random.randn(100, 5)
-    X1 = Y_vec[:, 0] + 0.5 * Y_vec[:, 1] + np.random.normal(0, 0.1, 100)
-    X2 = Y_vec[:, 2] + 0.5 * Y_vec[:, 3] + np.random.normal(0, 0.1, 100)
-    X3 = Y_vec[:, 4] + np.random.normal(0, 0.1, 100)
-    X_vec = np.column_stack((X1, X2, X3))
-    
-    
-    
-    X_group = list(range(X_vec.shape[1]))
-    Y_group = list(range(X_vec.shape[1], X_vec.shape[1]+Y_vec.shape[1]))
-    
-    data = np.concatenate((X_vec, Y_vec), axis=1)
-    
-    ng_vecci = NG_VecCI(data, groups=[X_group, Y_group])
-    
-    direction, test_results = ng_vecci.identify_causal_direction(X_vec, Y_vec)
-    print(direction)
+    # Execute the tests
+    # test_2G_VecCI()
+    test_NG_VecCI()
