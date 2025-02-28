@@ -1,7 +1,8 @@
 import os
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import copy
 from create_toy_datasets import CausalDataset, _plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
@@ -190,16 +191,17 @@ class BenchmarkCausalDiscovery:
         actual_parents_summary = window_to_summary_graph(actual_parents)
         
         algorithm = causalDiscovery(data=time_series, **algorithm_parameters)
-        try:
-            predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
-        except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
-            print('Returning nan values for this algorithm')
-            predicted_parents = {}
-            time = np.nan
-            memory = np.nan
+        # try: TODO: Uncomment
+        predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+        # except Exception as e:
+        #     print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+        #     print('Returning nan values for this algorithm')
+        #     predicted_parents = {}
+        #     time = np.nan
+        #     memory = np.nan
         
-        finally:
+        # finally:
+        if True:
             result = {'time': time, 'memory': memory}
             
             result['precision'] = get_precision(actual_parents, predicted_parents)
@@ -321,19 +323,22 @@ class BenchmarkCausalDiscovery:
         
         for score in scores:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-            for iteration, df_results in enumerate(results_dataframes.values()):
-                # We plot just the chosen dataset iteration
+            all_results = []
+            for algorithm_name, df_results in results_dataframes.items():
                 current_dataset_results = df_results[df_results['dataset_iteration'] == dataset_iteration_to_plot]
-                x = iteration
-                y = current_dataset_results[score]
-                ax.boxplot([y], positions=[x], widths=0.6, patch_artist=True,
-                           medianprops={'color': 'black', 'linewidth': 2})
-                ax.grid()
-                if score in ['f1', 'precision', 'recall', 
-                        'f1_summary', 'precision_summary', 'recall_summary']:
-                    ax.set_ylim(0, 1)
-                if score in ['shd', 'shd_summary']:
-                    ax.set_ylim(bottom=0, top=None)
+                current_dataset_results['algorithm'] = algorithm_name
+                all_results.append(current_dataset_results)
+            
+            all_results_df = pd.concat(all_results)
+            sns.violinplot(x='algorithm', y=score, data=all_results_df, ax=ax)
+            ax.grid()
+            
+            
+            if score in ['f1', 'precision', 'recall', 
+                    'f1_summary', 'precision_summary', 'recall_summary']:
+                ax.set_ylim(0, 1)
+            if score in ['shd', 'shd_summary']:
+                ax.set_ylim(bottom=0, top=None)
                 
             algorithms_names = list(results_dataframes.keys())
             ax.set_xticks(range(len(algorithms_names)), algorithms_names)
@@ -342,10 +347,7 @@ class BenchmarkCausalDiscovery:
             plt.savefig(f'{output_folder}/comparison_{score}.pdf')
             plt.close(fig)
 
-class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
-    def __init__(self):
-        super().__init__()
-        
+class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):        
     def benchmark_causal_discovery(self, 
                                 algorithms: dict[str, type[GroupCausalDiscoveryBase]],
                                 parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
@@ -357,9 +359,9 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
                                 verbose: int = 0,
                                 )        -> dict[str, list[ dict[str, Any] ]]:
         '''
-        Function to execute a series of algorithms for causal discovery over time series datasets,
+        Function to execute a series of algorithms for group causal discovery over time series datasets,
         using a series of parameters for algorithms and options in the creation of the datasets.
-            
+        
         Parameters:
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
@@ -438,6 +440,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
         return self.results
     
+    
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalDiscovery: type[GroupCausalDiscoveryBase],
                       algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
@@ -481,3 +484,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             result['shd_summary'] = get_shd(actual_parents_summary, predicted_parents_summary)
             
             return result
+        
+
+class BenchmarkEdgesDirection(BenchmarkCausalDiscovery):
+    pass

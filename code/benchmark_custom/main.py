@@ -10,7 +10,11 @@ from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrap
 import shutil
 import os
 
-from functions_test_data import changing_N_variables, changing_preselection_alpha
+# Ignore FutureWarnings, due to versions of libraries
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+from functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
 
 
 algorithms = {
@@ -40,14 +44,14 @@ algorithms_parameters = {
 }
 
 data_generation_options = {
-    'max_lag': 2,
+    'max_lag': 10,
     'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
-    'T': 500, # Number of time points in the dataset
-    'N_vars': 10, # Number of variables in the dataset
+    'T': 5000, # Number of time points in the dataset
+    'N_vars': 50, # Number of variables in the dataset
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
     'auto_coeffs': [0.7], # default: [0.5, 0.7]
-    'noise_dists': ['gaussian'], # deafult: ['gaussian']
+    'noise_dists': ['weibull'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
     'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
@@ -59,6 +63,8 @@ benchmark_options = {
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
+    'static': (static_parameters,
+                                    {}),
 }
 chosen_option = 'changing_N_variables'
 
