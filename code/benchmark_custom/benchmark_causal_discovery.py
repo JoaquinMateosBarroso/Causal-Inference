@@ -102,6 +102,8 @@ class BenchmarkCausalDiscovery:
             else:
                 os.makedirs(datasets_folder)
             
+            if self.verbose > 0:
+                print('Generating datasets...')
             # Generate the datasets, with their graph structure and time series
             causal_datasets = [CausalDataset() for _ in range(n_executions)]
             for current_dataset_index, causal_dataset in enumerate(causal_datasets):
