@@ -18,7 +18,6 @@ from functions_test_data import changing_N_variables, changing_preselection_alph
 
 
 algorithms = {
-    'pcmci-modified': PCMCIModifiedWrapper,
     'pcmci': PCMCIWrapper,
     'dynotears': DynotearsWrapper,
     'granger': GrangerWrapper,
@@ -27,6 +26,9 @@ algorithms = {
     
     # 'fullpcmci': PCMCIWrapper,
     # 'lpcmci': LPCMCIWrapper,
+    
+    # This works bad with big datasets
+    # 'pcmci-modified': PCMCIModifiedWrapper,
 }
 algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha
@@ -44,15 +46,16 @@ algorithms_parameters = {
 }
 
 data_generation_options = {
-    'max_lag': 10,
-    'crosslinks_density': 0.75, # Portion of links that won't be in the kind of X_{t-1}->X_t
+    'max_lag': 5,
+    'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 50, # Number of variables in the dataset
+    'N_vars': 10, # Number of variables in the dataset
+    'confounders_density': 0.25, # Portion of confounders in the dataset
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
     'auto_coeffs': [0.6], # default: [0.5, 0.7]
-    'noise_dists': ['weibull'], # deafult: ['gaussian']
-    'noise_sigmas': [0.2], # default: [0.5, 2]
+    'noise_dists': ['gaussian'], # deafult: ['gaussian']
+    'noise_sigmas': [0.7], # default: [0.5, 2]
     
     'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
 }

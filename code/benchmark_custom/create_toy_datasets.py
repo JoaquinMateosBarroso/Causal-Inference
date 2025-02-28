@@ -2,7 +2,7 @@
 import json
 import os
 import random
-from typing import Callable
+from typing import Callable, Union
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ from tigramite import plotting as tp
 from tigramite.graphs import Graphs
 
 
-def get_parents_dict(causal_process):
+def get_parents_dict(causal_process) -> dict[int, list[int]]:
     parents_dict = dict()
     for key in causal_process.keys():
         if key not in parents_dict:
@@ -34,7 +34,7 @@ class CausalDataset:
     }
     
     def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
-                      max_lag=3, dependency_funcs=['nonlinear'],
+                      confounders_density = 0, max_lag=3, dependency_funcs=['nonlinear'],
                       datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
         """
@@ -50,7 +50,8 @@ class CausalDataset:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
-            crosslinks_density : Percentage of links that are cross-links
+            crosslinks_density : Fraction of links that are cross-links
+            confounders_density : Fraction of confounders in the dataset
             max_lag : Maximum lag of the causal process
             dependency_funcs : List of dependency functions (in {'linear', 'nonlinear'}, or a function f:R->R)
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
@@ -64,18 +65,23 @@ class CausalDataset:
                                 for func in dependency_funcs ]
         
         L = int(N_vars * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
+        total_generating_vars = int(N_vars * (1 + confounders_density))
         
         # Generate random causal process
-        causal_process, noise = generate_structural_causal_process(N=N_vars,
+        causal_process, noise = generate_structural_causal_process(N=total_generating_vars,
                                                             L=L,
                                                             max_lag=max_lag,
                                                             dependency_funcs=dependency_funcs,
                                                             **kw_generation_args)
-
         self.parents_dict = get_parents_dict(causal_process)
 
         # Generate time series data from the causal process
         self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
+        
+        # Now we choose what variables will be kept and studied (the rest are hidden confounders)
+        chosen_nodes = random.sample(range(total_generating_vars), N_vars)
+        self.time_series = self.time_series[:, chosen_nodes]
+        self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
         
         if datasets_folder is not None:
             # If the folder does not exist, create it
@@ -347,3 +353,35 @@ if __name__ == '__main__':
     _plot_ts_graph(group_parents_dict)
     plt.show()
 
+def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nodes: list[int]
+                      ) -> dict[int, list[tuple[int, int]]]:
+    '''
+    Given a dictionary with the parents of each node in a graph,
+    return a dictionary with the parents of chosen nodes, considering that
+    a variable between the chosen_nodes is son of another if and only if
+    there is a directed path from the parent to the child that only goes
+    through non-chosen nodes.
+    '''
+    # Recursive function to extract the parents of a node with the above specified condition
+    # TODO: Implement correctly this function, possibly setting a max_distance to avoid infinite loops
+    def extract_parents_from_path(child) -> Union[int, int]:
+        new_parents = []
+        if new_parents_dict.get(child, None) != None:
+            return new_parents_dict[child]
+        for parent, lag in parents_dict[child]:
+            grandparents = extract_parents_from_path(parent)
+            if parent in grandparents: break
+            if parent in chosen_nodes:
+                new_parents.append((chosen_nodes.index(parent), lag))
+            else:
+                new_parents.extend(grandparents)
+        return new_parents
+    
+    # Initialize the new parents_dict
+    new_parents_dict = dict()
+    
+    for new_node, old_node in enumerate(chosen_nodes):
+        new_parents_dict[new_node] = extract_parents_from_path(old_node)
+         
+    return new_parents_dict
+                    
