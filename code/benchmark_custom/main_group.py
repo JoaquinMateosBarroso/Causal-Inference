@@ -18,17 +18,17 @@ algorithms = {
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
-                            'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
+                            'node_causal_discovery_params': {'max_lag': 5, 'pc_alpha': None}},
     
     'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
-                            'node_causal_discovery_params': {'max_lag': 2, 'lambda_w': 0.05, 'lambda_a': 0.05}},
+                            'node_causal_discovery_params': {'max_lag': 5, 'lambda_w': 0.05, 'lambda_a': 0.05}},
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
-                    'node_causal_discovery_params': {'max_lag': 2, 'pc_alpha': 0.01}},
+                    'node_causal_discovery_params': {'max_lag': 5, 'pc_alpha': None}},
 }
 
 data_generation_options = {
-    'max_lag': 2,
+    'max_lag': 5,
     'T': 1000, # Number of time points in the dataset
     'N_vars': 20, # Number of variables in the dataset
     'N_groups': 4, # Number of groups in the dataset
@@ -56,7 +56,7 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
 }
-chosen_option = 'changing_N_groups'
+chosen_option = 'static_parameters'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
                                  benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:

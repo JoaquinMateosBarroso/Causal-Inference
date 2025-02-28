@@ -9,7 +9,7 @@ from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBas
 from typing import Any, Iterator
 from tqdm import tqdm
 
-from group_causal_discovery_algorithms.group_causal_discovery_base import GroupCausalDiscoveryBase
+from group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
 
 # For printings
 BLUE = '\033[34m'
