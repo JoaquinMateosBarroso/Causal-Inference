@@ -49,8 +49,8 @@ data_generation_options = {
     'T': 2000, # Number of time points in the dataset
     'N_vars': 50, # Number of variables in the dataset
     # These parameters are used in generate_structural_causal_process:
-    'dependency_coeffs': [-0.4, 0.4], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.7], # default: [0.5, 0.7]
+    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
+    'auto_coeffs': [0.6], # default: [0.5, 0.7]
     'noise_dists': ['weibull'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
