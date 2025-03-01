@@ -32,32 +32,33 @@ algorithms = {
 }
 algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha
-    'pcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'cond_ind_test': 'parcorr'},
-    'granger': {'cv': 5, 'min_lag': 1, 'max_lag': 3},
-    'varlingam': {'min_lag': 1, 'max_lag': 3},
-    'dynotears': {'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    'pc-stable': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-    'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 1,
+    'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.01, 'cond_ind_test': 'parcorr'},
+    'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
+    'varlingam': {'min_lag': 0, 'max_lag': 5},
+    'dynotears': {              'max_lag': 3, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
+    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
+    
+    'pcmci-modified': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
                         'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
-    
-    
     'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
     'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
 }
 
 data_generation_options = {
+    'min_lag': 0,
     'max_lag': 5,
-    'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t
+    'contemp_fraction': 0.2, # Fraction of contemporaneous links; between 0 and 1
+    'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 2000, # Number of time points in the dataset
     'N_vars': 10, # Number of variables in the dataset
-    'confounders_density': 0.25, # Portion of confounders in the dataset
+    'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
     'auto_coeffs': [0.6], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
-    'noise_sigmas': [0.7], # default: [0.5, 2]
+    'noise_sigmas': [0.3], # default: [0.5, 2]
     
-    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
+    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'],
 }
 
 benchmark_options = {
@@ -108,7 +109,7 @@ if __name__ == '__main__':
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,
                                             results_folder=results_folder,
-                                            n_executions=10,
+                                            n_executions=5,
                                             scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     

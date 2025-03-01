@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
-from create_toy_datasets import CausalDataset, _plot_ts_graph
+from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
@@ -231,11 +231,10 @@ class BenchmarkCausalDiscovery:
             # Plot the time series dataset
             fig, axs = self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_plot.pdf')
-            plt.clf()
-            plt.close(fig)
+            plt.close('all')
             
             # Plot the graph structure
-            _plot_ts_graph(parents_dict)
+            plot_ts_graph(parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
             
             # Plot the summary graph structure
@@ -243,7 +242,7 @@ class BenchmarkCausalDiscovery:
             # Make the graph more beautiful by setting parents as past variables
             for son, parents in summary_parents.items():
                 summary_parents[son] = [(p, -1) for p in parents]
-            _plot_ts_graph(summary_parents)
+            # _plot_ts_graph(summary_parents)
             plt.savefig(f'{folder_name}/{data_name}_summary_graph.pdf')
             plt.clf()
             
@@ -301,7 +300,7 @@ class BenchmarkCausalDiscovery:
             ax.legend()
             
             plt.savefig(f'{results_folder}/plot_{score}.pdf')
-            plt.close(fig)
+            fig.clf(); plt.close('all') # Clear the figure and close it
 
     def plot_particular_result(self, results_folder,
                                      output_folder=None,
@@ -347,7 +346,7 @@ class BenchmarkCausalDiscovery:
             ax.set_ylabel(score)
             
             plt.savefig(f'{output_folder}/comparison_{score}.pdf')
-            plt.close(fig)
+            plt.close('all')
 
 class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):        
     def benchmark_causal_discovery(self, 

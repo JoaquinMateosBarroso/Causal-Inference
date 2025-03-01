@@ -34,8 +34,8 @@ class CausalDataset:
     }
     
     def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
-                      confounders_density = 0, max_lag=3, dependency_funcs=['nonlinear'],
-                      datasets_folder = None, **kw_generation_args) \
+                      confounders_density = 0, min_lag=1, max_lag=3, contemp_fraction=0.,
+                      dependency_funcs=['nonlinear'], datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
         """
         Generate a toy dataset with a causal process and time series data.
@@ -60,6 +60,9 @@ class CausalDataset:
             time_series : np.ndarray with shape (n_samples, n_variables)
             parents_dict: dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         """
+        if min_lag > 0 and contemp_fraction > 1e-6:
+            raise ValueError('If min_lag > 0, then contemp_fraction must be 0')
+        
         # Convert dependency_funcs names to functions
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func
                                 for func in dependency_funcs ]
@@ -71,10 +74,10 @@ class CausalDataset:
         causal_process, noise = generate_structural_causal_process(N=total_generating_vars,
                                                             L=L,
                                                             max_lag=max_lag,
+                                                            contemp_fraction=contemp_fraction,
                                                             dependency_funcs=dependency_funcs,
                                                             **kw_generation_args)
         self.parents_dict = get_parents_dict(causal_process)
-
         # Generate time series data from the causal process
         self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
         
@@ -328,12 +331,11 @@ class CausalDataset:
             f.write(node_parents_representation)
     
 
-def _plot_ts_graph(parents_dict):
+def plot_ts_graph(parents_dict):
     '''
     Function to plot the graph structure of the time series
     '''
     graph = Graphs.get_graph_from_dict(parents_dict)
-    
     tp.plot_time_series_graph(
         graph=graph,
         var_names=list(parents_dict.keys()),
@@ -341,17 +343,6 @@ def _plot_ts_graph(parents_dict):
     )
 
 
-if __name__ == '__main__':
-    dataset = CausalDataset()
-    # dataset.generate_toy_data('1')
-    
-    ts, node_parents_dict, group_parents_dict, groups = dataset.generate_group_toy_data('1',
-                                                                                        N_vars=6,
-                                                                                        N_groups=3,)
-    
-    _plot_ts_graph(node_parents_dict)
-    _plot_ts_graph(group_parents_dict)
-    plt.show()
 
 def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nodes: list[int]
                       ) -> dict[int, list[tuple[int, int]]]:
@@ -363,25 +354,42 @@ def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nod
     through non-chosen nodes.
     '''
     # Recursive function to extract the parents of a node with the above specified condition
-    # TODO: Implement correctly this function, possibly setting a max_distance to avoid infinite loops
-    def extract_parents_from_path(child) -> Union[int, int]:
+    def extract_parents_from_path(child, grandchilds=[]) -> Union[int, int]:
         new_parents = []
-        if new_parents_dict.get(child, None) != None:
-            return new_parents_dict[child]
         for parent, lag in parents_dict[child]:
-            grandparents = extract_parents_from_path(parent)
-            if parent in grandparents: break
-            if parent in chosen_nodes:
-                new_parents.append((chosen_nodes.index(parent), lag))
+            if parent in grandchilds: continue # To avoid infinite loops
+            grandparents = extract_parents_from_path(parent, grandchilds+[parent])
+            if parent in chosen_nodes and \
+                    (parent!=child or lag!=0): # To avoid X -> X
+                new_parent = (chosen_nodes.index(parent), lag)
+                new_parents.append(new_parent)
             else:
                 new_parents.extend(grandparents)
         return new_parents
     
     # Initialize the new parents_dict
     new_parents_dict = dict()
-    
     for new_node, old_node in enumerate(chosen_nodes):
         new_parents_dict[new_node] = extract_parents_from_path(old_node)
-         
+        
     return new_parents_dict
                     
+
+
+if __name__ == '__main__':
+    # dataset = CausalDataset()
+    # # dataset.generate_toy_data('1')
+    
+    # ts, node_parents_dict, group_parents_dict, groups = dataset.generate_group_toy_data('1',
+    #                                                                                     N_vars=6,
+    #                                                                                     N_groups=3,)
+    
+    # _plot_ts_graph(node_parents_dict)
+    # _plot_ts_graph(group_parents_dict)
+    # plt.show()
+    
+    
+    # Test _extract_subgraph
+    parents_dict = {0: [(0, -1)], 1: [(1, -1), (3, -4), (6, 0)], 2: [(2, -1)], 3: [(3, -1), (1, -2), (6, -2)], 4: [(4, -1)], 5: [(5, -1), (9, -2), (0, -2)], 6: [(6, -1), (0, -1)], 7: [(7, -1), (3, -2), (8, 0)], 8: [(8, -1)], 9: [(9, -1), (1, -5)]}
+    chosen_nodes = [8, 0, 2, 7, 5, 9, 4, 3, 1, 6]
+    print(_extract_subgraph(parents_dict, chosen_nodes))
