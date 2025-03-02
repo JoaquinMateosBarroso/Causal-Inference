@@ -32,7 +32,7 @@ algorithms = {
 }
 algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha
-    'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'cond_ind_test': 'gpdc'},
+    'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
     'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
     'varlingam': {'min_lag': 0, 'max_lag': 5},
     'dynotears': {              'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
@@ -50,13 +50,13 @@ data_generation_options = {
     'contemp_fraction': 1, # Fraction of contemporaneous links; between 0 and 1
     'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 25, # Number of variables in the dataset
+    'N_vars': 20, # Number of variables in the dataset
     'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.6], # default: [0.5, 0.7]
+    'auto_coeffs': [0.7], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
-    'noise_sigmas': [0.5], # default: [0.5, 2]
+    'noise_sigmas': [0.3], # default: [0.5, 2]
     
     'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
 }

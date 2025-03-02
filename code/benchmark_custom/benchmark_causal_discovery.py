@@ -7,7 +7,7 @@ import copy
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
-from typing import Any, Iterator
+from typing import Any, Iterator, Union
 from tqdm import tqdm
 
 from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase
@@ -487,49 +487,4 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
             return result
         
-
-class BenchmarkEdgesDirection(BenchmarkCausalDiscovery):
-    def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                      causalDiscovery: type[DirectionExtractorBase],
-                      algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
-        '''
-        Execute the algorithm one single time and calculate the necessary scores.
-        
-        Parameters:
-            causal_dataset : CausalDataset with the time series and the parents
-            causalDiscovery : class of the algorithm to be executed
-            algorithm_parameters : dictionary with the parameters for the algorithm
-        Returns:
-            result : dictionary with the scores of the algorithm
-        '''
-        time_series = causal_dataset.time_series
-        actual_parents = causal_dataset.parents_dict
-        actual_parents_summary = window_to_summary_graph(actual_parents)
-        
-        algorithm = causalDiscovery(data=time_series, **algorithm_parameters)
-        try:
-            predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
-        except Exception as e:
-            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
-            print('Returning nan values for this algorithm')
-            predicted_parents = {}
-            time = np.nan
-            memory = np.nan
-        
-        finally:
-            result = {'time': time, 'memory': memory}
-            
-            result['precision'] = get_precision(actual_parents, predicted_parents)
-            result['recall'] = get_recall(actual_parents, predicted_parents)
-            result['f1'] = get_f1(actual_parents, predicted_parents)
-            result['shd'] = get_shd(actual_parents, predicted_parents)
-            
-            # Obtain the same metrics in the summary graph
-            predicted_parents_summary = window_to_summary_graph(predicted_parents)
-            result['precision_summary'] = get_precision(actual_parents_summary, predicted_parents_summary)
-            result['recall_summary'] = get_recall(actual_parents_summary, predicted_parents_summary)
-            result['f1_summary'] = get_f1(actual_parents_summary, predicted_parents_summary)
-            result['shd_summary'] = get_shd(actual_parents_summary, predicted_parents_summary)
-            
-            return result
 

@@ -148,7 +148,8 @@ def window_to_summary_graph(window_graph: dict[int, list[tuple[int, int]]]
     '''
     summary_graph = {}
     for t, parents in window_graph.items():
-        summary_graph[t] = [parent[0] for parent in parents]
+        summary_graph[t] = [(parent, -1) for parent, lag in parents if lag < 0]
+        summary_graph[t] += [(parent, 0) for parent, lag in parents if lag == 0]
         # Remove duplicates
         summary_graph[t] = list(set(summary_graph[t]))
         

@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase, EdgeDirection
 
@@ -16,7 +15,7 @@ class NG_VecCI(DirectionExtractorBase):
     This is an extension of the 2G-Vector Causal Inference algorithm for groups of variables,
     [Wahl, J., Ninad, U., & Runge, J. (2023, June). Vector causal inference between two groups of variables.]
     '''
-    def identify_causal_direction(self,X: pp.DataFrame , Y: pp.DataFrame, max_lag=3, alpha=0.01,
+    def identify_causal_direction(self,X: pp.DataFrame , Y: pp.DataFrame, alpha=0.01,
                                     CI_test_method='ParCorr', ambiguity = None,
                                     test = 'full', max_sep_set = None, linear = True,
                                     fit_intercept = False, random_state = None) -> EdgeDirection:
@@ -44,9 +43,7 @@ class NG_VecCI(DirectionExtractorBase):
             ambiguity = alpha
 
         if test == 'full':
-            test_results = _full_conditioning_ind_test(X, Y, max_lag, alpha,
-                                    CI_test_method=CI_test_method, linear = linear,
-                                    fit_intercept=fit_intercept, random_state=random_state)
+            test_results = _full_conditioning_ind_test(X,Y,alpha,CI_test_method=CI_test_method, linear = linear, fit_intercept=fit_intercept, random_state=random_state)
         # elif test == 'PC':
         #     test_results = conditioning_ind_test_with_PC(X, Y, alpha, CI_test_method=CI_test_method, max_sep_set=max_sep_set, linear_interactions=linear)
         
@@ -70,7 +67,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
                                 CI_test_method='ParCorr', linear = True,
                                 fit_intercept = False, random_state = None):
     '''
-    Implementation of 2G-VecCI.Full as desribed in the submitted article [https://github.com/JonasChoice/2GVecCI], but extended to time series.
+    Implementation of 2G-VecCI.Full as desribed in the submitted article [https://github.com/JonasChoice/2GVecCI].
     Runs sparsity based independent test of regions X and Y with the prescribed CI_test_method.
     
     Parameters:
@@ -90,11 +87,11 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         random_state = np.random
 
     if CI_test_method == 'ParCorr':
-        CI_test = ParCorr()
+        CI_test =ParCorr()
     if CI_test_method == 'GPDC':
-        CI_test = GPDCtorch()
+        CI_test =GPDCtorch()
     if CI_test_method == 'CMIknn':
-        CI_test = CMIknn()
+        CI_test =CMIknn()
     dict = {}
     # LINEAR CASE, where we can use residuals to test for conditional independence
     if linear == True:
@@ -103,37 +100,22 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         residualsY = Regression['X_to_Y'].residuals
         edgecounterY = 0
         edgecounterResY = 0
-        #Set conditional independece tests data
-        CI_test_Y = copy.deepcopy(CI_test)
-        CI_test_Y.set_dataframe(pp.DataFrame(Y))
-        CI_test_Y_residuals = copy.deepcopy(CI_test)
-        CI_test_Y_residuals.set_dataframe(pp.DataFrame(residualsY))
-        
-        # Maximum number of edges     = contemporary edges        + lagged edges 
-        get_max_edges = lambda N_vars : N_vars * (N_vars - 1) / 2 + N_vars**2 * max_lag
-        max_edgenumberX = get_max_edges(X.shape[1])
-        max_edgenumberY = get_max_edges(Y.shape[1])
-        
-        # Create lists of all possible variables and respective lags
-        X_vars = [(var, -lag) for var in range(X.shape[1]) for lag in range(max_lag+1)]
-        Y_vars = [(var, -lag) for var in range(Y.shape[1]) for lag in range(max_lag+1)]
-        
-        # iterate over all possible pairs of variables of Y, i.e., all possible edges
+        max_edgenumberY = Y.shape[1] * (Y.shape[1] - 1) / 2
+        max_edgenumberX = X.shape[1] * (X.shape[1] - 1) / 2
+        # iterate over all possible pairs of variables, i.e., all possible edges
         for var1 in range(Y.shape[1]):
             for var2 in range(var1 + 1, Y.shape[1]):
-                for lag in range(0, max_lag+1):
-                    # Test the link (var1, -lag) -> (var2, 0)
-                    cond_set = Y_vars.copy()
-                    cond_set.remove((var1, -lag))
-                    cond_set.remove((var2, 0))
-                    
-                    valY, pvalY = CI_test_Y.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                    if pvalY < alpha: # Is current edge significant over G_Y?
-                        edgecounterY += 1
-                    
-                    valResY, pvalResY = CI_test_Y_residuals.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                    if pvalResY < alpha: # Is current edge significant over G_{Y|X}?
-                        edgecounterResY += 1
+                removedY = np.delete(Y, (var1, var2), 1)
+                valY, pvalY = CI_test.run_test_raw(Y[:, var1:var1 + 1], Y[:, var2:var2 + 1], z=removedY)
+                
+                if pvalY < alpha: # Is current edge significant over G_Y?
+                    edgecounterY += 1
+                
+                removedResY = np.delete(residualsY, (var1, var2), 1)
+                valResY, pvalResY = CI_test.run_test_raw(residualsY[:, var1:var1 + 1], residualsY[:, var2:var2 + 1],
+                                                            z=removedResY)
+                if pvalResY < alpha: # Is current edge significant over G_{Y|X}?
+                    edgecounterResY += 1
                 
         dict['number of nodes Y'] = Y.shape[1]
         dict['max number of edges Y'] = max_edgenumberY
@@ -144,34 +126,22 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         
         # OBTAIN EDGE DENSITY OF X AND RES X|Y
         residualsX = Regression['Y_to_X'].residuals
-        # Set conditional independece tests data
-        CI_test_X = copy.deepcopy(CI_test)
-        CI_test_X.set_dataframe(pp.DataFrame(X))
-        CI_test_X_residuals = copy.deepcopy(CI_test)
-        CI_test_X_residuals.set_dataframe(pp.DataFrame(residualsX))
-        
         edgecounterX = 0
         edgecounterResX = 0
         # iterate over all possible pairs of variables, i.e., all possible edges
         for var1 in range(X.shape[1]):
             for var2 in range(var1 + 1, X.shape[1]):
-                for lag in range(0, max_lag+1):
-                    # iterate over all possible pairs of variables of X, i.e., all possible edges
-                    for var1 in range(X.shape[1]):
-                        for var2 in range(var1 + 1, X.shape[1]):
-                            for lag in range(0, max_lag+1):
-                                # Test the link (var1, -lag) -> (var2, 0)
-                                cond_set = X_vars.copy()
-                                cond_set.remove((var1, -lag))
-                                cond_set.remove((var2, 0))
-                                
-                                valX, pvalX = CI_test_X.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                                if pvalX < alpha: # Is current edge significant over G_X?
-                                    edgecounterX += 1
-                                
-                                valResX, pvalResX = CI_test_X_residuals.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                                if pvalResX < alpha: # Is current edge significant over G_{X|Y}?
-                                    edgecounterResX += 1
+                removedX = np.delete(X, (var1, var2), 1)
+                valX, pvalX = CI_test.run_test_raw(X[:, var1:var1 + 1], X[:, var2:var2 + 1], z=removedX)
+                
+                if pvalX < alpha: # Is current edge significant over G_X?
+                    edgecounterX += 1
+                
+                removedResX = np.delete(residualsX, (var1, var2), 1)
+                valResX, pvalResX = CI_test.run_test_raw(residualsX[:, var1:var1 + 1], residualsX[:, var2:var2 + 1],
+                                                            z=removedResX)
+                if pvalResX < alpha: # Is current edge significant over G_{X|Y}?
+                    edgecounterResX += 1
             
         dict['number of nodes X'] = X.shape[1]
         dict['max number of edges X'] = max_edgenumberX
@@ -183,7 +153,6 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         return dict
     
     else: # NON-LINEAR CASE, where we cannot use residuals
-        # TODO: Adapt with case to time series
         edgecounterY = 0
         edgecounterResY = 0
         max_edgenumberY = Y.shape[1] * (Y.shape[1] - 1) / 2
