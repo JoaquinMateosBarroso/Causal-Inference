@@ -6,7 +6,7 @@ from benchmark_causal_discovery import BenchmarkGroupCausalDiscovery
 import shutil
 import os
 
-from functions_test_data import changing_N_groups, changing_N_variables, changing_preselection_alpha, static_parameters
+from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_preselection_alpha, static_parameters
 from group_causal_discovery.dimension_reduction import DimensionReductionGroupCausalDiscovery
 from group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
 
@@ -18,30 +18,32 @@ algorithms = {
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
-                            'node_causal_discovery_params': {'max_lag': 5, 'pc_alpha': None}},
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
     'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
                             'node_causal_discovery_params': {'max_lag': 5, 'lambda_w': 0.05, 'lambda_a': 0.05}},
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
-                    'node_causal_discovery_params': {'max_lag': 5, 'pc_alpha': None}},
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
 }
 
 data_generation_options = {
+    'min_lag': 0,
     'max_lag': 5,
+    'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
     'N_vars': 20, # Number of variables in the dataset
-    'N_groups': 4, # Number of groups in the dataset
+    'N_groups': 5, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.5], # default: [0.5, 0.7]
+    'auto_coeffs': [0.4], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
-    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
+    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }
 
 benchmark_options = {
@@ -55,8 +57,11 @@ benchmark_options = {
     'changing_N_groups': (changing_N_groups,
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
+    
+    'chaning_N_vars_per_group': (changing_N_vars_per_group,
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]})
 }
-chosen_option = 'static_parameters'
+chosen_option = 'chaning_N_vars_per_group'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
                                  benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
@@ -86,7 +91,7 @@ if __name__ == '__main__':
     
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
-    results_folder = 'results'
+    results_folder = 'results_group'
     execute_benchmark = True
 
     if execute_benchmark:
@@ -102,7 +107,7 @@ if __name__ == '__main__':
     
     benchmark.plot_ts_datasets(datasets_folder)
     
-    benchmark.plot_moving_results(results_folder, x_axis='N_groups')
+    benchmark.plot_moving_results(results_folder, x_axis='N_vars')
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
     # Save results for summary graph scores

@@ -108,8 +108,8 @@ class CausalDataset:
     
     def generate_group_toy_data(self, name, T=100, N_vars=20, N_groups=3,
                                 inner_group_crosslinks_density=0.5, outer_group_crosslinks_density=0.5,
-                                n_node_links_per_group_link=2,
-                                max_lag=3, dependency_funcs=['nonlinear'],
+                                n_node_links_per_group_link=2, contemp_fraction=.0,
+                                max_lag=3, min_lag=1, dependency_funcs=['nonlinear'],
                                 datasets_folder = None, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]], dict[int, list[int]], list[list[int]]]:
         '''
@@ -142,6 +142,9 @@ class CausalDataset:
             groups : List of lists, where each list is a group of variables
             node_parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
         '''
+        # Check that parameters are consistent
+        if min_lag > 0 and contemp_fraction > 1e-6:
+            raise ValueError('If there is a fraction of links that are contemporaneous, the minimum lag must be 0')
         # Convert dependency_funcs names to functions
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func\
                                 for func in dependency_funcs]
@@ -155,8 +158,10 @@ class CausalDataset:
         for index, group in enumerate(self.groups):
             # Forcing crosslinks_density = L / (N + L)
             L = int(len(group) * inner_group_crosslinks_density / (1 - inner_group_crosslinks_density))
+            L = int(L * (1+contemp_fraction))
             causal_process, _ = generate_structural_causal_process(N=len(group), L=L, max_lag=max_lag,
                                                                     dependency_funcs=dependency_funcs,
+                                                                    contemp_fraction=contemp_fraction,
                                                                     **kw_generation_args)
             
             # Change the keys of the causal process to the global index
@@ -164,8 +169,10 @@ class CausalDataset:
         
         # Generate outer causal processes
         L = int(N_groups * outer_group_crosslinks_density / (1 - outer_group_crosslinks_density))
+        L = int(L * (1+contemp_fraction))
         outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L, max_lag=max_lag,
                                                                      dependency_funcs=dependency_funcs,
+                                                                     contemp_fraction=contemp_fraction,
                                                                     **kw_generation_args)
         
         global_causal_process = self._join_processes( outer_causal_process, groups_causal_processes,
@@ -211,6 +218,10 @@ class CausalDataset:
             
             # Remove duplicates
             group_parents_dict[son_group] = list(set(group_parents_dict[son_group]))
+            # Remove autolinks
+            for son, parents in group_parents_dict.items():
+                group_parents_dict[son] = [(parent,lag) for (parent,lag) in parents\
+                                                if parent!=son or lag!=0]
         
         return group_parents_dict
         
@@ -343,7 +354,6 @@ def plot_ts_graph(parents_dict):
         var_names=list(parents_dict.keys()),
         link_colorbar_label='cross-MCI (edges)',
     )
-
 
 
 def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nodes: list[int]

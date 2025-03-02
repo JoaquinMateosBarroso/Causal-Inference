@@ -39,7 +39,7 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
         self.extra_args = kwargs
         
         self.groups_data = self._prepare_groups_data(dimensionality_reduction)
-
+    
     def _prepare_groups_data(self, dimensionality_reduction: str) -> list[np.ndarray]:
         '''
         Execute the indicate dimensionality reduction algorithm to the groups of variables,
@@ -59,12 +59,13 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
             if dimensionality_reduction == 'pca':
                 pca = PCA(n_components=1)
                 group_data = pca.fit_transform(group_data)
+            elif dimensionality_reduction == 'avg':
+                group_data = np.mean(group_data, axis=0)
             else:
                 raise ValueError(f'Invalid dimensionality reduction technique: {dimensionality_reduction}')
             groups_data.append(group_data)
-            
-        time_series = np.array(groups_data)
-        time_series = time_series.reshape(-1, len(groups_data))
+        
+        time_series = np.array(groups_data).reshape(len(groups_data), -1).T
         return time_series
     
     def extract_parents(self) -> dict[int, list[int]]:
@@ -77,7 +78,7 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
         self.causal_discovery_alg = self._getCausalDiscoveryAlgorithm()
         
         group_parents = self.causal_discovery_alg.extract_parents()
-        
+                
         return group_parents
 
     def _getCausalDiscoveryAlgorithm(self) -> CausalDiscoveryBase:

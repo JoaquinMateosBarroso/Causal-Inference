@@ -30,7 +30,7 @@ class NG_VecCI(DirectionExtractorBase):
             Y : tigramite dataframe of form (T,N') where T is sample and N' is group size
             alpha : significance level of CI tests
             CI_test_method : conditional independence test method, default ParCorr
-            ambiguity : ambiguity level as specified in submitted paper, if None chosen to be alpha
+            ambiguity : ambiguity level as specified in cited paper, if None chosen to be alpha
             test : string, either 'full' for 2G-VecCI.Full or 'PC' for 2G-VecCI.PC
             max_sep_set : maximal size of d-separation set in case 2G-VecCI.PC is used
             linear : boolean, tests for linear or non-linear interactions
@@ -100,7 +100,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
     # LINEAR CASE, where we can use residuals to test for conditional independence
     if linear == True:
         # OBTAIN EDGE DENSITY OF Y AND RES Y|X
-        Regression = _regression(X, Y, fit_intercept=fit_intercept)
+        Regression = _regression(X, 0, Y, fit_intercept=fit_intercept)
         residualsY = Regression['X_to_Y'].residuals
         edgecounterY = 0
         edgecounterResY = 0
@@ -157,22 +157,18 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         for var1 in range(X.shape[1]):
             for var2 in range(var1 + 1, X.shape[1]):
                 for lag in range(0, max_lag+1):
-                    # iterate over all possible pairs of variables of X, i.e., all possible edges
-                    for var1 in range(X.shape[1]):
-                        for var2 in range(var1 + 1, X.shape[1]):
-                            for lag in range(0, max_lag+1):
-                                # Test the link (var1, -lag) -> (var2, 0)
-                                cond_set = X_vars.copy()
-                                cond_set.remove((var1, -lag))
-                                cond_set.remove((var2, 0))
-                                
-                                valX, pvalX = CI_test_X.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                                if pvalX < alpha: # Is current edge significant over G_X?
-                                    edgecounterX += 1
-                                
-                                valResX, pvalResX = CI_test_X_residuals.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
-                                if pvalResX < alpha: # Is current edge significant over G_{X|Y}?
-                                    edgecounterResX += 1
+                    # Test the link (var1, -lag) -> (var2, 0)
+                    cond_set = X_vars.copy()
+                    cond_set.remove((var1, -lag))
+                    cond_set.remove((var2, 0))
+                    
+                    valX, pvalX = CI_test_X.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
+                    if pvalX < alpha: # Is current edge significant over G_X?
+                        edgecounterX += 1
+                    
+                    valResX, pvalResX = CI_test_X_residuals.run_test([(var1, -lag)], [(var2, -lag)], cond_set)
+                    if pvalResX < alpha: # Is current edge significant over G_{X|Y}?
+                        edgecounterResX += 1
             
         dict['number of nodes X'] = X.shape[1]
         dict['max number of edges X'] = max_edgenumberX
@@ -230,12 +226,13 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
         return dict
     
     
-def _regression(X: np.ndarray, Y: np.ndarray, fit_intercept: bool=False):
+def _regression(X: np.ndarray, lag_X: int, Y: np.ndarray, fit_intercept: bool=False):
     '''
     Regression function that regresses the random vector X linearly on Y and Y on X and returns both residuals
     
     Parameters:
         X: numpy array with shape (T, N) where T is the number of samples and N the number of variables
+        lag_X: integer, the lag of the regression (we regress X on Y with lag lag_X)
         Y: numpy array with shape (T, N') where T is the number of samples and N' the number of variables
         fit_intercept: boolean, whether to fit an intercept in the regression
     
@@ -244,6 +241,7 @@ def _regression(X: np.ndarray, Y: np.ndarray, fit_intercept: bool=False):
     '''
     dict = {}
     # Perform linear regression
+    
     reg_X_to_Y = LinearRegression(fit_intercept=False)
     reg_Y_to_X = LinearRegression(fit_intercept=False)
     reg_X_to_Y.fit(X, Y)
@@ -340,15 +338,20 @@ if __name__ == '__main__':
         Test the capacity of the edge extraction algorithm to extract edges from a time series
         '''
         dataset = CausalDataset()
-        ts_data, groups_parents_dict, groups, node_parents_dict = dataset.generate_group_toy_data(1, T=200, N_vars=20, N_groups=4, noise_sigmas=[0.2])
+        ts_data, groups_parents_dict, groups, node_parents_dict = dataset.generate_group_toy_data(1, T=2000, N_vars=20, N_groups=4, noise_sigmas=[0.2],
+                                                                                                  outer_group_crosslinks_density=0.8,
+                                                                                                  contemp_fraction=1, dependency_coeffs=[-0.3, 0.3],
+                                                                                                  auto_coeffs=[0.], noise_dists=['gaussian'],
+                                                                                                  dependency_funcs=['linear'])
         
-        ng_vecci = NG_VecCI(ts_data, groups=groups)
+        ng_vecci = NG_VecCI(ts_data, groups=groups, ambiguity=0.25)
         
         print('Start testing')
         predicted_groups_parents = {i: [] for i in range(len(ng_vecci.groups))}
         for i in range(len(ng_vecci.groups)):
             for j in range(i+1, len(ng_vecci.groups)):
-                direction = ng_vecci.extract_direction(i, j)
+                direction, test_results = ng_vecci.extract_direction(i, j)
+                print(f'{direction=}')
                 if direction == EdgeDirection.LEFT2RIGHT:
                     predicted_groups_parents[j].append(i)
                 elif direction == EdgeDirection.RIGHT2LEFT:
@@ -360,5 +363,5 @@ if __name__ == '__main__':
         rec = get_recall(groups_parents_dict, predicted_groups_parents)
         print(f'Precision: {prec}, Recall: {rec}')
         
-        
+    
     test_edge_extraction_capacity()

@@ -327,7 +327,7 @@ class BenchmarkCausalDiscovery:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             all_results = []
             for algorithm_name, df_results in results_dataframes.items():
-                current_dataset_results = df_results[df_results['dataset_iteration'] == dataset_iteration_to_plot]
+                current_dataset_results = df_results.loc[df_results['dataset_iteration'] == dataset_iteration_to_plot].copy()
                 current_dataset_results['algorithm'] = algorithm_name
                 all_results.append(current_dataset_results)
             
