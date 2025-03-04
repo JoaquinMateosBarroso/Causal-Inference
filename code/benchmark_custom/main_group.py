@@ -9,14 +9,19 @@ import os
 from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_preselection_alpha, static_parameters
 from group_causal_discovery.dimension_reduction import DimensionReductionGroupCausalDiscovery
 from group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
-
+from group_causal_discovery.hybrid import HybridGroupCausalDiscovery
 
 algorithms = {
     'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     'micro-level': MicroLevelGroupCausalDiscovery,
+    'hybrid': HybridGroupCausalDiscovery
 }
 algorithms_parameters = {
+    'hybrid': {'dimensionality_reduction': 'pca', 'dimensionality_reduction_params': {'explained_variance_threshold': 0.9},
+                            'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
@@ -25,6 +30,7 @@ algorithms_parameters = {
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
 }
 
 data_generation_options = {
@@ -34,14 +40,14 @@ data_generation_options = {
     'T': 1000, # Number of time points in the dataset
     'N_vars': 20, # Number of variables in the dataset
     'N_groups': 5, # Number of groups in the dataset
-    'inner_group_crosslinks_density': 0.5,
-    'outer_group_crosslinks_density': 0.5,
+    'inner_group_crosslinks_density': 0.25,
+    'outer_group_crosslinks_density': 0.25,
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
-    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
+    'dependency_coeffs': [-0.2, 0.2], # default: [-0.5, 0.5]
     'auto_coeffs': [0.4], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
-    'noise_sigmas': [0.2], # default: [0.5, 2]
+    'noise_sigmas': [0.4], # default: [0.5, 2]
     
     'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }

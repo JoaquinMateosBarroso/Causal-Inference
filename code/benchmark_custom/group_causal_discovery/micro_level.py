@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.decomposition import PCA
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
 from causal_discovery_algorithms.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
@@ -10,16 +9,16 @@ from typing import Any
 class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
     '''
     Class that implements the dimension reduction algorithm for causal discovery on groups of variables.
+    A causal discovery algorithm is applied to discover the causal relationships between all of the node-level
+    variables, and then the whole graph is reduced to the group-level graph.
     '''
     def __init__(self, data: np.ndarray,
                     groups: list[set[int]],
                     node_causal_discovery_alg: str = 'pcmci',
-                    node_causal_discovery_params: dict[Any] = None,
+                    node_causal_discovery_params: dict[str, Any] = None,
                     **kwargs):
         '''
         Create an object that is able to predict causalities over groups of time series variables.
-        A causal discovery algorithm is applied to discover the causal relationships between all of the node-level
-        variables, and then the whole graph is reduced to the group-level graph.
         
         Parameters
             data : np.array with the data, shape (n_samples, n_variables)
