@@ -26,7 +26,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         Create an object that is able to predict causalities over groups of time series variables.
         
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_variables)
             groups : list[set[int]] list with the sets that will compound each group of variables.
                         We will suppose that the groups are known beforehand.
@@ -74,7 +74,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         Execute the PCA dimensionality reduction algorithm to the groups of variables,
         in order to obtain a univariate time series for each group.
         
-        Parameters:
+        Args:
             explained_variance_threshold : float indicating the minimum explained variance that the PCA
                         algorithm must achieve to stop the dimensionality reduction.
             groups_compresion_method : string indicating the method that will be used to compress the
@@ -147,7 +147,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         Convert the parents of each microgroup to the parents of each group of variables
         
-        Parameters:
+        Args:
             micro_parents : dict[int, list[int]]. Dictionary with the parents of each microgroup.
         
         Returns:

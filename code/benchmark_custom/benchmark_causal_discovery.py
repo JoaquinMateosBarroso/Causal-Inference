@@ -37,7 +37,7 @@ class BenchmarkCausalDiscovery:
         Function to execute a series of algorithms for causal discovery over time series datasets,
         using a series of parameters for algorithms and options in the creation of the datasets.
             
-        Parameters:
+        Args:
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             algorithms_parameters : dict[str, Any]
@@ -182,7 +182,7 @@ class BenchmarkCausalDiscovery:
         '''
         Execute the algorithm one single time and calculate the necessary scores.
         
-        Parameters:
+        Args:
             causal_dataset : CausalDataset with the time series and the parents
             causalDiscovery : class of the algorithm to be executed
             algorithm_parameters : dictionary with the parameters for the algorithm
@@ -363,7 +363,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         Function to execute a series of algorithms for group causal discovery over time series datasets,
         using a series of parameters for algorithms and options in the creation of the datasets.
         
-        Parameters:
+        Args:
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             algorithms_parameters : dict[str, Any]
@@ -448,7 +448,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         '''
         Execute the algorithm one single time and calculate the necessary scores.
         
-        Parameters:
+        Args:
             causal_dataset : CausalDataset with the time series and the parents
             causalDiscovery : class of the algorithm to be executed
             algorithm_parameters : dictionary with the parameters for the algorithm

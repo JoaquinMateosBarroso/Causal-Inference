@@ -54,7 +54,7 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         Convert the parents of each node to the parents of each group of variables
         
-        Parameters:
+        Args:
             node_parents : dict[int, list[int]]. Dictionary with the parents of each node.
         
         Returns:

@@ -16,7 +16,7 @@ class DynotearsWrapper(CausalDiscoveryBase):
     def __init__(self, data: np.ndarray, max_lag: int, **kwargs):
         '''
         Initialize the Granger object
-        Parameters:
+        Args:
         '''
         self.df = pd.DataFrame(data, columns=range(data.shape[1]))
         self.max_lag = max_lag
@@ -25,7 +25,7 @@ class DynotearsWrapper(CausalDiscoveryBase):
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''
         graph_structure = dynotears.from_pandas_dynamic(time_series=self.df,
@@ -40,7 +40,8 @@ class DynotearsWrapper(CausalDiscoveryBase):
 def get_parents_from_causalnex_edges(edges: list[tuple[str, str]]) -> dict[int, list[int]]:
     '''
     Function to extract the parents from the edges list.
-    Parameters:
+    
+    Args:
         edges : list of tuples with the edges, where each tuple is (parent, child),
                 being a node represented by '{origin}_lag{lag}'. E.g. '0_lag1'.
     Returns:

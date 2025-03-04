@@ -46,7 +46,7 @@ class CausalDataset:
         Where the scalar coefficients are takien from kw_generation_args 'dependency_coeffs' and 'auto_coeffs' parameters,
         and the noise :math:`\epsilon_i(t)` is taken from kw_generation_args 'noise_dists' and 'noise_sigmas' parameters.
         
-        Parameters:
+        Args:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
@@ -125,7 +125,7 @@ class CausalDataset:
         Where the scalar coefficients are takien from kw_generation_args 'dependency_coeffs' and 'auto_coeffs' parameters,
         and the noise :math:`\epsilon_i(t)` is taken from kw_generation_args 'noise_dists' and 'noise_sigmas' parameters.
         
-        Parameters:
+        Args:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
@@ -200,7 +200,7 @@ class CausalDataset:
         '''
         Given a dictionary with the parents of each node, return a dictionary with the parents of each group.
         
-        Parameters:
+        Args:
             node_parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i_node, -tau) ...].
             
         Returns:
@@ -229,7 +229,7 @@ class CausalDataset:
         '''
         Generate N_groups groups of variables, with at least 2 nodes each.
         
-        Parameters:
+        Args:
             N_vars : Number of variables
             N_groups : Number of groups
         
@@ -255,7 +255,7 @@ class CausalDataset:
         Change the keys of the causal process to the global index, through a bijective mapping
         
         
-        Parameters:
+        Args:
             causal_process : dictionary whose keys are the local index of the nodes, and values are the lists of tuples
                                 [ ((parent, lag), coeff, func), ... ]
             group : list of the global index of the nodes
@@ -287,7 +287,7 @@ class CausalDataset:
         to the global index by assigning n_node_links_per_group_link links between nodes
         of the different groups.
         
-        Parameters:
+        Args:
             outer_causal_process : dictionary whose keys are the index of the groups, and values are the lists of tuples
                                 [ ((parent_group, lag), coeff, func), ... ]
             groups_causal_processes : dictionaries whose keys are the groups index, and whose items are dictionaries

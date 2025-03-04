@@ -1,6 +1,6 @@
 from typing import Any
 import numpy as np
-from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from causal_discovery_algorithms import CausalDiscoveryBase
 from causalai.models.time_series.granger import Granger
 from causalai.models.time_series.var_lingam import VARLINGAM
 
@@ -16,7 +16,7 @@ class GrangerWrapper(CausalDiscoveryBase):
                  max_lag=3, cv=5, **kwargs):
         '''
         Initialize the Granger object
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_features)
             min_lag : minimum lag to consider
             max_lag : maximum lag to consider
@@ -30,7 +30,7 @@ class GrangerWrapper(CausalDiscoveryBase):
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''
         parents_causalai = self.granger.run(max_lag=self.max_lag)
@@ -46,7 +46,7 @@ class VARLINGAMWrapper(CausalDiscoveryBase):
                  max_lag=3, **kwargs):
         '''
         Initialize the VARLINGAM object
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_features)
             min_lag : minimum lag to consider
             max_lag : maximum lag to consider
@@ -59,7 +59,7 @@ class VARLINGAMWrapper(CausalDiscoveryBase):
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''
         parents_causalai = self.varlingam.run(max_lag=self.max_lag)

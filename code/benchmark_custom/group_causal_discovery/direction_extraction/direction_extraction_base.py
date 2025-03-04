@@ -23,7 +23,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         '''
         Create an object that is able to predict over groups of time series variables
         
-        Parameters:
+        Args:
             data : np.array with the data, shape (n_samples, n_variables)
             groups : list[set[int]] list with the sets that will compound each group of variables.
                 We will suppose that the groups are known beforehand.
@@ -44,7 +44,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         '''
         To be implemented by subclasses
         
-        Parameters:
+        Args:
             X : np.ndarray. Data of the first group of variables, shape (n_samples, n_variables)
             Y : np.ndarray. Data of the second group of variables, shape (n_samples, n_variables)
         Returns:
@@ -85,7 +85,7 @@ def _opposite_direction(direction: EdgeDirection) -> EdgeDirection:
     '''
     Get the direction that would have the adjacent node in the same edge
     
-    Parameters:
+    Args:
         direction : EdgeDirection. The direction of the edge
     
     Returns:

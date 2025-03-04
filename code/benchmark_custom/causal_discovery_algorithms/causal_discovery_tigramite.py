@@ -2,6 +2,7 @@
 from typing import Union
 import numpy as np
 import tigramite
+import tigramite.data_processing
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.independence_tests.cmiknn import CMIknn

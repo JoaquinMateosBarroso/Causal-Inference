@@ -80,7 +80,7 @@ class PCMCI_Modified(PCMCI):
         if self.verbosity > 0:
             print("\n##\n## Step 2: PC algorithm with contemp. conditions "
                   "and MCI tests\n##"
-                  "\n\nParameters:")
+                  "\n\nArgs:")
             if link_assumptions is not None:
                 print("\nlink_assumptions = %s" % str(_int_link_assumptions))
             print("\nindependence test = %s" % self.cond_ind_test.measure

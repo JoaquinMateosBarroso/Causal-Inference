@@ -7,9 +7,9 @@ import shutil
 import os
 
 from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_preselection_alpha, static_parameters
-from group_causal_discovery.dimension_reduction import DimensionReductionGroupCausalDiscovery
-from group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
-from group_causal_discovery.hybrid import HybridGroupCausalDiscovery
+from group_causal_discovery import DimensionReductionGroupCausalDiscovery
+from group_causal_discovery import MicroLevelGroupCausalDiscovery
+from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'hybrid': HybridGroupCausalDiscovery,
@@ -70,18 +70,18 @@ benchmark_options = {
 chosen_option = 'chaning_N_vars_per_group'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
-                                 benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
+                                 benchmark_options, chosen_option) -> Iterator[tuple[dict[str, Any], dict[str, Any]]]:
     '''
     Function to generate the parameters for the algorithms and the data generation.
     
-    Parameters:
+    Args:
         algorithms_parameters : dict[str, dict[str, Any]]. Dictionary with the initial parameters for the algorithms.
         data_generation_options : dict[str, Any]. Dictionary with the options for the data generation.
         benchmark_options : dict[str, Tuple[Callable, dict[str, Any]]]. Dictionary with the options for the benchmark.
         chosen_option : str. The chosen option for the benchmark.
     
     Returns:
-        parameters_iterator: function[dict[str, Any], dict[str, Any]]. A function that returns the parameters for the algorithms and the data generation.
+        parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]]. A function that returns the parameters for the algorithms and the data generation.
     '''    
     options_generator, options_kwargs = benchmark_options[chosen_option]
     for data_generation_options, algorithms_parameters in \

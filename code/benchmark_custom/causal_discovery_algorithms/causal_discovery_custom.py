@@ -59,7 +59,7 @@ def summarized_causality_multivariate_granger(X, max_lag=5, max_summarized_cross
     
     [Geweke, 1982; Chen et al., 2004; Barrett et al.,2010]
     
-    Parameters:
+    Args:
       X      : np.array of shape (T, d) containing the time series data.
       maxlag : Maximum lag to consider for lag order selection.
       max_summarized_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
@@ -150,7 +150,7 @@ def summarized_causality_univariate_granger(X, max_lag=5, max_summarized_crossli
     For each pair (p, q) with p != q, it tests whether the lagged values of series p 
     help to predict series q beyond using only the lagged values of series q.
     
-    Parameters:
+    Args:
       X      : np.array of shape (T, d) containing the time series data.
       max_lag: Maximum lag to consider for lag order selection.
       max_summarized_crosslinks_density: Maximum fraction of edges that we should supose are going to be cross-links.
@@ -225,7 +225,7 @@ def select_order_univariate(series, max_lag):
     """
     Selects the optimal lag order for a univariate time series using AIC.
     
-    Parameters:
+    Args:
       series  : np.array of shape (T,) containing the time series data.
       max_lag : Maximum lag order to consider.
       

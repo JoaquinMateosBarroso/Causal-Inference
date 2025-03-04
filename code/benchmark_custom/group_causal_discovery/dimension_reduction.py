@@ -45,7 +45,7 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
         Execute the indicate dimensionality reduction algorithm to the groups of variables,
         in order to obtain a univariate time series for each group.
         
-        Parameters:
+        Args:
             dimensionality_reduction : str indicating the type of dimensionality reduction technique
                         that is applied to groups. options=['pca']. default='pca'
         

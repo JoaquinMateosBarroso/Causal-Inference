@@ -25,7 +25,7 @@ class NG_VecCI(DirectionExtractorBase):
         Function that executes either 2G-VecCI.PC or 2G-VecCi.Full and outputs the causal direction as well as the inference criterion
         and details on edge counts and densities
         
-        Parameters:
+        Args:
             X : tigramite dataframe of form (T,N) where T is sample and N is group size
             Y : tigramite dataframe of form (T,N') where T is sample and N' is group size
             alpha : significance level of CI tests
@@ -74,7 +74,7 @@ def _full_conditioning_ind_test(X: np.ndarray, Y: np.ndarray, max_lag=3, alpha=0
     Implementation of 2G-VecCI.Full as desribed in the submitted article [https://github.com/JonasChoice/2GVecCI], but extended to time series.
     Runs sparsity based independent test of regions X and Y with the prescribed CI_test_method.
     
-    Parameters:
+    Args:
         X: np.ndarray containing posible origin variables, shape (T, N)
         Y: np.ndarray containing possible target variables, shape (T, N')
         alpha: floating number, significance level for conditional independence testing
@@ -230,7 +230,7 @@ def _regression(X: np.ndarray, lag_X: int, Y: np.ndarray, fit_intercept: bool=Fa
     '''
     Regression function that regresses the random vector X linearly on Y and Y on X and returns both residuals
     
-    Parameters:
+    Args:
         X: numpy array with shape (T, N) where T is the number of samples and N the number of variables
         lag_X: integer, the lag of the regression (we regress X on Y with lag lag_X)
         Y: numpy array with shape (T, N') where T is the number of samples and N' the number of variables

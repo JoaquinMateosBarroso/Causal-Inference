@@ -4,9 +4,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from benchmark_causal_discovery import BenchmarkCausalDiscovery
-from causal_discovery_algorithms.causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from causal_discovery_algorithms.causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
-from causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
+from causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
+from causal_discovery_algorithms import DynotearsWrapper
 import shutil
 import os
 
@@ -76,7 +76,7 @@ def generate_parameters_iterator(algorithms_parameters, data_generation_options,
     '''
     Function to generate the parameters for the algorithms and the data generation.
     
-    Parameters:
+    Args:
         algorithms_parameters : dict[str, dict[str, Any]]. Dictionary with the initial parameters for the algorithms.
         data_generation_options : dict[str, Any]. Dictionary with the options for the data generation.
         benchmark_options : dict[str, Tuple[Callable, dict[str, Any]]]. Dictionary with the options for the benchmark.
