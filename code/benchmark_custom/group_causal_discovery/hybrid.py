@@ -21,11 +21,12 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     dimensionality_reduction_params: dict[str, Any] = None,
                     node_causal_discovery_alg: str = 'pcmci',
                     node_causal_discovery_params: dict[str, Any] = None,
+                    verbose: int = 0,
                     **kwargs):
         '''
         Create an object that is able to predict causalities over groups of time series variables.
         
-        Parameters
+        Parameters:
             data : np.array with the data, shape (n_samples, n_variables)
             groups : list[set[int]] list with the sets that will compound each group of variables.
                         We will suppose that the groups are known beforehand.
@@ -42,6 +43,8 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         self.node_causal_discovery_alg = node_causal_discovery_alg
         self.node_causal_discovery_params = node_causal_discovery_params if node_causal_discovery_params is not None else {}
         self.extra_args = kwargs
+        self.verbose = verbose
+        
         
         if dimensionality_reduction == 'pca':
             self.micro_groups, self.micro_data = self._prepare_micro_groups_pca(**dimensionality_reduction_params)
@@ -55,12 +58,12 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         Extract the parents of each group of variables using the dimension reduction algorithm
         
-        Returns
+        Returns:
             Dictionary with the parents of each group of variables.
         '''
-        micro_parents = self.micro_level_causal_discovery.extract_parents()
+        group_parents = self.micro_level_causal_discovery.extract_parents()
         
-        group_parents = self._convert_micro_to_group_parents(micro_parents)
+        # group_parents = self._convert_micro_to_group_parents(micro_parents)
         
         return group_parents
     
@@ -78,12 +81,12 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                         groups of variables. options=['principal_components', 'subgroups']
         
         Returns:
-            micro_groups : dict[int, set[int]] where keys are original groups, and values are the indexes of
+            micro_groups : list[ set[int] ] where keys are original groups, and values are the indexes of
                                     associated microvariables.
             micro_groups_data : np.ndarray where each column is the univariate time series of each group
                             of variables after the dimensionality reduction
         '''
-        micro_groups = {}
+        micro_groups = []
         micro_data = [] # List where each element is the ts data of a microgroup
         for i, group in enumerate(self.groups):
             if groups_division_method == 'principal_components':
@@ -94,7 +97,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                 
                 # Append the microgroup variables indexes to the list    
                 n_variables = group_data_pca.shape[1]
-                micro_groups[i] = set(range(len(micro_data), len(micro_data)+n_variables))
+                prev_number_of_variables = sum(arr.shape[1] for arr in micro_data)
+                micro_groups.append( set(range(prev_number_of_variables,
+                                                prev_number_of_variables + n_variables)) )
                 
                 # Append the microgroup data to the list
                 micro_data.append(group_data_pca)
@@ -130,6 +135,11 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             else:
                 raise ValueError(f'Invalid groups division method: {groups_division_method}')
         
+        micro_data = np.concatenate(micro_data, axis=1)
+        
+        if self.verbose > 0:
+            print(f'Data dimensionality has been reduced to {micro_data.shape[1]} in order to perform microlevel causal discovery.')
+
         return micro_groups, micro_data
     
     
@@ -144,15 +154,18 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             group_parents : dict[int, list[int]]. Dictionary with the parents of each group of variables.
         '''
         group_parents = {}
+        print(f'{micro_parents=}')
         for group_idx, group in enumerate(self.groups):
             group_parents[group_idx] = []
             for son_micro_idx in self.micro_groups[group_idx]:
-                # A group is son of another group iff any microgroup has a parent microgroup that is in the parent group
-                for parent_micro_idx in micro_parents[son_micro_idx]:
-                    [parent_group_idx] = [idx for idx, group in enumerate(self.micro_groups) if parent_micro_idx in group]
+                # A group is son of another group iff any microgroup of the son has a parent microgroup that is in the parent group
+                for parent_micro_idx, lag in micro_parents[son_micro_idx]:
+                    [parent_group_idx] = [idx for idx, micro_group in enumerate(self.micro_groups)
+                                                if parent_micro_idx in micro_group]
                     # Add the parent group (with microgroup's lag) to the parents of the son group
-                    group_parents[group_idx].append((parent_group_idx, parent_micro_idx))
+                    group_parents[group_idx].append((parent_group_idx, lag))
             # Remove duplicates
             group_parents[group_idx] = list(set(group_parents[group_idx]))
         
-        return
+        return group_parents
+    

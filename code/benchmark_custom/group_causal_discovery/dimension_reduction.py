@@ -66,6 +66,7 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
             groups_data.append(group_data)
         
         time_series = np.array(groups_data).reshape(len(groups_data), -1).T
+        time_series = np.concatenate(groups_data, axis=1)
         return time_series
     
     def extract_parents(self) -> dict[int, list[int]]:

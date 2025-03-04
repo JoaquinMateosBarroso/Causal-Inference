@@ -194,17 +194,16 @@ class BenchmarkCausalDiscovery:
         actual_parents_summary = window_to_summary_graph(actual_parents)
         
         algorithm = causalDiscovery(data=time_series, **algorithm_parameters)
-        # try: TODO: Uncomment
-        predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
-        # except Exception as e:
-        #     print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
-        #     print('Returning nan values for this algorithm')
-        #     predicted_parents = {}
-        #     time = np.nan
-        #     memory = np.nan
+        try:
+            predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+        except Exception as e:
+            print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
+            print('Returning nan values for this algorithm')
+            predicted_parents = {}
+            time = np.nan
+            memory = np.nan
         
-        # finally:
-        if True:
+        finally:
             result = {'time': time, 'memory': memory}
             
             result['precision'] = get_precision(actual_parents, predicted_parents)
@@ -424,7 +423,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             # Generate and save results of all algorithms with current dataset options
             current_results = self.test_algorithms(causal_datasets, algorithms,
                                                    current_algorithms_parameters)
-            
+
             for name, algorithm_results in current_results.items():
                 for particular_result in algorithm_results:
                     particular_result.update(data_option) # Include the parameters in the information for results
