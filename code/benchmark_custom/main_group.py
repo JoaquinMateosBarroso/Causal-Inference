@@ -67,7 +67,7 @@ benchmark_options = {
     'chaning_N_vars_per_group': (changing_N_vars_per_group,
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10]})
 }
-chosen_option = 'static_parameters'
+chosen_option = 'chaning_N_vars_per_group'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
                                  benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
