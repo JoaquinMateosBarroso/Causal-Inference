@@ -1,3 +1,8 @@
+'''
+Module with the base class for causal discovery algorithms.
+'''
+
+
 import time
 import numpy as np
 from abc import ABC, abstractmethod

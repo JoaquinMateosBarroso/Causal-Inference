@@ -1,4 +1,10 @@
-# %%
+'''
+Module with the different functions that are necessary to generate toy time series datasets
+from causal processes, which are defined by ts DAGs.
+'''
+
+
+
 import json
 import os
 import random
@@ -41,10 +47,12 @@ class CausalDataset:
         Generate a toy dataset with a causal process and time series data.
         Node-level links are modeled as a linear combination of the parents, in the following way:
         
-        .. math:: `X_i^t = \sum_{j \in \text{parents}(i)} \beta_{ij} X_j^{t - \tau_{ij}} + \epsilon_i(t)`
+        .. math:: X_i^t = \sum_{j \in \\text{parents}(i)} \\beta_{ij} X_j^{t - \\tau_{ij}} + \epsilon_i(t)
         
         Where the scalar coefficients are takien from kw_generation_args 'dependency_coeffs' and 'auto_coeffs' parameters,
         and the noise :math:`\epsilon_i(t)` is taken from kw_generation_args 'noise_dists' and 'noise_sigmas' parameters.
+        
+
         
         Args:
             name : Name of the dataset
@@ -53,7 +61,7 @@ class CausalDataset:
             crosslinks_density : Fraction of links that are cross-links
             confounders_density : Fraction of confounders in the dataset
             max_lag : Maximum lag of the causal process
-            dependency_funcs : List of dependency functions (in {'linear', 'nonlinear'}, or a function f:R->R)
+            dependency_funcs : List of dependency functions (in {'linear', 'nonlinear'}, or a function :math:`f:\mathbb R \\rightarrow\mathbb R`)
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
             
         Returns:
@@ -120,7 +128,7 @@ class CausalDataset:
         nodes of different groups, with a density of inner_group_crosslinks_density.
         Node-level links are modeled as a linear combination of the parents, in the following way:
         
-        .. math:: `X_i^t = \sum_{j \in \text{parents}(i)} \beta_{ij} X_j^{t - \tau_{ij}} + \epsilon_i(t)`
+        .. math:: X_i^t = \sum_{j \in \\text{parents}(i)} \\beta_{ij} X_j^{t - \\tau_{ij}} + \epsilon_i(t)
         
         Where the scalar coefficients are takien from kw_generation_args 'dependency_coeffs' and 'auto_coeffs' parameters,
         and the noise :math:`\epsilon_i(t)` is taken from kw_generation_args 'noise_dists' and 'noise_sigmas' parameters.
@@ -129,11 +137,11 @@ class CausalDataset:
             name : Name of the dataset
             T : Number of time points
             N : Number of variables
-            N_groups : Number of groups (this number must be greater than N/2, to allow groups creation)
+            N_groups : Number of groups (this number must be greater than :math:`N/2`, to allow groups creation)
             inner_group_crosslinks_density : Percentage of inner-group links that are cross-links
             n_node_links_per_group_link : Number of links between nodes of different groups that are linked
             max_lag : Maximum lag of the causal process
-            dependency_funcs : List of dependency functions (in ['linear', 'nonlinear'], or a function f:R->R)
+            dependency_funcs : List of dependency functions (in ['linear', 'nonlinear'], or a function :math:`f:\mathbb R \\rightarrow\mathbb R`)
             dataset_folder : Name of the folder where datasets and parents will be saved. By default they are not saved.
             
         Returns:
