@@ -62,6 +62,7 @@ def changing_N_vars_per_group(options, algorithms_parameters,
         list_N_vars_per_group = [5, 10, 20, 50]
     
     for N_vars_per_group in list_N_vars_per_group:
+        options['N_vars_per_group'] = N_vars_per_group
         options['N_vars'] = options['N_groups'] * N_vars_per_group
         
         for algorithm_parameters in algorithms_parameters.values():

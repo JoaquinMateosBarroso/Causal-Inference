@@ -7,7 +7,7 @@ import copy
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
-from typing import Any, Iterator, Union
+from typing import Any, Iterator
 from tqdm import tqdm
 
 from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase
@@ -326,6 +326,9 @@ class BenchmarkCausalDiscovery:
             fig, ax = plt.subplots(1, 1, figsize=(10, 5))
             all_results = []
             for algorithm_name, df_results in results_dataframes.items():
+                if dataset_iteration_to_plot == -1: # Get the results for the last dataset iteration
+                    dataset_iteration_to_plot = df_results['dataset_iteration'].max()
+                    
                 current_dataset_results = df_results.loc[df_results['dataset_iteration'] == dataset_iteration_to_plot].copy()
                 current_dataset_results['algorithm'] = algorithm_name
                 all_results.append(current_dataset_results)

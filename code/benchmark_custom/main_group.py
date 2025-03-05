@@ -1,4 +1,4 @@
-from typing import Any, Iterator, Union
+from typing import Any, Iterator
 
 from matplotlib import pyplot as plt
 
@@ -98,7 +98,9 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results_group'
-    execute_benchmark = True
+    execute_benchmark = False
+    dataset_iteration_to_plot = -1
+    plot_x_axis = 'N_vars_per_group'
 
     if execute_benchmark:
         parameters_iterator = generate_parameters_iterator(algorithms_parameters, data_generation_options,
@@ -113,14 +115,15 @@ if __name__ == '__main__':
     
     benchmark.plot_ts_datasets(datasets_folder)
     
-    benchmark.plot_moving_results(results_folder, x_axis='N_vars')
+    benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
     # Save results for whole graph scores
-    benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
+    benchmark.plot_particular_result(results_folder,
+                                     dataset_iteration_to_plot=dataset_iteration_to_plot)
     # Save results for summary graph scores
     benchmark.plot_particular_result(results_folder, results_folder + '/summary',
                                      scores=[f'{score}_summary' for score in \
                                                     ['shd', 'f1', 'precision', 'recall']],
-                                     dataset_iteration_to_plot=0)
+                                     dataset_iteration_to_plot=dataset_iteration_to_plot)
 
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
     destination_folder = os.path.join(results_folder, datasets_folder)
