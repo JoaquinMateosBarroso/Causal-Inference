@@ -5,14 +5,14 @@
 
 \begin{tikzpicture}
     \node[shape=circle,draw=black] (A) at (0,0) {A};
-    \node[shape=circle,draw=black] (B) at (0,3) {B};
-    \node[shape=circle,draw=black] (C) at (2.5,4) {C};
-    \node[shape=circle,draw=black] (D) at (2.5,1) {D};
+    \node[shape=circle,draw=black] (B) at (-1.5,2) {B};
+    \node[shape=circle,draw=black] (C) at (0,4) {C};
+    \node[shape=circle,draw=black] (D) at (1.5,2) {D};
 
-    \path [->] (A) edge node[left] {$2$} (B);
+    \path [->] (A) edge node[below] {$2$} (B);
     \path [->](B) edge node[below]  {$4$} (C);
     \path [->](A) edge node[below]  {$2$} (D);
-    \path [->](D) edge node[left]  {$3$} (C);
+    \path [->](D) edge node[below]  {$3$} (C);
 \end{tikzpicture}
 
 \end{document}

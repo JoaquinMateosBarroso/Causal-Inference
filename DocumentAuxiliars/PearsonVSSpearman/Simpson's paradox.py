@@ -48,4 +48,4 @@ if __name__ == '__main__':
 
     plt.legend()
 
-    plt.show()
+    plt.savefig('simpsons-paradox.pdf')

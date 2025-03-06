@@ -90,8 +90,10 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         micro_data = [] # List where each element is the ts data of a microgroup
         for i, group in enumerate(self.groups):
             if groups_division_method == 'principal_components':
-                # Extract the principal components of the group
+                # Standarize data, so that the PCA algorithm works properly
                 group_data = self.data[:, list(group)]
+                group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
+                # Extract the principal components of the group
                 pca = PCA(n_components=explained_variance_threshold)
                 group_data_pca = pca.fit_transform(group_data)
                 
