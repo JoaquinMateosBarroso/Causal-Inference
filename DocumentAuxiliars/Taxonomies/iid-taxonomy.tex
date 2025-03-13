@@ -1,0 +1,28 @@
+\documentclass{standalone}
+\usepackage{forest}
+
+\begin{document}
+
+%\section*{Taxonomy of Causal Discovery Methods}
+
+\begin{forest}
+for tree={
+    grow=east,
+    parent anchor=east,
+    child anchor=west,
+    anchor=west,
+    edge path={\noexpand\path[draw,thick] (!u.parent anchor) -- +(5pt,0pt) |- (.child anchor);}
+}
+[Causal Discovery
+    [Hybrids]
+    [Score-based, yshift=-5pt
+        [Combinatory Optimization, xshift=20pt]
+        [Continuous Optimization, xshift=20pt]
+    ]
+    [Granger Causality-based, yshift=0pt]
+    [Structural Equation Models-based, yshift=5pt]
+    [Constraint-based, yshift=10pt]
+]
+\end{forest}
+
+\end{document}
