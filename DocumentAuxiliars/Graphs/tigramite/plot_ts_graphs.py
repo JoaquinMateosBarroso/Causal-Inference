@@ -6,23 +6,23 @@ from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.plotting import plot_time_series_graph
 
 
-basic_window_graph = np.array([
+ts_basic_window_graph = np.array([
                   [[0, 1, 0, 0], [1, 1, 0, 0], [0, 0, 0, 0]],
                   [[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]],
                   [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 1, 0]],])
 
-basic_extended_summary_graph = np.array([
+ts_basic_extended_summary_graph = np.array([
                   [[0, 1], [1, 1], [0, 0]],
                   [[0, 0], [0, 1], [0, 1]],
                   [[0, 0], [0, 0], [0, 1]],])
 
 
-basic_summary_graph = np.array([
+ts_basic_summary_graph = np.array([
                   [[1], [1], [0]],
                   [[0], [1], [1]],
                   [[0], [0], [1]],])
 
-basic_fully_connected_graph = np.ones((2, 2, 4))
+ts_basic_fully_connected_graph = np.ones((2, 2, 4))
 
 def plot_graph(graph):
     plot_time_series_graph(graph=graph,
@@ -31,6 +31,6 @@ def plot_graph(graph):
 
 
 if __name__ == '__main__':
-    plot_graph(basic_fully_connected_graph)
-    plt.savefig('basic_fully_connected_graph.pdf')
+    plot_graph(ts_basic_fully_connected_graph)
+    plt.savefig('figs' + 'ts_basic_fully_connected_graph.pdf')
 
