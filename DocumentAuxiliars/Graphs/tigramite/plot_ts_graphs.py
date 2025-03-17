@@ -32,5 +32,5 @@ def plot_graph(graph):
 
 if __name__ == '__main__':
     plot_graph(ts_basic_fully_connected_graph)
-    plt.savefig('figs' + 'ts_basic_fully_connected_graph.pdf')
+    plt.savefig('figs/' + 'ts_basic_fully_connected_graph.pdf')
 
