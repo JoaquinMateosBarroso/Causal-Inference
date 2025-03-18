@@ -6,16 +6,16 @@ from benchmark_causal_discovery import BenchmarkGroupCausalDiscovery
 import shutil
 import os
 
-from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_preselection_alpha, static_parameters
+from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
 from group_causal_discovery import DimensionReductionGroupCausalDiscovery
 from group_causal_discovery import MicroLevelGroupCausalDiscovery
 from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'hybrid': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
+    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    # 'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -65,9 +65,16 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'chaning_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]})
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]}),
+    
+    'changing_alg_params': (changing_alg_params,
+                                    {'alg_name': 'hybrid',
+                                     'list_modifying_algorithms_params': [
+                                        {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
+                                            for variance in [0.05, 0.2, 0.4, 0.6, 0.8, 1]]})
 }
-chosen_option = 'chaning_N_vars_per_group'
+
+chosen_option = 'changing_alg_params'
 
 def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
                                  benchmark_options, chosen_option) -> Iterator[tuple[dict[str, Any], dict[str, Any]]]:
@@ -83,12 +90,7 @@ def generate_parameters_iterator(algorithms_parameters, data_generation_options,
     Returns:
         parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]]. A function that returns the parameters for the algorithms and the data generation.
     '''    
-    options_generator, options_kwargs = benchmark_options[chosen_option]
-    for data_generation_options, algorithms_parameters in \
-            options_generator(data_generation_options,
-                                                  algorithms_parameters,
-                                                  **options_kwargs):
-        yield data_generation_options, algorithms_parameters
+        
 
 
 
@@ -98,13 +100,16 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results_group'
-    execute_benchmark = False
+    execute_benchmark = True
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
 
     if execute_benchmark:
-        parameters_iterator = generate_parameters_iterator(algorithms_parameters, data_generation_options,
-                                                           benchmark_options, chosen_option)
+        options_generator, options_kwargs = benchmark_options[chosen_option]
+        parameters_iterator = options_generator(data_generation_options,
+                                                    algorithms_parameters,
+                                                    **options_kwargs)
+        
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,

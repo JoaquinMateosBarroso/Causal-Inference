@@ -70,6 +70,14 @@ def changing_N_vars_per_group(options, algorithms_parameters,
         
         yield algorithms_parameters, options
 
+def changing_alg_params(options, algorithms_parameters,
+                       alg_name, list_modifying_algorithms_params):
+    for modifying_algorithm_params in list_modifying_algorithms_params:
+        for param_name, param_value in modifying_algorithm_params.items():
+            algorithms_parameters[alg_name][param_name] = param_value
+        
+        yield algorithms_parameters, options
+
 '''
     EVALUATION METRICS
 '''
