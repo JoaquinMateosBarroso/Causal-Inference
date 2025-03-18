@@ -71,7 +71,7 @@ benchmark_options = {
                                     {'alg_name': 'hybrid',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
-                                            for variance in [0.05, 0.2, 0.4, 0.6, 0.8, 1]]})
+                                            for variance in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]]})
 }
 
 chosen_option = 'changing_alg_params'
@@ -99,10 +99,12 @@ if __name__ == '__main__':
     
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
-    results_folder = 'results_group'
+    results_folder = 'results_group_hybrid_studying_threshold'
     execute_benchmark = True
+    plot_graphs = False
+    
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'N_vars_per_group'
+    plot_x_axis = 'explained_variance_threshold'
 
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
@@ -114,21 +116,22 @@ if __name__ == '__main__':
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,
                                             results_folder=results_folder,
-                                            n_executions=5,
+                                            n_executions=25,
                                             scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     
-    benchmark.plot_ts_datasets(datasets_folder)
-    
-    benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
-    # Save results for whole graph scores
-    benchmark.plot_particular_result(results_folder,
-                                     dataset_iteration_to_plot=dataset_iteration_to_plot)
-    # Save results for summary graph scores
-    benchmark.plot_particular_result(results_folder, results_folder + '/summary',
-                                     scores=[f'{score}_summary' for score in \
-                                                    ['shd', 'f1', 'precision', 'recall']],
-                                     dataset_iteration_to_plot=dataset_iteration_to_plot)
+    if plot_graphs:
+        benchmark.plot_ts_datasets(datasets_folder)
+        
+        benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
+        # Save results for whole graph scores
+        benchmark.plot_particular_result(results_folder,
+                                        dataset_iteration_to_plot=dataset_iteration_to_plot)
+        # Save results for summary graph scores
+        benchmark.plot_particular_result(results_folder, results_folder + '/summary',
+                                        scores=[f'{score}_summary' for score in \
+                                                        ['shd', 'f1', 'precision', 'recall']],
+                                        dataset_iteration_to_plot=dataset_iteration_to_plot)
 
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
     destination_folder = os.path.join(results_folder, datasets_folder)
