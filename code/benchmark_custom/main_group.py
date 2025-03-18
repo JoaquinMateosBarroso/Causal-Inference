@@ -71,7 +71,7 @@ benchmark_options = {
                                     {'alg_name': 'hybrid',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
-                                            for variance in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]]})
+                                            for variance in [.1, .2, .3, .4, .5, .6, .7, .8, .9, .99]]})
 }
 
 chosen_option = 'changing_alg_params'
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results_group_hybrid_studying_threshold'
-    execute_benchmark = True
-    plot_graphs = False
+    execute_benchmark = False
+    plot_graphs = True
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'explained_variance_threshold'
@@ -116,7 +116,7 @@ if __name__ == '__main__':
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,
                                             results_folder=results_folder,
-                                            n_executions=25,
+                                            n_executions=100,
                                             scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     
