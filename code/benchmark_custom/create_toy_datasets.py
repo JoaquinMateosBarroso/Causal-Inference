@@ -41,7 +41,8 @@ class CausalDataset:
     
     def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
                       confounders_density = 0, min_lag=1, max_lag=3, contemp_fraction=0.,
-                      dependency_funcs=['nonlinear'], datasets_folder = None, **kw_generation_args) \
+                      dependency_funcs=['nonlinear'], datasets_folder = None, maximum_tries=100,
+                      **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
         """
         Generate a toy dataset with a causal process and time series data.
@@ -80,22 +81,32 @@ class CausalDataset:
         
         total_generating_vars = int(N_vars * (1 + confounders_density))
         
-        # Generate random causal process
-        causal_process, noise = generate_structural_causal_process(N=total_generating_vars,
-                                                            L=L,
-                                                            max_lag=max_lag,
-                                                            contemp_fraction=contemp_fraction,
-                                                            dependency_funcs=dependency_funcs,
-                                                            **kw_generation_args)
-        self.parents_dict = get_parents_dict(causal_process)
-        # Generate time series data from the causal process
-        self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
+        # Try to generate data until there are no NaNs
+        it = 0
+        while (it:=it+1) < maximum_tries:
+            # Generate random causal process
+            causal_process, noise = generate_structural_causal_process(N=total_generating_vars,
+                                                                L=L,
+                                                                max_lag=max_lag,
+                                                                contemp_fraction=contemp_fraction,
+                                                                dependency_funcs=dependency_funcs,
+                                                                **kw_generation_args)
+            self.parents_dict = get_parents_dict(causal_process)
+            # Generate time series data from the causal process
+            self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
+            
+            # Now we choose what variables will be kept and studied (the rest are hidden confounders)
+            chosen_nodes = random.sample(range(total_generating_vars), N_vars)
+            self.time_series = self.time_series[:, chosen_nodes]
+            self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
+
+            if not np.isnan(self.time_series).any():
+                break
         
-        # Now we choose what variables will be kept and studied (the rest are hidden confounders)
-        chosen_nodes = random.sample(range(total_generating_vars), N_vars)
-        self.time_series = self.time_series[:, chosen_nodes]
-        self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
-        
+        # If the maximum number of tries is reached, raise an error
+        if it == maximum_tries:
+            raise ValueError('Current Could not generate a dataset without NaNs')
+            
         if datasets_folder is not None:
             # If the folder does not exist, create it
             if not os.path.exists(datasets_folder):
@@ -118,7 +129,7 @@ class CausalDataset:
                                 inner_group_crosslinks_density=0.5, outer_group_crosslinks_density=0.5,
                                 n_node_links_per_group_link=2, contemp_fraction=.0,
                                 max_lag=3, min_lag=1, dependency_funcs=['nonlinear'],
-                                datasets_folder = None, **kw_generation_args) \
+                                datasets_folder = None, maximum_tries=100, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]], dict[int, list[int]], list[list[int]]]:
         '''
         Generate a toy dataset with a group based causal process and time series data.
@@ -157,44 +168,54 @@ class CausalDataset:
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func\
                                 for func in dependency_funcs]
         
-        self.groups = self._generate_groups(N_vars, N_groups)
-        
-        # Dictionary where keys will be the global index of the nodes, and values the causal processes
-        groups_causal_processes = dict()
-        
-        # Generate inner causal processes
-        for index, group in enumerate(self.groups):
-            # Forcing crosslinks_density = L / (N + L)
-            L = int(len(group) * inner_group_crosslinks_density / (1 - inner_group_crosslinks_density))
-            L = int(L * (1+contemp_fraction))
-            causal_process, _ = generate_structural_causal_process(N=len(group), L=L, max_lag=max_lag,
-                                                                    dependency_funcs=dependency_funcs,
-                                                                    contemp_fraction=contemp_fraction,
-                                                                    **kw_generation_args)
+        # Try to generate data until there are no NaNs
+        for it in range(maximum_tries):
+            self.groups = self._generate_groups(N_vars, N_groups)
             
-            # Change the keys of the causal process to the global index
-            groups_causal_processes[index] = self._change_keys(causal_process, group)
+            # Dictionary where keys will be the global index of the nodes, and values the causal processes
+            groups_causal_processes = dict()
+            
+            
+            # Generate inner causal processes
+            for index, group in enumerate(self.groups):
+                # Forcing crosslinks_density = L / (N + L)
+                L = int(len(group) * inner_group_crosslinks_density / (1 - inner_group_crosslinks_density))
+                L = int(L * (1+contemp_fraction))
+                causal_process, _ = generate_structural_causal_process(N=len(group), L=L, max_lag=max_lag,
+                                                                        dependency_funcs=dependency_funcs,
+                                                                        contemp_fraction=contemp_fraction,
+                                                                        **kw_generation_args)
+                
+                # Change the keys of the causal process to the global index
+                groups_causal_processes[index] = self._change_keys(causal_process, group)
+            
+            # Generate outer causal processes
+            L = int(N_groups * outer_group_crosslinks_density / (1 - outer_group_crosslinks_density))
+            L = int(L * (1+contemp_fraction))
+            outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L, max_lag=max_lag,
+                                                                        dependency_funcs=dependency_funcs,
+                                                                        contemp_fraction=contemp_fraction,
+                                                                        **kw_generation_args)
+            
+            global_causal_process = self._join_processes( outer_causal_process, groups_causal_processes,
+                                                        n_node_links_per_group_link)
+            
+            # Generate noise
+            _, noise = generate_structural_causal_process(N=N_vars, **kw_generation_args)
+            
+            self.node_parents_dict = get_parents_dict(global_causal_process)
+            self.parents_dict = self.extract_group_parents(self.node_parents_dict)
+            
+            # Generate time series data from the causal process
+            self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise, transient_fraction=.0)
+
+            if not np.isnan(self.time_series).any():
+                break
         
-        # Generate outer causal processes
-        L = int(N_groups * outer_group_crosslinks_density / (1 - outer_group_crosslinks_density))
-        L = int(L * (1+contemp_fraction))
-        outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L, max_lag=max_lag,
-                                                                     dependency_funcs=dependency_funcs,
-                                                                     contemp_fraction=contemp_fraction,
-                                                                    **kw_generation_args)
-        
-        global_causal_process = self._join_processes( outer_causal_process, groups_causal_processes,
-                                                     n_node_links_per_group_link)
-        
-        # Generate noise
-        _, noise = generate_structural_causal_process(N=N_vars, **kw_generation_args)
-        
-        self.node_parents_dict = get_parents_dict(global_causal_process)
-        self.parents_dict = self.extract_group_parents(self.node_parents_dict)
-        
-        # Generate time series data from the causal process
-        self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise, transient_fraction=.0)
-        
+        # If the maximum number of tries is reached, raise an error
+        if it == maximum_tries:
+            raise ValueError('Could not generate a dataset without NaNs')
+            
         if datasets_folder is not None:
             # If the folder does not exist, create it
             if not os.path.exists(datasets_folder):
