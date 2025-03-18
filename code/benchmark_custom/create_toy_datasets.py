@@ -100,6 +100,7 @@ class CausalDataset:
             self.time_series = self.time_series[:, chosen_nodes]
             self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
 
+            # If dataset has no NaNs, use it
             if not np.isnan(self.time_series).any():
                 break
         
@@ -209,6 +210,7 @@ class CausalDataset:
             # Generate time series data from the causal process
             self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise, transient_fraction=.0)
 
+            # If dataset has no NaNs, use it
             if not np.isnan(self.time_series).any():
                 break
         
