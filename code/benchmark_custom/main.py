@@ -71,28 +71,6 @@ benchmark_options = {
 }
 chosen_option = 'static'
 
-def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
-                                 benchmark_options, chosen_option) -> Iterator[Union[dict[str, Any], dict[str, Any]]]:
-    '''
-    Function to generate the parameters for the algorithms and the data generation.
-    
-    Args:
-        algorithms_parameters : dict[str, dict[str, Any]]. Dictionary with the initial parameters for the algorithms.
-        data_generation_options : dict[str, Any]. Dictionary with the options for the data generation.
-        benchmark_options : dict[str, Tuple[Callable, dict[str, Any]]]. Dictionary with the options for the benchmark.
-        chosen_option : str. The chosen option for the benchmark.
-    
-    Returns:
-        parameters_iterator: function[dict[str, Any], dict[str, Any]]. A function that returns the parameters for the algorithms and the data generation.
-    '''    
-    options_generator, options_kwargs = benchmark_options[chosen_option]
-    for data_generation_options, algorithms_parameters in \
-            options_generator(data_generation_options,
-                                                  algorithms_parameters,
-                                                  **options_kwargs):
-        yield data_generation_options, algorithms_parameters
-
-
 
 if __name__ == '__main__':
     plt.style.use('ggplot')
@@ -102,9 +80,12 @@ if __name__ == '__main__':
     results_folder = 'results'
     execute_benchmark = True
 
-    if execute_benchmark:
-        parameters_iterator = generate_parameters_iterator(algorithms_parameters, data_generation_options,
-                                                           benchmark_options, chosen_option)
+    if execute_benchmark:    
+        options_generator, options_kwargs = benchmark_options[chosen_option]
+        parameters_iterator = options_generator(data_generation_options,
+                                                    algorithms_parameters,
+                                                    **options_kwargs)
+        
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,

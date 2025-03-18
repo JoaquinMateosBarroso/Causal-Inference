@@ -76,22 +76,6 @@ benchmark_options = {
 
 chosen_option = 'changing_alg_params'
 
-def generate_parameters_iterator(algorithms_parameters, data_generation_options, 
-                                 benchmark_options, chosen_option) -> Iterator[tuple[dict[str, Any], dict[str, Any]]]:
-    '''
-    Function to generate the parameters for the algorithms and the data generation.
-    
-    Args:
-        algorithms_parameters : dict[str, dict[str, Any]]. Dictionary with the initial parameters for the algorithms.
-        data_generation_options : dict[str, Any]. Dictionary with the options for the data generation.
-        benchmark_options : dict[str, Tuple[Callable, dict[str, Any]]]. Dictionary with the options for the benchmark.
-        chosen_option : str. The chosen option for the benchmark.
-    
-    Returns:
-        parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]]. A function that returns the parameters for the algorithms and the data generation.
-    '''    
-        
-
 
 
 if __name__ == '__main__':
@@ -100,8 +84,8 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results_group_hybrid_studying_threshold'
-    execute_benchmark = False
-    plot_graphs = True
+    execute_benchmark = True
+    plot_graphs = False
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'explained_variance_threshold'
