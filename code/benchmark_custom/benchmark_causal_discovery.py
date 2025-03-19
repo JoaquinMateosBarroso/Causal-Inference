@@ -371,7 +371,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             parameters_iterator : Iterator[tuple[dict[str, Any], dict[str, Any]]]
                 An iterator that returns a tuple with the parameters for the algorithms and the options for the datasets.
-                Note: If generate_toy_data is False, just the first iteration is used.
+                Note: If generate_toy_data is False, iterations are used for algorithms parameters.
             datasets : list[np.ndarray], optional
                 A list of numpy arrays representing the datasets to be used in the benchmark.
             verbose : int, optional
@@ -462,50 +462,48 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
                                         n_executions_per_data_param: int,
                                         datasets_folder: str,
                                         )  -> dict[str, list[ dict[str, Any] ]]:
-        # Use just the parameters of the first iteration
-        current_parameters = next(parameters_iterator)
-        current_algorithms_parameters, data_option = current_parameters
-        causal_datasets = []
-        
-        # Obtain datasets from folders acording to their filename: {number}_data.csv
-        if os.path.exists(datasets_folder):
-            for filename in sorted(os.listdir(datasets_folder), key = lambda x: int(x.split('_')[0])):
-                if filename.endswith('.csv'):
-                    dataset = pd.read_csv(f'{datasets_folder}/{filename}')
-                    parents_filename = f'{datasets_folder}/{filename.split("_")[0]}_parents.txt'
-                    with open(parents_filename, 'r') as f:
-                        parents_dict = eval(f.read())
-                    groups_filename = f'{datasets_folder}/{filename.split("_")[0]}_groups.txt'
-                    with open(groups_filename, 'r') as f:
-                        groups = eval(f.read())
-                    
-                    causal_datasets.append(CausalDataset(time_series=dataset.values,
-                                                            parents_dict=parents_dict,
-                                                            groups=groups))
-        else:
-            raise ValueError(f'The dataset folder {datasets_folder} does not exist')
-        
-        if self.verbose > 0:
-            print('\n' + '-'*50)
-            print(BLUE, 'Executing the datasets AGAIN but with different options.', RESET)
-        
-        # Generate and save results of all algorithms with given datasets
-        current_results = self.test_algorithms(causal_datasets, algorithms,
-                                                current_algorithms_parameters)
-        
-        for name, algorithm_results in current_results.items():
-            iteration = -1
-            for particular_result in algorithm_results:
-                particular_result.update(data_option) # Include the parameters in the information for results
-                particular_result['dataset_iteration'] = (iteration:=iteration+1) // n_executions_per_data_param
+        for current_algorithms_parameters, data_option in parameters_iterator:
+            causal_datasets = []
+            
+            # Obtain datasets from folders acording to their filename: {number}_data.csv
+            if os.path.exists(datasets_folder):
+                for filename in sorted(os.listdir(datasets_folder), key = lambda x: int(x.split('_')[0])):
+                    if filename.endswith('.csv'):
+                        dataset = pd.read_csv(f'{datasets_folder}/{filename}')
+                        parents_filename = f'{datasets_folder}/{filename.split("_")[0]}_parents.txt'
+                        with open(parents_filename, 'r') as f:
+                            parents_dict = eval(f.read())
+                        groups_filename = f'{datasets_folder}/{filename.split("_")[0]}_groups.txt'
+                        with open(groups_filename, 'r') as f:
+                            groups = eval(f.read())
+                        
+                        causal_datasets.append(CausalDataset(time_series=dataset.values,
+                                                                parents_dict=parents_dict,
+                                                                groups=groups))
+            else:
+                raise ValueError(f'The dataset folder {datasets_folder} does not exist')
+            
+            if self.verbose > 0:
+                print('\n' + '-'*50)
+                print(BLUE, 'Executing the datasets AGAIN but with different options.', RESET)
+            
+            # Generate and save results of all algorithms with given datasets
+            current_results = self.test_algorithms(causal_datasets, algorithms,
+                                                    current_algorithms_parameters)
+            
+            for name, algorithm_results in current_results.items():
+                iteration = -1
+                for particular_result in algorithm_results:
+                    particular_result.update(data_option) # Include the parameters in the information for results
+                    particular_result['dataset_iteration'] = (iteration:=iteration+1) // n_executions_per_data_param
 
-                # Include current result in the list of result
-                self.results[name].append(particular_result)
-        
-                self.all_algorithms_parameters[name].\
-                            append(copy.deepcopy(current_algorithms_parameters[name]))
-        
-        self.save_results()
+                    # Include current result in the list of result
+                    self.results[name].append(particular_result)
+            
+                    self.all_algorithms_parameters[name].\
+                                append(copy.deepcopy(current_algorithms_parameters[name]))
+            
+            self.save_results()
             
         return self.results
     
