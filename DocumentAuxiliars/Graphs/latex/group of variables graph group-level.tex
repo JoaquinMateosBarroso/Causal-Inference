@@ -1,0 +1,20 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usepackage{ifthen}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \node[dashed,shape=ellipse,draw=black] (W1) at (0, 5) {$W^1$};
+    \node[dashed,shape=ellipse,draw=black] (W2) at (3, 0.5) {$W^2$};
+    \node[dashed,shape=ellipse,draw=black] (W3) at (-3, 0.5) {$W^3$};
+
+    \path [->] (W1) edge (W2);
+    \path [->] (W1) edge (W3);
+    \path [->] (W2) edge (W3);
+
+
+\end{tikzpicture}
+
+\end{document}

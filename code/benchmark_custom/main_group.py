@@ -12,10 +12,10 @@ from group_causal_discovery import MicroLevelGroupCausalDiscovery
 from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'hybrid': HybridGroupCausalDiscovery,
-    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    # 'micro-level': MicroLevelGroupCausalDiscovery,
+    # 'hybrid': HybridGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
