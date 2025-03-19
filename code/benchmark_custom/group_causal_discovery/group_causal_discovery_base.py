@@ -10,7 +10,7 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
     Base class for causal discovery on groups of variables algorithms
     '''
     def __init__(self, data: np.ndarray, groups: list[set[int]], 
-                 standarize: bool=False, **kwargs):
+                 standarize: bool=True, **kwargs):
         '''
         Create an object that is able to predict over groups of time series variables
         

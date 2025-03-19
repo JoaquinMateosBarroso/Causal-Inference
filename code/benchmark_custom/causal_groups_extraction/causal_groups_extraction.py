@@ -10,9 +10,9 @@ class CausalGroupsExtractor(ABC): # Abstract class
     Base class to extract a set of groups of variables that may be used to later
     predict the causal structure over these groups of variables
     '''
-    def __init__(self, data: np.ndarray, standarize: bool=False, **kwargs):
+    def __init__(self, data: np.ndarray, standarize: bool=True, **kwargs):
         '''
-        Create an object that is able to extracat meaningful groups 
+        Create an object that is able to extract meaningful groups 
         from a dataset of time series variables
         
         Parameters
