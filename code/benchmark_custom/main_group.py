@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import numpy as np
 
 from benchmark_causal_discovery import BenchmarkGroupCausalDiscovery
 import shutil
@@ -10,10 +11,10 @@ from group_causal_discovery import MicroLevelGroupCausalDiscovery
 from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    # 'hybrid': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
+    'hybrid': HybridGroupCausalDiscovery,
+    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    # 'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -70,7 +71,7 @@ benchmark_options = {
                                     {'alg_name': 'hybrid',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
-                                            for variance in [.1, .2]]})#[.1, .2, .3, .4, .5, .6, .7, .8, .9, .99]]})
+                                            for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
 chosen_option = 'changing_alg_params'
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'explained_variance_threshold'
-
+    
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
         parameters_iterator = options_generator(data_generation_options,
@@ -101,7 +102,7 @@ if __name__ == '__main__':
                                             datasets_folder=datasets_folder,
                                             generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
-                                            n_executions=3,
+                                            n_executions=100,
                                             scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     
@@ -117,7 +118,7 @@ if __name__ == '__main__':
                                         scores=[f'{score}_summary' for score in \
                                                         ['shd', 'f1', 'precision', 'recall']],
                                         dataset_iteration_to_plot=dataset_iteration_to_plot)
-
+    
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
     destination_folder = os.path.join(results_folder, datasets_folder)
     if os.path.exists(destination_folder):
