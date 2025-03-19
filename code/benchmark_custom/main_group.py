@@ -28,6 +28,7 @@ algorithms_parameters = {
     'hybrid': {'dimensionality_reduction': 'pca', 'dimensionality_reduction_params': {'explained_variance_threshold': 0.5},
                             'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                            'groups_division_method': 'subgroups',
                 'verbose': 1},
 }
 
@@ -69,7 +70,7 @@ benchmark_options = {
                                     {'alg_name': 'hybrid',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
-                                            for variance in [.1, .2, .3, .4, .5, .6, .7, .8, .9, .99]]})
+                                            for variance in [.1, .2]]})#[.1, .2, .3, .4, .5, .6, .7, .8, .9, .99]]})
 }
 
 chosen_option = 'changing_alg_params'
@@ -84,6 +85,7 @@ if __name__ == '__main__':
     results_folder = 'results_group_hybrid_studying_threshold'
     execute_benchmark = True
     plot_graphs = False
+    generate_toy_data = False
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'explained_variance_threshold'
@@ -97,8 +99,9 @@ if __name__ == '__main__':
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,
+                                            generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
-                                            n_executions=100,
+                                            n_executions=3,
                                             scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     

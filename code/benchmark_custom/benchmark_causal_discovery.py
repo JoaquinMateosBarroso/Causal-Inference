@@ -355,7 +355,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
     def benchmark_causal_discovery(self, 
                                 algorithms: dict[str, type[GroupCausalDiscoveryBase]],
                                 parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
-                                datasets: list[np.ndarray] = None,
+                                generate_toy_data: bool = False,
                                 datasets_folder: str = None,
                                 results_folder: str = None,
                                 scores: list[ str ] = ['f1', 'precision', 'recall', 'time', 'memory'],
@@ -369,10 +369,9 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         Args:
             algorithms : dict[str, CausalDiscoveryBase]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
-            algorithms_parameters : dict[str, Any]
-                A dictionary where keys are the names of the algorithms and values are parameters for each algorithm.
-            options : dict[str, list], optional
-                A dictionary where keys are the names of the options and values are lists of possible values for each option.
+            parameters_iterator : Iterator[tuple[dict[str, Any], dict[str, Any]]]
+                An iterator that returns a tuple with the parameters for the algorithms and the options for the datasets.
+                Note: If generate_toy_data is False, just the first iteration is used.
             datasets : list[np.ndarray], optional
                 A list of numpy arrays representing the datasets to be used in the benchmark.
             verbose : int, optional
@@ -392,8 +391,10 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         # A list whose items are the lists of dictionaries of results and parameters of the different executions
         self.results = {alg: list() for alg in algorithms.keys()}
         
-        if datasets is None:
+        if generate_toy_data:
             self._benchmark_with_toy_data(algorithms, parameters_iterator, n_executions, datasets_folder)
+        else:
+            self._benchmark_with_given_data(algorithms, parameters_iterator, n_executions, datasets_folder)
 
         return self.results
     
@@ -402,22 +403,16 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
                                         n_executions: int,
                                         datasets_folder: str,
                                         )  -> dict[str, list[ dict[str, Any] ]]:
+        # Delete previous toy data
+        if os.path.exists(datasets_folder):
+            for filename in os.listdir(datasets_folder):
+                    os.remove(f'{datasets_folder}/{filename}')
+        else:
+            os.makedirs(datasets_folder)
+        
         for iteration, current_parameters in enumerate(parameters_iterator):
             current_algorithms_parameters, data_option = current_parameters
-            # Delete previous toy data
-            if os.path.exists(datasets_folder):
-                for filename in os.listdir(datasets_folder):
-                        os.remove(f'{datasets_folder}/{filename}')
-            else:
-                os.makedirs(datasets_folder)
-            
-            # Generate the datasets, with their graph structure and time series
-            causal_datasets = [CausalDataset() for _ in range(n_executions)]
-            if self.verbose > 0:
-                print('Generating datasets...')
-            for current_dataset_index, causal_dataset in enumerate(causal_datasets):
-                dataset_index = iteration * n_executions + current_dataset_index
-                causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
+            causal_datasets = self.generate_datasets(iteration, n_executions, datasets_folder, data_option)
             
             if self.verbose > 0:
                 print('\n' + '-'*50)
@@ -444,6 +439,75 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
         return self.results
     
+    def generate_datasets(self, iteration, n_datasets, datasets_folder, data_option):
+        '''
+        Function to generate the datasets for the benchmark
+        
+        Args:
+            n_datasets : int The number of datasets to be generated
+            datasets_folder : str The folder in which the datasets will be saved
+            data_option : dict[str, Any] The options to generate the datasets
+        '''
+        causal_datasets = [CausalDataset() for _ in range(n_datasets)]
+        if self.verbose > 0:
+            print('Generating datasets...')
+        for current_dataset_index, causal_dataset in enumerate(causal_datasets):
+            dataset_index = iteration * n_datasets + current_dataset_index
+            causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
+
+        return causal_datasets
+        
+    def _benchmark_with_given_data(self, algorithms: dict[str, type[GroupCausalDiscoveryBase]],
+                                        parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
+                                        n_executions_per_data_param: int,
+                                        datasets_folder: str,
+                                        )  -> dict[str, list[ dict[str, Any] ]]:
+        # Use just the parameters of the first iteration
+        current_parameters = next(parameters_iterator)
+        current_algorithms_parameters, data_option = current_parameters
+        causal_datasets = []
+        
+        # Obtain datasets from folders acording to their filename: {number}_data.csv
+        if os.path.exists(datasets_folder):
+            for filename in sorted(os.listdir(datasets_folder), key = lambda x: int(x.split('_')[0])):
+                if filename.endswith('.csv'):
+                    dataset = pd.read_csv(f'{datasets_folder}/{filename}')
+                    parents_filename = f'{datasets_folder}/{filename.split("_")[0]}_parents.txt'
+                    with open(parents_filename, 'r') as f:
+                        parents_dict = eval(f.read())
+                    groups_filename = f'{datasets_folder}/{filename.split("_")[0]}_groups.txt'
+                    with open(groups_filename, 'r') as f:
+                        groups = eval(f.read())
+                    
+                    causal_datasets.append(CausalDataset(time_series=dataset.values,
+                                                            parents_dict=parents_dict,
+                                                            groups=groups))
+        else:
+            raise ValueError(f'The dataset folder {datasets_folder} does not exist')
+        
+        if self.verbose > 0:
+            print('\n' + '-'*50)
+            print(BLUE, 'Executing the datasets AGAIN but with different options.', RESET)
+        
+        # Generate and save results of all algorithms with given datasets
+        current_results = self.test_algorithms(causal_datasets, algorithms,
+                                                current_algorithms_parameters)
+        
+        for name, algorithm_results in current_results.items():
+            iteration = -1
+            for particular_result in algorithm_results:
+                particular_result.update(data_option) # Include the parameters in the information for results
+                particular_result['dataset_iteration'] = (iteration:=iteration+1) // n_executions_per_data_param
+
+                # Include current result in the list of result
+                self.results[name].append(particular_result)
+        
+                self.all_algorithms_parameters[name].\
+                            append(copy.deepcopy(current_algorithms_parameters[name]))
+        
+        self.save_results()
+            
+        return self.results
     
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalDiscovery: type[GroupCausalDiscoveryBase],

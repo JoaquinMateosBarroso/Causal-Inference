@@ -27,9 +27,18 @@ def get_parents_dict(causal_process) -> dict[int, list[int]]:
     return parents_dict
 
 class CausalDataset:
-    def __init__(self):
-        self.time_series = None
-        self.parents_dict = None
+    def __init__(self, time_series=None, parents_dict=None, groups=None):
+        '''
+        Initialize the CausalDataset object.
+        
+        Args:
+            time_series : np.ndarray with shape (n_samples, n_variables)
+            parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
+            groups : List of lists, where each list is a group of variables. Just is used in case of group-based datasets.
+        '''
+        self.time_series = time_series
+        self.parents_dict = parents_dict
+        self.groups = groups
     
     dependency_funcs_dict = {
         'linear': lambda x: x,
