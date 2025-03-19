@@ -9,7 +9,8 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
     '''
     Base class for causal discovery on groups of variables algorithms
     '''
-    def __init__(self, data: np.ndarray, groups: list[set[int]], **kwargs):
+    def __init__(self, data: np.ndarray, groups: list[set[int]], 
+                 standarize: bool=False, **kwargs):
         '''
         Create an object that is able to predict over groups of time series variables
         
@@ -18,8 +19,14 @@ class GroupCausalDiscoveryBase(ABC): # Abstract class
             groups : list[set[int]] list with the sets that will compound each group of variables.
                         We will suppose that the groups are known beforehand.
                         The index of a group will be considered as its position in groups list.
+            standarize : bool indicating if the data should be standarized before applying the algorithm
         '''
-        pass
+        if standarize:
+            self.data = (data - data.mean(axis=0)) / data.std(axis=0)
+        else:
+            self.data = data
+        self.groups = groups
+        self.extra_args = kwargs
 
     @abstractmethod
     def extract_parents(self) -> dict[int, list[int]]:

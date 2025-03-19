@@ -31,6 +31,8 @@ class PCMCIWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
+        super().__init__(data, **kwargs)
+        
         self.cond_ind_test = {'parcorr': ParCorr(),
                               'gpdc': GPDC(),
                               'cmiknn': CMIknn(significance='fixed_thres'), # Very slow
@@ -40,7 +42,7 @@ class PCMCIWrapper(CausalDiscoveryBase):
         self.pc_alpha = pc_alpha
         self.extra_args = kwargs
         
-        dataframe = convert_to_tigramite_dataframe(data)
+        dataframe = convert_to_tigramite_dataframe(self.data)
         self.pcmci = PCMCI(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,
@@ -73,6 +75,8 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
+        super().__init__(data, **kwargs)
+        
         self.cond_ind_test = {'parcorr': RobustParCorr(significance='analytic'),
                               'cmiknn': CMIknn(significance='shuffle test'),
                               }[cond_ind_test]
@@ -81,7 +85,7 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
         self.pc_alpha = pc_alpha
         self.extra_args = kwargs
         
-        dataframe = convert_to_tigramite_dataframe(data)
+        dataframe = convert_to_tigramite_dataframe(self.data)
         self.pcmci = PCMCI_Modified(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,
@@ -105,13 +109,15 @@ class LPCMCIWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
+        super().__init__(data, **kwargs)
+        
         self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
         self.pc_alpha = pc_alpha
         
-        dataframe = convert_to_tigramite_dataframe(data)
+        dataframe = convert_to_tigramite_dataframe(self.data)
         self.lpcmci = LPCMCI(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,
@@ -148,13 +154,15 @@ class PCStableWrapper(CausalDiscoveryBase):
         :param max_lag: maximum lag to consider
         :param pc_alpha: alpha value for the conditional independence test
         '''
+        super().__init__(data, **kwargs)
+        
         self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),
                               }[cond_ind_test]
         self.min_lag = min_lag
         self.max_lag = max_lag
         self.pc_alpha = pc_alpha
         
-        dataframe = convert_to_tigramite_dataframe(data)
+        dataframe = convert_to_tigramite_dataframe(self.data)
         self.pcmci = PCMCI(
             dataframe=dataframe,
             cond_ind_test=self.cond_ind_test,

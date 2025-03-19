@@ -14,14 +14,18 @@ class CausalDiscoveryBase(ABC): # Abstract class
     Base class for causal discovery algorithms
     '''
     @abstractmethod
-    def __init__(self, data: np.ndarray, **kwargs):
+    def __init__(self, data: np.ndarray, standarize: bool=True, **kwargs):
         '''
         To be implemented by subclasses
         
         Parameters
             data : np.array with the data, shape (n_samples, n_variables)
+            standarize : bool indicating if the data should be standarized. default=True
         '''
-        pass
+        if standarize:
+            self.data = (data - data.mean(axis=0)) / data.std(axis=0)
+        else:
+            self.data = data
     
     @abstractmethod
     def extract_parents(self) -> dict[int, list[int]]:

@@ -22,10 +22,12 @@ class GrangerWrapper(CausalDiscoveryBase):
             max_lag : maximum lag to consider
             cv : number of folds for the cross-validation
         '''
+        super().__init__(data, **kwargs)
+        
         self.min_lag = min_lag
         self.max_lag = max_lag
         
-        self.granger = Granger(TimeSeriesData(data), cv=cv, max_iter=1e5)
+        self.granger = Granger(TimeSeriesData(self.data), cv=cv, max_iter=1e5)
 
     def extract_parents(self) -> dict[int, list[int]]:
         '''
@@ -51,10 +53,12 @@ class VARLINGAMWrapper(CausalDiscoveryBase):
             min_lag : minimum lag to consider
             max_lag : maximum lag to consider
         '''
+        super().__init__(data, **kwargs)
+        
         self.min_lag = min_lag
         self.max_lag = max_lag
         
-        self.varlingam = VARLINGAM(TimeSeriesData(data))
+        self.varlingam = VARLINGAM(TimeSeriesData(self.data))
     
     def extract_parents(self) -> dict[int, list[int]]:
         '''

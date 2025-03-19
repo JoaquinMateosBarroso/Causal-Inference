@@ -18,7 +18,9 @@ class DynotearsWrapper(CausalDiscoveryBase):
         Initialize the Granger object
         Args:
         '''
-        self.df = pd.DataFrame(data, columns=range(data.shape[1]))
+        super().__init__(data, **kwargs)
+        
+        self.df = pd.DataFrame(self.data, columns=range(self.data.shape[1]))
         self.max_lag = max_lag
         self.kwargs = kwargs
         

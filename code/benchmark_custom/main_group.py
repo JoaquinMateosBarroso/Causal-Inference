@@ -1,5 +1,3 @@
-from typing import Any, Iterator
-
 from matplotlib import pyplot as plt
 
 from benchmark_causal_discovery import BenchmarkGroupCausalDiscovery

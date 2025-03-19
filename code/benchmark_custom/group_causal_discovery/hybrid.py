@@ -38,8 +38,8 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                         relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
             node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
         '''
-        self.data = data
-        self.groups = groups
+        super().__init__(data, groups, **kwargs)
+        
         self.node_causal_discovery_alg = node_causal_discovery_alg
         self.node_causal_discovery_params = node_causal_discovery_params if node_causal_discovery_params is not None else {}
         self.extra_args = kwargs
