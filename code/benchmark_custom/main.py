@@ -91,7 +91,6 @@ if __name__ == '__main__':
                                             datasets_folder=datasets_folder,
                                             results_folder=results_folder,
                                             n_executions=5,
-                                            scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     
     benchmark.plot_ts_datasets(datasets_folder)

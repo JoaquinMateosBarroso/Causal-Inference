@@ -594,4 +594,4 @@ class BenchmarkGroupsExtraction:
         # A list whose items are the lists of dictionaries of results and parameters of the different executions
         self.results = {alg: list() for alg in algorithms.keys()}
         
-        self._benchmark_with_given_data(algorithms, parameters_iterator, n_executions, datasets)
+        self._benchmark_with_given_data(algorithms, parameters_iterator, n_executions, datasets_folder)
