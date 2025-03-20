@@ -5,7 +5,7 @@ from memory_profiler import memory_usage
 
 
 
-class CausalGroupsExtractor(ABC): # Abstract class
+class CausalGroupsExtractorBase(ABC): # Abstract class
     '''
     Base class to extract a set of groups of variables that may be used to later
     predict the causal structure over these groups of variables

@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
+from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractor
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
@@ -26,11 +27,9 @@ class BenchmarkCausalDiscovery:
     def benchmark_causal_discovery(self, 
                                 algorithms: dict[str, type[CausalDiscoveryBase]],
                                 parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
-                                datasets: list[np.ndarray] = None,
                                 datasets_folder: str = None,
                                 results_folder: str = None,
-                                scores: list[ str ] = ['f1', 'precision', 'recall', 'time', 'memory'],
-                                n_executions: int = 3,
+                                n_executions: int = 10,
                                 verbose: int = 0) \
                                         -> dict[str, list[ dict[str, Any] ]]:
         '''
@@ -44,8 +43,6 @@ class BenchmarkCausalDiscovery:
                 A dictionary where keys are the names of the algorithms and values are parameters for each algorithm.
             options : dict[str, list], optional
                 A dictionary where keys are the names of the options and values are lists of possible values for each option.
-            datasets : list[np.ndarray], optional
-                A list of numpy arrays representing the datasets to be used in the benchmark.
             verbose : int, optional
                 The level of comments that is going to be printed.
             datasets_folder : str, optional
@@ -63,8 +60,7 @@ class BenchmarkCausalDiscovery:
         # A list whose items are the lists of dictionaries of results and parameters of the different executions
         self.results = {alg: list() for alg in algorithms.keys()}
         
-        if datasets is None:
-            self._benchmark_with_toy_data(algorithms, parameters_iterator, n_executions, datasets_folder)
+        self._benchmark_with_toy_data(algorithms, parameters_iterator, n_executions, datasets_folder)
 
         return self.results                        
     
@@ -358,7 +354,6 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
                                 generate_toy_data: bool = False,
                                 datasets_folder: str = None,
                                 results_folder: str = None,
-                                scores: list[ str ] = ['f1', 'precision', 'recall', 'time', 'memory'],
                                 n_executions: int = 3,
                                 verbose: int = 0,
                                 )        -> dict[str, list[ dict[str, Any] ]]:
@@ -372,12 +367,18 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             parameters_iterator : Iterator[tuple[dict[str, Any], dict[str, Any]]]
                 An iterator that returns a tuple with the parameters for the algorithms and the options for the datasets.
                 Note: If generate_toy_data is False, iterations are used for algorithms parameters.
-            datasets : list[np.ndarray], optional
-                A list of numpy arrays representing the datasets to be used in the benchmark.
-            verbose : int, optional
-                The level of comments that is going to be printed.
+            generate_toy_data : bool, optional
+                If True, the datasets are generated with the options in the parameters_iterator.
+                If False, the datasets are taken from the datasets_folder.
             datasets_folder : str, optional
                 The name of the folder in which datasets will be saved. If not specified, datasets are not saved.
+            results_folder : str, optional
+                The name of the folder in which results will be saved. If not specified, results are not saved.
+            n_executions : int, optional
+                The number of executions for each combination of parameters.
+            verbose : int, optional
+                The level of comments that is going to be printed.
+            
         Returns:
             results: dict[str, list[ dict[str, Any] ]]
                 A dictionary where keys are the names of the algorithms and values are 
@@ -552,3 +553,45 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             return result
         
 
+class BenchmarkGroupsExtraction:
+    def __init__(self):
+        self.verbose = 0
+        self.results = None
+        
+    def benchmark_groups_extraction(self, 
+                                algorithms: dict[str, type[CausalGroupsExtractor]],
+                                parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
+                                datasets_folder: str,
+                                results_folder: str = None,
+                                scores: list[ str ] = ['avg_explained_variance', '1/n_groups', 'time', 'memory'],
+                                n_executions: int = 3,
+                                verbose: int = 0) \
+                                        -> dict[str, list[ dict[str, Any] ]]:
+        '''
+        Function to execute a series of algorithms for causal discovery over time series datasets,
+        using a series of parameters for algorithms and options in the creation of the datasets.
+            
+        Args:
+            algorithms : dict[str, CausalDiscoveryBase]
+                A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
+            parameters_iterator : Iterator[tuple[dict[str, Any], dict[str, Any]]]
+                An iterator that returns a tuple with the parameters for the algorithms and the options for the datasets 
+                (datasets options won't be used here).
+            datasets_folder : str, optional
+                The name of the folder from which datasets will be taken.
+            verbose : int, optional
+                The level of comments that is going to be printed.
+        Returns:
+            results: dict[str, list[ dict[str, Any] ]]
+                A dictionary where keys are the names of the algorithms and values are 
+                    lists with dictionaries containing the results of the benchmark for each algorithm.
+        '''
+        self.verbose = verbose
+        self.results_folder = results_folder
+        self.algorithms = algorithms
+        self.all_algorithms_parameters = {name: list() for name in algorithms.keys()}
+        
+        # A list whose items are the lists of dictionaries of results and parameters of the different executions
+        self.results = {alg: list() for alg in algorithms.keys()}
+        
+        self._benchmark_with_given_data(algorithms, parameters_iterator, n_executions, datasets)

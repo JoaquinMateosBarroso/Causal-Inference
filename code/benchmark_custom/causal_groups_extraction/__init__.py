@@ -1,1 +1,3 @@
-from .causal_groups_extraction import *
+from .causal_groups_extraction import CausalGroupsExtractor
+from .exhaustive_causal_groups_extraction import ExhaustiveCausalGroupsExtractor
+from .genetic_causal_groups_extraction import GeneticCausalGroupsExtractor
