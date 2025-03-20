@@ -90,6 +90,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         micro_data = [] # List where each element is the ts data of a microgroup
         for i, group in enumerate(self.groups):
             if groups_division_method == 'principal_components':
+                print('NOOO')
                 # Standarize data, so that the PCA algorithm works properly
                 group_data = self.data[:, list(group)]
                 group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
@@ -112,6 +113,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     Recursive function that divides the group in 2 subgroups until the explained variance
                     of the first PC represents at least a "explained_variance_threshold" fraction of the total
                     '''
+                    print('Se ejecuta lo que quiero')
                     group_data = self.data[:, list(current_subgroup)]
                     pca = PCA(n_components=1)
                     group_data_pca = pca.fit_transform(group_data)

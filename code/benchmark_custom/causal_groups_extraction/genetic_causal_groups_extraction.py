@@ -12,7 +12,7 @@ class GeneticCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
     Class to extract a set of groups of variables by using an exhaustive search
     '''
-    def __init__(self, data: np.ndarray, scores_getter: function, scores_weights: list, **kwargs):
+    def __init__(self, data: np.ndarray, scores_getter: Callable, scores_weights: list, **kwargs):
         '''
         Create an object that is able to extracat meaningful groups 
         from a dataset of time series variables
@@ -41,7 +41,7 @@ class GeneticCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
 
 
 
-def _run_genetic_algorithm(n_variables, scores_getter: function, scores_weights: list) -> list[set[int]]:
+def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights: list) -> list[set[int]]:
     # Define the set to partition
     ELEMENTS = list(range(1, n_variables+1))  # {1, 2, ..., N}
 

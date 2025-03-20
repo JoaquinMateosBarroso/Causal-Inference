@@ -10,7 +10,7 @@ class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract cla
     '''
     Class to extract a set of groups of variables by using an exhaustive search
     '''
-    def __init__(self, data: np.ndarray, score_getter: function, **kwargs):
+    def __init__(self, data: np.ndarray, score_getter: Callable, **kwargs):
         '''
         Create an object that is able to extracat meaningful groups 
         from a dataset of time series variables
