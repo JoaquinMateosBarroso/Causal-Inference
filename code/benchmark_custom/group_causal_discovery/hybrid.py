@@ -88,9 +88,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         micro_groups = []
         micro_data = [] # List where each element is the ts data of a microgroup
+        current_number_of_variables = 0
         for i, group in enumerate(self.groups):
             if groups_division_method == 'principal_components':
-                print('NOOO')
                 # Standarize data, so that the PCA algorithm works properly
                 group_data = self.data[:, list(group)]
                 group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
@@ -100,9 +100,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                 
                 # Append the microgroup variables indexes to the list    
                 n_variables = group_data_pca.shape[1]
-                prev_number_of_variables = sum(arr.shape[1] for arr in micro_data)
-                micro_groups.append( set(range(prev_number_of_variables,
-                                                prev_number_of_variables + n_variables)) )
+                current_number_of_variables = sum(arr.shape[1] for arr in micro_data)
+                micro_groups.append( set(range(current_number_of_variables,
+                                                current_number_of_variables + n_variables)) )
                 
                 # Append the microgroup data to the list
                 micro_data.append(group_data_pca)
@@ -113,15 +113,17 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     Recursive function that divides the group in 2 subgroups until the explained variance
                     of the first PC represents at least a "explained_variance_threshold" fraction of the total
                     '''
-                    print('Se ejecuta lo que quiero')
                     group_data = self.data[:, list(current_subgroup)]
                     pca = PCA(n_components=1)
                     group_data_pca = pca.fit_transform(group_data)
                     explained_variance = pca.explained_variance_ratio_[0]
                     
                     if explained_variance >= explained_variance_threshold:
-                        # We have reached the desired explained variance,
-                        return [current_subgroup], group_data_pca
+                        # We have reached the desired explained variance; one single pc is enough
+                        nonlocal current_number_of_variables
+                        used_subgroup = [current_number_of_variables]
+                        current_number_of_variables += 1
+                        return used_subgroup, group_data_pca
                     else:
                         # Divide the half of the variables that have highest importance in PC1
                         ordered_nodes = np.argsort(pca.components_[0])
@@ -130,12 +132,13 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                         second_half = ordered_nodes[half:]
                         first_subgroup, first_subgroup_data = _prepare_subgroups([current_subgroup[i] for i in first_half])
                         second_subgroup, second_subgroup_data = _prepare_subgroups([current_subgroup[i] for i in second_half])
-                        
                         return first_subgroup + second_subgroup, np.concatenate([first_subgroup_data, second_subgroup_data], axis=1)
                 
-                micro_groups[i], group_data_pca = _prepare_subgroups(group)
+                micro_group, group_data_pca = _prepare_subgroups(group)
+                micro_groups.append( set(micro_group) )
                 micro_data.append(group_data_pca)
-                
+            
+            
             else:
                 raise ValueError(f'Invalid groups division method: {groups_division_method}')
         
@@ -158,7 +161,6 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             group_parents : dict[int, list[int]]. Dictionary with the parents of each group of variables.
         '''
         group_parents = {}
-        print(f'{micro_parents=}')
         for group_idx, group in enumerate(self.groups):
             group_parents[group_idx] = []
             for son_micro_idx in self.micro_groups[group_idx]:

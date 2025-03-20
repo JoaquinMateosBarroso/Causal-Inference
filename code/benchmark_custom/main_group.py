@@ -71,7 +71,8 @@ benchmark_options = {
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'hybrid',
                                      'list_modifying_algorithms_params': [
-                                        {'dimensionality_reduction_params': {'explained_variance_threshold': variance}}\
+                                        {'dimensionality_reduction_params': {'explained_variance_threshold': variance,
+                                                                             'groups_division_method': 'subgroups'}}\
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
@@ -104,7 +105,6 @@ if __name__ == '__main__':
                                             generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
                                             n_executions=100,
-                                            scores=['f1', 'precision', 'recall', 'time', 'memory'],
                                             verbose=1)
     
     if plot_graphs:

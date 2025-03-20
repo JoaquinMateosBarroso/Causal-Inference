@@ -45,7 +45,7 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
         self.causal_discovery_alg = self._getCausalDiscoveryAlgorithm()
         
         node_parents = self.causal_discovery_alg.extract_parents()
-        
+
         group_parents = self._convert_node_to_group_parents(node_parents)
         
         return group_parents

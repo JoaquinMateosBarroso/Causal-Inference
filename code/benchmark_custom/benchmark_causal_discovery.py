@@ -526,16 +526,18 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         actual_parents_summary = window_to_summary_graph(actual_parents)
         
         algorithm = causalDiscovery(data=time_series, groups=causal_dataset.groups,  **algorithm_parameters)
-        try:
+        # try:
+        if True:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
-        except Exception as e:
+        # except Exception as e:
+        else:
             print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
             print('Returning nan values for this algorithm')
             predicted_parents = {}
             time = np.nan
             memory = np.nan
         
-        finally:
+        # finally:
             result = {'time': time, 'memory': memory}
             
             result['precision'] = get_precision(actual_parents, predicted_parents)
