@@ -1,6 +1,7 @@
 import numpy as np
 from memory_profiler import memory_usage
 from typing import Callable
+from more_itertools import set_partitions
 
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractor
 
@@ -20,6 +21,7 @@ class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractor): # Abstract class
             score_getter : function that receives a set of groups and returns a score to maximize
         '''
         super().__init__(data, **kwargs)
+        self.score_getter = score_getter
         
         
     
@@ -30,5 +32,16 @@ class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractor): # Abstract class
         Returns
             groups : list of sets with the variables that compound each group
         '''
-        pass
+        all_posible_partitions = list(set_partitions(range(self.data.shape[1])))
+        best_score = float('-inf')
+        best_partition = None
+        for partition in all_posible_partitions:
+            score = self.score_getter(partition)
+            if score > best_score:
+                best_score = score
+                best_partition = partition
+        
+        return best_partition
     
+
+
