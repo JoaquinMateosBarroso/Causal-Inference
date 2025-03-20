@@ -19,7 +19,8 @@ class DirectionExtractorBase(ABC): # Abstract class
     '''
     Base class for direction extraction algorithms on groups of variables
     '''
-    def __init__(self, data: np.ndarray, groups: list[set[int]], **kwargs):
+    def __init__(self, data: np.ndarray, groups: list[set[int]],
+                 max_lag: int=3, **kwargs):
         '''
         Create an object that is able to predict over groups of time series variables
         
@@ -37,10 +38,11 @@ class DirectionExtractorBase(ABC): # Abstract class
         # values are the direction of the edge between them
         self.directions_graph: dict = None
         
+        self.max_lag = max_lag
         self.extra_args = kwargs
 
     @abstractmethod
-    def identify_causal_direction(self, X: np.ndarray, Y: np.ndarray) -> EdgeDirection:
+    def identify_causal_direction(self, X: np.ndarray, Y: np.ndarray, lag_X:int=0) -> EdgeDirection:
         '''
         To be implemented by subclasses
         
@@ -52,7 +54,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         '''
         pass
     
-    def extract_direction(self, X_index: int, Y_index: int) -> EdgeDirection:
+    def extract_direction(self, X_index: int, Y_index: int, lag_X: int=0) -> EdgeDirection:
         '''
         Uses the specific algorithm to extract the direction of the edge between two groups of variables
         present in the class data
@@ -63,7 +65,7 @@ class DirectionExtractorBase(ABC): # Abstract class
         X = self.groups_data[X_index]
         Y = self.groups_data[Y_index]
         
-        return self.identify_causal_direction(X, Y)
+        return self.identify_causal_direction(X, Y, lag_X)
     
     def extract_graph_directions(self) -> dict[set[int, int], EdgeDirection]:
         '''
