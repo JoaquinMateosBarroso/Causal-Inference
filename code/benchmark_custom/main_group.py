@@ -26,10 +26,11 @@ algorithms_parameters = {
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
-    'hybrid': {'dimensionality_reduction': 'pca', 'dimensionality_reduction_params': {'explained_variance_threshold': 0.5},
-                            'node_causal_discovery_alg': 'pcmci',
-                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                            'groups_division_method': 'subgroups',
+    'hybrid': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
+                                                   'groups_division_method': 'subgroups'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
 }
 

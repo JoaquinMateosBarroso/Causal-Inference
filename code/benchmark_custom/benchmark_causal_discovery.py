@@ -491,8 +491,8 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             current_results = self.test_algorithms(causal_datasets, algorithms,
                                                     current_algorithms_parameters)
             
+            iteration = -1
             for name, algorithm_results in current_results.items():
-                iteration = -1
                 for particular_result in algorithm_results:
                     particular_result.update(data_option) # Include the parameters in the information for results
                     particular_result['dataset_iteration'] = (iteration:=iteration+1) // n_executions_per_data_param
