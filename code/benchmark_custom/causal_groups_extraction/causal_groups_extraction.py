@@ -35,7 +35,7 @@ class CausalGroupsExtractorBase(ABC): # Abstract class
         '''
         pass
     
-    def extract_groups_parents_time_and_memory(self) -> tuple[dict[int, list[int]], float, float]:
+    def extract_groups_time_and_memory(self) -> tuple[dict[int, list[int]], float, float]:
         '''
         Execute the extract_groups method and return the set of groups, the time that took to run the algorithm
         

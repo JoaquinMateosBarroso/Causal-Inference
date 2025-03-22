@@ -50,7 +50,7 @@ data_generation_options = {
     'contemp_fraction': 1, # Fraction of contemporaneous links; between 0 and 1
     'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 20, # Number of variables in the dataset
+    'N_vars': 5, # Number of variables in the dataset
     'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]

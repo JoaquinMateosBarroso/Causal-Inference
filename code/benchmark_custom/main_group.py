@@ -12,9 +12,9 @@ from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'hybrid': HybridGroupCausalDiscovery,
-    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    # 'micro-level': MicroLevelGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -76,7 +76,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_alg_params'
+chosen_option = 'static_parameters'
 
 
 
@@ -85,13 +85,13 @@ if __name__ == '__main__':
     
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
-    results_folder = 'results_group_hybrid_studying_threshold'
-    execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = False
+    results_folder = 'results'
+    execute_benchmark = False
+    plot_graphs = True
+    generate_toy_data = True
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'explained_variance_threshold'
+    plot_x_axis = 'f1'
     
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
@@ -104,7 +104,7 @@ if __name__ == '__main__':
                                             datasets_folder=datasets_folder,
                                             generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
-                                            n_executions=100,
+                                            n_executions=5,
                                             verbose=1)
     
     if plot_graphs:
