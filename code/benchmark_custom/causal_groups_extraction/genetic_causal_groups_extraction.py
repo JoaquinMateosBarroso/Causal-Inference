@@ -5,6 +5,7 @@ from typing import Callable
 from deap import base, creator, tools, algorithms
 
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from causal_groups_extraction.stat_utils import get_scores_getter
 
 
 
@@ -12,18 +13,18 @@ class GeneticCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
     Class to extract a set of groups of variables by using an exhaustive search
     '''
-    def __init__(self, data: np.ndarray, scores_getter: Callable, scores_weights: list, **kwargs):
+    def __init__(self, data: np.ndarray, scores: list[str], scores_weights: list, **kwargs):
         '''
         Create an object that is able to extracat meaningful groups 
         from a dataset of time series variables
         
         Parameters
             data : np.array with the data, shape (n_samples, n_variables)
-            score_getter : function that receives a set of groups and returns a score to maximize
+            scores : list of strings with the names of the scores to optimize
             scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
         '''
         super().__init__(data, **kwargs)
-        self.scores_getter = scores_getter
+        self.scores_getter = get_scores_getter(data, scores)
         self.scores_weights = scores_weights
     
     def extract_groups(self) -> tuple[list[set[int]]]:
@@ -41,11 +42,15 @@ class GeneticCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
 
 
 
-def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights: list) -> list[set[int]]:
+def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights: list=[1.0]) -> list[set[int]]:
     # Define the set to partition
-    ELEMENTS = list(range(1, n_variables+1))  # {1, 2, ..., N}
+    ELEMENTS = list(range(0, n_variables))  # {1, 2, ..., N}
 
     # Genetic Algorithm: Define Fitness (Maximization)
+    if hasattr(creator, "FitnessMax") and hasattr(creator, "Individual"):
+        del creator.FitnessMax
+        del creator.Individual
+    
     creator.create("FitnessMax", base.Fitness, weights=scores_weights)
     creator.create("Individual", list, fitness=creator.FitnessMax)
 
@@ -58,7 +63,7 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
         partition = []
         start = 0
         for cut in cuts + [n_variables]:
-            partition.append([ELEMENTS[i] for i in indices[start:cut]])
+            partition.append({ELEMENTS[i] for i in indices[start:cut]})
             start = cut
         return partition
 
@@ -70,21 +75,65 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     toolbox.register("evaluate", scores_getter)
 
     # Custom crossover: swap two random subsets
-    def cx_partition(ind1, ind2):
-        if len(ind1) > 1 and len(ind2) > 1:
-            i, j = random.randint(0, len(ind1) - 1), random.randint(0, len(ind2) - 1)
-            ind1[i], ind2[j] = ind2[j], ind1[i]
-        return ind1, ind2
+    def crossover_partitions(part1, part2):
+        '''
+        Performs a crossover between two partitions, returning two new partitions.
 
-    toolbox.register("mate", cx_partition)
+        Parameters:
+        - part1, part2: List of sets representing partitions of the same universal set.
+
+        Returns:
+        - Two new partitions as lists of sets.
+        '''
+        # Flatten elements to track assignments
+        universe = set().union(*part1)  # Get all elements in the set
+        elem_to_group1 = {}
+        elem_to_group2 = {}
+
+        # Randomly assign elements based on partitions
+        for subset in part1:
+            if random.random() < 0.5:
+                for elem in subset:
+                    elem_to_group1[elem] = subset
+            else:
+                for elem in subset:
+                    elem_to_group2[elem] = subset
+
+        for subset in part2:
+            if random.random() < 0.5:
+                for elem in subset:
+                    elem_to_group1[elem] = subset
+            else:
+                for elem in subset:
+                    elem_to_group2[elem] = subset
+
+        # Ensure every element is assigned
+        for elem in universe:
+            if elem not in elem_to_group1:
+                elem_to_group1[elem] = {elem}
+            if elem not in elem_to_group2:
+                elem_to_group2[elem] = {elem}
+
+        # Reconstruct partitions
+        offspring1 = list({frozenset(v) for v in elem_to_group1.values()})
+        offspring2 = list({frozenset(v) for v in elem_to_group2.values()})
+
+        # Convert frozenset to set
+        part1[:] = [set(s) for s in offspring1]
+        part2[:] = [set(s) for s in offspring2]
+        
+        return part1, part2
+
+
+    toolbox.register("mate", crossover_partitions)
 
     # Custom mutation: move an element from one subset to another
     def mut_partition(individual):
         if len(individual) > 1:
             src_idx, dst_idx = random.sample(range(len(individual)), 2)
             if individual[src_idx]:  # Ensure source subset isn't empty
-                element = individual[src_idx].pop(random.randrange(len(individual[src_idx])))
-                individual[dst_idx].append(element)
+                element = individual[src_idx].pop()
+                individual[dst_idx].add(element)
         return (individual,)
 
     toolbox.register("mutate", mut_partition)
@@ -98,10 +147,12 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     # Run the Genetic Algorithm
     def run_ga():
         pop = toolbox.population(n=50)
-        algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=40, verbose=True)
+        algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=40, verbose=False)
         return pop
 
     # Execute GA and get best partition
     best_population = run_ga()
     best_individual = tools.selBest(best_population, k=1)[0]
     print("Best Partition Found:", best_individual, "Fitness:", scores_getter(best_individual))
+    
+    return best_individual

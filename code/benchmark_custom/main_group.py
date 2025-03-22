@@ -39,8 +39,8 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
-    'N_vars': 20, # Number of variables in the dataset
-    'N_groups': 5, # Number of groups in the dataset
+    'N_vars': 5, # Number of variables in the dataset
+    'N_groups': 2, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -89,23 +89,37 @@ if __name__ == '__main__':
     execute_benchmark = False
     plot_graphs = True
     generate_toy_data = True
+    n_executions = 3
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'f1'
     
+    
+    
+    options_generator, options_kwargs = benchmark_options[chosen_option]
+    parameters_iterator = options_generator(data_generation_options,
+                                                algorithms_parameters,
+                                                **options_kwargs)
     if execute_benchmark:
-        options_generator, options_kwargs = benchmark_options[chosen_option]
-        parameters_iterator = options_generator(data_generation_options,
-                                                    algorithms_parameters,
-                                                    **options_kwargs)
         
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                             parameters_iterator=parameters_iterator,
                                             datasets_folder=datasets_folder,
                                             generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
-                                            n_executions=5,
+                                            n_executions=n_executions,
                                             verbose=1)
+    elif generate_toy_data:
+        # Delete previous toy data
+        if os.path.exists(datasets_folder):
+            for filename in os.listdir(datasets_folder):
+                os.remove(f'{datasets_folder}/{filename}')
+        else:
+            os.makedirs(datasets_folder)
+
+        for iteration, current_parameters in enumerate(parameters_iterator):
+            current_algorithms_parameters, data_option = current_parameters
+            causal_datasets = benchmark.generate_datasets(iteration, n_executions, datasets_folder, data_option)
     
     if plot_graphs:
         benchmark.plot_ts_datasets(datasets_folder)

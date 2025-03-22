@@ -1,3 +1,4 @@
+from typing import Callable
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.metrics import normalized_mutual_info_score
@@ -7,6 +8,8 @@ def get_pc1_explained_variance(data: np.ndarray) -> float:
     '''
     Get the explained variance of the first principal component of the data.
     '''
+    if data.shape[1] == 0:
+        return 1
     pca = PCA(n_components=1)
     pca.fit(data)
     return pca.explained_variance_ratio_[0]
@@ -51,3 +54,14 @@ def get_normalized_mutual_information(pred_groups: list[set[int]], gt_groups: li
                 break
     
     return normalized_mutual_info_score(gt_labels, pred_labels)
+
+def get_scores_getter(data: np.ndarray, scores: list[str]) -> Callable:
+    '''
+    Generate a score getter function that receives a set of groups and returns a score to maximize.
+    '''
+    scores_getters = {
+        'variance_explainability_score': get_variance_explainability_score,
+        'normalized_mutual_information': get_normalized_mutual_information,
+    }
+    
+    return lambda groups: [scores_getters[score](data, groups) for score in scores]

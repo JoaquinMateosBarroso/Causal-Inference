@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_variance_explainability_score
+from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_variance_explainability_score
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
@@ -145,10 +145,10 @@ class BenchmarkBase(ABC):
         # Delete previous toy data
         if os.path.exists(datasets_folder):
             for filename in os.listdir(datasets_folder):
-                    os.remove(f'{datasets_folder}/{filename}')
+                os.remove(f'{datasets_folder}/{filename}')
         else:
             os.makedirs(datasets_folder)
-        
+
         for iteration, current_parameters in enumerate(parameters_iterator):
             current_algorithms_parameters, data_option = current_parameters
             causal_datasets = self.generate_datasets(iteration, n_executions, datasets_folder, data_option)
@@ -189,7 +189,7 @@ class BenchmarkBase(ABC):
         for current_algorithms_parameters, data_option in parameters_iterator:
             if self.verbose > 0:
                 print('\n' + '-'*50)
-                print(BLUE, 'Executing the datasets AGAIN but with different options.', RESET)
+                print(BLUE, 'Executing the loaded datasets.', RESET)
             
             # Generate and save results of all algorithms with given datasets
             current_results = self.test_algorithms(causal_datasets, algorithms,
@@ -273,7 +273,7 @@ class BenchmarkBase(ABC):
             # Make the graph more beautiful by setting parents as past variables
             for son, parents in summary_parents.items():
                 summary_parents[son] = [(p, -1) for p in parents]
-            # _plot_ts_graph(summary_parents)
+            plot_ts_graph(summary_parents)
             plt.savefig(f'{folder_name}/{data_name}_summary_graph.pdf')
             plt.clf()
             
@@ -486,6 +486,8 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             datasets_folder : str The folder in which the datasets will be saved
             data_option : dict[str, Any] The options to generate the datasets
         '''
+        if self.verbose > 0:
+            print('Generating datasets...')
         return _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
     
     def load_datasets(self, datasets_folder):
@@ -549,6 +551,8 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
             datasets_folder : str The folder in which the datasets will be saved
             data_option : dict[str, Any] The options to generate the datasets
         '''
+        if self.verbose > 0:
+            print('Generating datasets...')
         return _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
     
     def load_datasets(self, datasets_folder):
@@ -577,7 +581,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         try:
             predicted_groups, time, memory = algorithm.extract_groups_time_and_memory()
         except Exception as e:
-            print(f'Error in algorithm {causalExtraction.__name__}: {e}')
+            print(f'Error in algorithm {causalExtraction.__name__}: {e.with_traceback()}')
             print('Returning nan values for this algorithm')
             predicted_groups = [set(range(causal_dataset.time_series.shape[1]))]
             time = np.nan
@@ -589,17 +593,17 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
             result['predicted_groups'] = predicted_groups
             result['actual_groups'] = actual_groups
             
-            result['average_explained_variance'] = get_average_pc1_explained_variance(causal_dataset.time_series, actual_groups)
-            result['n_groups'] = len(actual_groups)
-            result['variance_explainability_score'] = get_variance_explainability_score(causal_dataset.time_series, actual_groups)
+            result['average_explained_variance'] = get_average_pc1_explained_variance(causal_dataset.time_series, predicted_groups)
+            result['n_groups'] = len(predicted_groups)
+            result['variance_explainability_score'] = get_variance_explainability_score(causal_dataset.time_series, predicted_groups)
+            result['NMI'] = get_normalized_mutual_information(predicted_groups, actual_groups)
             
             return result
-
-
+        
 
 
 # INNER AUXILIAR FUNCTIONS
-def _generate_group_dataset(self, iteration, n_datasets, datasets_folder, data_option):
+def _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option):
     '''
     Function to generate the datasets for the benchmark
     
@@ -608,16 +612,14 @@ def _generate_group_dataset(self, iteration, n_datasets, datasets_folder, data_o
         datasets_folder : str The folder in which the datasets will be saved
         data_option : dict[str, Any] The options to generate the datasets
     '''
-    if self.verbose > 0:
-        print('Generating datasets...')
     causal_datasets = [CausalDataset() for _ in range(n_datasets)]
     for current_dataset_index, causal_dataset in enumerate(causal_datasets):
         dataset_index = iteration * n_datasets + current_dataset_index
         causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
-
+    
     return causal_datasets
 
-def _load_group_datasets(self, datasets_folder):
+def _load_group_datasets(datasets_folder):
         '''
         Function to load the datasets for the benchmark
         
@@ -644,5 +646,3 @@ def _load_group_datasets(self, datasets_folder):
             raise ValueError(f'The dataset folder {datasets_folder} does not exist')
         
         return causal_datasets
-        
-    

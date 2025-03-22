@@ -3,6 +3,7 @@ from typing import Callable
 from more_itertools import set_partitions
 
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from causal_groups_extraction.stat_utils import get_scores_getter
 
 
 
@@ -10,20 +11,17 @@ class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract cla
     '''
     Class to extract a set of groups of variables by using an exhaustive search
     '''
-    def __init__(self, data: np.ndarray, score_getter: Callable, **kwargs):
+    def __init__(self, data: np.ndarray, scores: list[str], **kwargs):
         '''
         Create an object that is able to extracat meaningful groups 
         from a dataset of time series variables
         
         Parameters
             data : np.array with the data, shape (n_samples, n_variables)
-            score_getter : function that receives a partition of the set of variables
-                and returns a score to maximize
+            scores : list[str] with the name of the score to optimize (only one)
         '''
         super().__init__(data, **kwargs)
-        self.score_getter = score_getter
-        
-        
+        self.score_getter = get_scores_getter(data, scores)
     
     def extract_groups(self) -> tuple[list[set[int]]]:
         '''
@@ -36,7 +34,7 @@ class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract cla
         best_score = float('-inf')
         best_partition = None
         for partition in all_posible_partitions:
-            score = self.score_getter(partition)
+            [score] = self.score_getter(partition)
             if score > best_score:
                 best_score = score
                 best_partition = partition

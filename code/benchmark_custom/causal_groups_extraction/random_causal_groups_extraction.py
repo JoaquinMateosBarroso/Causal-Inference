@@ -1,8 +1,6 @@
 import random
 import numpy as np
-from typing import Callable
 
-from deap import base, creator, tools, algorithms
 
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
 
@@ -12,7 +10,7 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
     Class to extract a set of groups of variables by using an exhaustive search
     '''
-    def __init__(self, data: np.ndarray, scores_getter: function, scores_weights: list, **kwargs):
+    def __init__(self, data: np.ndarray, **kwargs):
         '''
         Create an object that is able to extracat meaningful groups 
         from a dataset of time series variables
@@ -23,8 +21,6 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
             scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
         '''
         super().__init__(data, **kwargs)
-        self.scores_getter = scores_getter
-        self.scores_weights = scores_weights
     
     def extract_groups(self) -> tuple[list[set[int]]]:
         '''
@@ -34,8 +30,8 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
             groups : list of sets with the variables that compound each group
         '''
         # Define the set to partition
-        ELEMENTS = list(range(1, n_variables+1))
         n_variables = self.data.shape[1]
+        ELEMENTS = list(range(0, n_variables))
         
         # Generate a random partition
         indices = list(range(n_variables))

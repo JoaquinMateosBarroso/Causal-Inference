@@ -5,21 +5,23 @@ from benchmark import BenchmarkGroupsExtraction
 import shutil
 import os
 
-from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
+from causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
+from functions_test_data import static_parameters
 from causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
     'exhaustive': ExhaustiveCausalGroupsExtractor,
     'genetic': GeneticCausalGroupsExtractor,
-    # TODO: 'random': , 
+    'random': RandomCausalGroupsExtractor, 
 }
 algorithms_parameters = {
-    'exhaustive': {},
+    'exhaustive': {'scores': ['variance_explainability_score']}, # Exhaustive can get only one score
     
-    'genetic': {},
+    'genetic': {'scores': ['variance_explainability_score'], 'scores_weights': [1.0]},
     
     'random': {},
 }
+
 data_generation_options = {}
 
 benchmark_options = {
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     generate_toy_data = False
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'explained_variance_threshold'
+    plot_x_axis = ''
     
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
@@ -61,13 +63,8 @@ if __name__ == '__main__':
         benchmark.plot_ts_datasets(datasets_folder)
         
         benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
-        # Save results for whole graph scores
+        # Save results for scores
         benchmark.plot_particular_result(results_folder,
-                                        dataset_iteration_to_plot=dataset_iteration_to_plot)
-        # Save results for summary graph scores
-        benchmark.plot_particular_result(results_folder, results_folder + '/summary',
-                                        scores=[f'{score}_summary' for score in \
-                                                        ['shd', 'f1', 'precision', 'recall']],
                                         dataset_iteration_to_plot=dataset_iteration_to_plot)
     
     # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
