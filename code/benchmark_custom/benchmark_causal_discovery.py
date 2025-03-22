@@ -585,8 +585,10 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
             result = {'time': time, 'memory': memory}
             actual_groups = causal_dataset.groups
             
-            result[''] = None
+            result['predicted_groups'] = predicted_groups
+            result['actual_groups'] = actual_groups
             
+            result['average_explained_variance'] = None
             
             return result
 
