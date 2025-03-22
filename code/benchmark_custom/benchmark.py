@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_variance_explainability_score
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
@@ -588,7 +589,9 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
             result['predicted_groups'] = predicted_groups
             result['actual_groups'] = actual_groups
             
-            result['average_explained_variance'] = None
+            result['average_explained_variance'] = get_average_pc1_explained_variance(causal_dataset.time_series, actual_groups)
+            result['n_groups'] = len(actual_groups)
+            result['variance_explainability_score'] = get_variance_explainability_score(causal_dataset.time_series, actual_groups)
             
             return result
 

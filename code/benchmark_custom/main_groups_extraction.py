@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
-from benchmark_causal_discovery import BenchmarkGroupsExtraction
+from benchmark import BenchmarkGroupsExtraction
 import shutil
 import os
 

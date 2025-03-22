@@ -3,7 +3,7 @@ from typing import Any, Iterator, Union
 from matplotlib import pyplot as plt
 import numpy as np
 
-from benchmark_causal_discovery import BenchmarkCausalDiscovery
+from benchmark import BenchmarkCausalDiscovery
 from causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
 from causal_discovery_algorithms import DynotearsWrapper

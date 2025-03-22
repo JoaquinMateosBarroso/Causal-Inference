@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.metrics import normalized_mutual_info_score
 
 
 def get_pc1_explained_variance(data: np.ndarray) -> float:
@@ -29,3 +30,24 @@ def get_variance_explainability_score(data: np.ndarray, groups: list[set[int]]) 
     geometric_mean = (explained_variance * inverse_n_groups) ** (1/2)
     
     return geometric_mean
+
+def get_normalized_mutual_information(pred_groups: list[set[int]], gt_groups: list[set[int]]):
+    '''
+    Get the normalized mutual information between two sets of groups.
+    '''
+    # Adapt group format to the labels one required by sklearn
+    pred_labels = np.zeros(len(gt_groups))
+    for i, group in enumerate(pred_groups):
+        for j, gt_group in enumerate(gt_groups):
+            if group == gt_group:
+                pred_labels[i] = j
+                break
+    
+    gt_labels = np.zeros(len(gt_groups))
+    for i, group in enumerate(gt_groups):
+        for j, pred_group in enumerate(pred_groups):
+            if group == pred_group:
+                gt_labels[i] = j
+                break
+    
+    return normalized_mutual_info_score(gt_labels, pred_labels)
