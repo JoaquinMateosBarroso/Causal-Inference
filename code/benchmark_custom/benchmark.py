@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_variance_explainability_score
+from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
 from create_toy_datasets import CausalDataset, plot_ts_graph
 from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
@@ -189,7 +189,7 @@ class BenchmarkBase(ABC):
         for current_algorithms_parameters, data_option in parameters_iterator:
             if self.verbose > 0:
                 print('\n' + '-'*50)
-                print(BLUE, 'Executing the loaded datasets.', RESET)
+                print(BLUE, 'Datasets have been loaded.', RESET)
             
             # Generate and save results of all algorithms with given datasets
             current_results = self.test_algorithms(causal_datasets, algorithms,
@@ -595,7 +595,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
             
             result['average_explained_variance'] = get_average_pc1_explained_variance(causal_dataset.time_series, predicted_groups)
             result['n_groups'] = len(predicted_groups)
-            result['variance_explainability_score'] = get_variance_explainability_score(causal_dataset.time_series, predicted_groups)
+            result['explainability_score'] = get_explainability_score(causal_dataset.time_series, predicted_groups)
             result['NMI'] = get_normalized_mutual_information(predicted_groups, actual_groups)
             
             return result

@@ -39,10 +39,10 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
-    'N_vars': 5, # Number of variables in the dataset
-    'N_groups': 2, # Number of groups in the dataset
-    'inner_group_crosslinks_density': 0.5,
-    'outer_group_crosslinks_density': 0.5,
+    'N_vars': 8, # Number of variables in the dataset
+    'N_groups': 3, # Number of groups in the dataset
+    'inner_group_crosslinks_density': 0.75,
+    'outer_group_crosslinks_density': 0.2,
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     execute_benchmark = False
     plot_graphs = True
     generate_toy_data = True
-    n_executions = 3
+    n_executions = 5
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'f1'

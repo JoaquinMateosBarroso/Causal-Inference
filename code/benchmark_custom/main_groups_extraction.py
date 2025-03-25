@@ -15,9 +15,9 @@ algorithms = {
     'random': RandomCausalGroupsExtractor, 
 }
 algorithms_parameters = {
-    'exhaustive': {'scores': ['variance_explainability_score']}, # Exhaustive can get only one score
+    'exhaustive': {'scores': ['bic']}, # Exhaustive can get only one score
     
-    'genetic': {'scores': ['variance_explainability_score'], 'scores_weights': [1.0]},
+    'genetic': {'scores': ['bic'], 'scores_weights': [1.0]},
     
     'random': {},
 }

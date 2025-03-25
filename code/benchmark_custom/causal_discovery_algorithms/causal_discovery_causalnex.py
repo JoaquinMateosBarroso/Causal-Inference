@@ -3,9 +3,6 @@ from typing import Any
 import numpy as np
 from causalnex.structure import dynotears
 
-# To admit the use of this package's data structures
-from causalai.data.time_series import TimeSeriesData
-
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 
 
