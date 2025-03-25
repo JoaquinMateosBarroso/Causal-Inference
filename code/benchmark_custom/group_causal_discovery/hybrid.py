@@ -14,6 +14,19 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
     with less variables than the original problem. Then, a microlevel causal discovery algorithm will
     be applied to the reduced time series, and the group causal graph will be extracted from the
     microgroups one.
+    
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        groups : list[set[int]] list with the sets that will compound each group of variables.
+                    We will suppose that the groups are known beforehand.
+                    The index of a group will be considered as its position in groups list.
+        dimensionality_reduction : str indicating the type of dimensionality reduction technique
+                    that is applied to groups. options=['pca']. default='pca'
+        dimensionality_reduction_params : dict with the parameters for the dimensionality reduction algorithm.
+        node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
+                    relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
+        node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
     '''
     def __init__(self, data: np.ndarray,
                     groups: list[set[int]],
@@ -23,21 +36,6 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     node_causal_discovery_params: dict[str, Any] = None,
                     verbose: int = 0,
                     **kwargs):
-        '''
-        Create an object that is able to predict causalities over groups of time series variables.
-        
-        Args:
-            data : np.array with the data, shape (n_samples, n_variables)
-            groups : list[set[int]] list with the sets that will compound each group of variables.
-                        We will suppose that the groups are known beforehand.
-                        The index of a group will be considered as its position in groups list.
-            dimensionality_reduction : str indicating the type of dimensionality reduction technique
-                        that is applied to groups. options=['pca']. default='pca'
-            dimensionality_reduction_params : dict with the parameters for the dimensionality reduction algorithm.
-            node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
-                        relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
-            node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
-        '''
         super().__init__(data, groups, **kwargs)
         
         self.node_causal_discovery_alg = node_causal_discovery_alg

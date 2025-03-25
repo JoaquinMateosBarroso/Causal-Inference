@@ -11,17 +11,15 @@ from causalai.data.time_series import TimeSeriesData
 class GrangerWrapper(CausalDiscoveryBase):
     '''
     Wrapper for Granger algorithm
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_features)
+        min_lag : minimum lag to consider
+        max_lag : maximum lag to consider
+        cv : number of folds for the cross-validation
     '''
     def __init__(self, data: np.ndarray, min_lag=1,
                  max_lag=3, cv=5, **kwargs):
-        '''
-        Initialize the Granger object
-        Args:
-            data : np.array with the data, shape (n_samples, n_features)
-            min_lag : minimum lag to consider
-            max_lag : maximum lag to consider
-            cv : number of folds for the cross-validation
-        '''
         super().__init__(data, **kwargs)
         
         self.min_lag = min_lag
@@ -63,6 +61,7 @@ class VARLINGAMWrapper(CausalDiscoveryBase):
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
+        
         Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''

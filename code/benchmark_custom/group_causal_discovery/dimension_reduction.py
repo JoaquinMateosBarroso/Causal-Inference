@@ -10,6 +10,19 @@ from typing import Any
 class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
     '''
     Class that implements the dimension reduction algorithm for causal discovery on groups of variables.
+    
+    The constructor prepares the groups of variables using a dimensionality reduction technique,
+    and then applies a causal discovery algorithm to discover the causal relationships between the variables of each group.
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        groups : list[set[int]] list with the sets that will compound each group of variables.
+                    We will suppose that the groups are known beforehand.
+                    The index of a group will be considered as its position in groups list.
+        dimensionality_reduction : str indicating the type of dimensionality reduction technique
+                    that is applied to groups. options=['pca']. default='pca'
+        node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
+                    relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
     '''
     def __init__(self, data: np.ndarray,
                     groups: list[set[int]],
@@ -17,21 +30,6 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     node_causal_discovery_alg: str = 'pcmci',
                     node_causal_discovery_params: dict[Any] = None,
                     **kwargs):
-        '''
-        Create an object that is able to predict over groups of time series variables.
-        The constructor prepares the groups of variables using a dimensionality reduction technique,
-        and then applies a causal discovery algorithm to discover the causal relationships between the variables of each group.
-        
-        Parameters
-            data : np.array with the data, shape (n_samples, n_variables)
-            groups : list[set[int]] list with the sets that will compound each group of variables.
-                        We will suppose that the groups are known beforehand.
-                        The index of a group will be considered as its position in groups list.
-            dimensionality_reduction : str indicating the type of dimensionality reduction technique
-                        that is applied to groups. options=['pca']. default='pca'
-            node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
-                        relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
-        '''
         super().__init__(data, groups, **kwargs)
         
         self.node_causal_discovery_alg = node_causal_discovery_alg

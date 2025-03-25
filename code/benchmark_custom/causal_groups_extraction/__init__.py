@@ -1,3 +1,4 @@
 from .causal_groups_extraction import CausalGroupsExtractorBase
 from .exhaustive_causal_groups_extraction import ExhaustiveCausalGroupsExtractor
 from .genetic_causal_groups_extraction import GeneticCausalGroupsExtractor
+from .random_causal_groups_extraction import RandomCausalGroupsExtractor

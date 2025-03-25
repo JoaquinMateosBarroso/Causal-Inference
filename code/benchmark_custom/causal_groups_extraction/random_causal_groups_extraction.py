@@ -9,17 +9,13 @@ from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtrac
 class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
     Class to extract a set of groups of variables by using an exhaustive search
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        score_getter : function that receives a set of groups and returns a score to maximize
+        scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
     '''
     def __init__(self, data: np.ndarray, **kwargs):
-        '''
-        Create an object that is able to extracat meaningful groups 
-        from a dataset of time series variables
-        
-        Parameters
-            data : np.array with the data, shape (n_samples, n_variables)
-            score_getter : function that receives a set of groups and returns a score to maximize
-            scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
-        '''
         super().__init__(data, **kwargs)
     
     def extract_groups(self) -> tuple[list[set[int]]]:

@@ -12,16 +12,15 @@ from memory_profiler import memory_usage
 class CausalDiscoveryBase(ABC): # Abstract class
     '''
     Base class for causal discovery algorithms
+    
+    To be implemented by subclasses
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        standarize : bool indicating if the data should be standarized. default=True
     '''
     @abstractmethod
     def __init__(self, data: np.ndarray, standarize: bool=True, **kwargs):
-        '''
-        To be implemented by subclasses
-        
-        Parameters
-            data : np.array with the data, shape (n_samples, n_variables)
-            standarize : bool indicating if the data should be standarized. default=True
-        '''
         if standarize:
             self.data = (data - data.mean(axis=0)) / data.std(axis=0)
         else:

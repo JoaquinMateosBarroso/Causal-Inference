@@ -19,17 +19,19 @@ from causal_discovery_algorithms.modified_pcmci import PCMCI_Modified
 class PCMCIWrapper(CausalDiscoveryBase):
     '''
     Wrapper for PCMCI algorithm
+    
+    Args:
+        data: np.array with the data, shape (n_samples, n_features)
+        cond_ind_test: string with the name of the conditional independence test
+        min_lag: minimum lag to consider
+        max_lag: maximum lag to consider
+        pc_alpha: alpha value for the conditional independence test
     '''
     def __init__(self, data: np.ndarray, cond_ind_test='parcorr',
                  min_lag=1, max_lag=3, pc_alpha: int = None, **kwargs):
         '''
         Initialize the PCMCI object
         
-        :param data: np.array with the data, shape (n_samples, n_features)
-        :param cond_ind_test: string with the name of the conditional independence test
-        :param min_lag: minimum lag to consider
-        :param max_lag: maximum lag to consider
-        :param pc_alpha: alpha value for the conditional independence test
         '''
         super().__init__(data, **kwargs)
         
@@ -64,16 +66,21 @@ class PCMCIWrapper(CausalDiscoveryBase):
 
 
 class PCMCIModifiedWrapper(PCMCIWrapper):
+    '''
+    Wrapper for PCMCI algorithm with some modifications to improve the performance.
+    
+    Args:
+        data: np.array with the data, shape (n_samples, n_features)
+        cond_ind_test: string with the name of the conditional independence test
+        min_lag: minimum lag to consider
+        max_lag: maximum lag to consider
+        pc_alpha: alpha value for the conditional independence test
+    '''
     def __init__(self, data: np.ndarray, cond_ind_test='parcorr',
                  min_lag=1, max_lag=3, pc_alpha: int = None, **kwargs):
         '''
         Initialize the PCMCI object
         
-        :param data: np.array with the data, shape (n_samples, n_features)
-        :param cond_ind_test: string with the name of the conditional independence test
-        :param min_lag: minimum lag to consider
-        :param max_lag: maximum lag to consider
-        :param pc_alpha: alpha value for the conditional independence test
         '''
         super().__init__(data, **kwargs)
         
@@ -97,17 +104,19 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
 class LPCMCIWrapper(CausalDiscoveryBase):
     '''
     Wrapper for LPCMCI algorithm
+    
+    Args:
+        data: np.array with the data, shape (n_samples, n_features)
+        cond_ind_test: string with the name of the conditional independence test
+        min_lag: minimum lag to consider
+        max_lag: maximum lag to consider
+        pc_alpha: alpha value for the conditional independence test
     '''
     def __init__(self, data, cond_ind_test='parcorr',
                  min_lag=1, max_lag=3, pc_alpha=0.05, **kwargs):
         '''
         Initialize the PCMCI object
         
-        :param data: np.array with the data, shape (n_samples, n_features)
-        :param cond_ind_test: string with the name of the conditional independence test
-        :param min_lag: minimum lag to consider
-        :param max_lag: maximum lag to consider
-        :param pc_alpha: alpha value for the conditional independence test
         '''
         super().__init__(data, **kwargs)
         
@@ -142,18 +151,16 @@ class LPCMCIWrapper(CausalDiscoveryBase):
 class PCStableWrapper(CausalDiscoveryBase):
     '''
     Wrapper for PC Stable algorithm
+    
+    Args:
+        data: np.array with the data, shape (n_samples, n_features)
+        cond_ind_test: string with the name of the conditional independence test
+        min_lag: minimum lag to consider
+        max_lag: maximum lag to consider
+        pc_alpha: alpha value for the conditional independence test
     '''
     def __init__(self, data: np.ndarray, cond_ind_test='parcorr', 
                  min_lag=1, max_lag=3, pc_alpha=0.05, **kwargs):
-        '''
-        Initialize the PCStable object
-        
-        :param data: np.array with the data, shape (n_samples, n_features)
-        :param cond_ind_test: string with the name of the conditional independence test
-        :param min_lag: minimum lag to consider
-        :param max_lag: maximum lag to consider
-        :param pc_alpha: alpha value for the conditional independence test
-        '''
         super().__init__(data, **kwargs)
         
         self.cond_ind_test = {'parcorr': ParCorr(significance='analytic'),

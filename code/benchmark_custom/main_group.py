@@ -86,7 +86,7 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     datasets_folder = 'toy_data'
     results_folder = 'results'
-    execute_benchmark = False
+    execute_benchmark = True
     plot_graphs = True
     generate_toy_data = True
     n_executions = 5

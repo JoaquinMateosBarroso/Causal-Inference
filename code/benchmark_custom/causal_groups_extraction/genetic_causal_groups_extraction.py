@@ -12,17 +12,13 @@ from causal_groups_extraction.stat_utils import get_scores_getter
 class GeneticCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
     Class to extract a set of groups of variables by using an exhaustive search
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        scores : list of strings with the names of the scores to optimize
+        scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
     '''
     def __init__(self, data: np.ndarray, scores: list[str], scores_weights: list, **kwargs):
-        '''
-        Create an object that is able to extracat meaningful groups 
-        from a dataset of time series variables
-        
-        Parameters
-            data : np.array with the data, shape (n_samples, n_variables)
-            scores : list of strings with the names of the scores to optimize
-            scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
-        '''
         super().__init__(data, **kwargs)
         self.scores_getter = get_scores_getter(data, scores)
         self.scores_weights = scores_weights

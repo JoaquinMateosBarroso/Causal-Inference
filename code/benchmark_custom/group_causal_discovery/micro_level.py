@@ -11,24 +11,21 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
     Class that implements the dimension reduction algorithm for causal discovery on groups of variables.
     A causal discovery algorithm is applied to discover the causal relationships between all of the node-level
     variables, and then the whole graph is reduced to the group-level graph.
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_variables)
+        groups : list[set[int]] list with the sets that will compound each group of variables.
+                    We will suppose that the groups are known beforehand.
+                    The index of a group will be considered as its position in groups list.
+        node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
+                    relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
+        node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
     '''
     def __init__(self, data: np.ndarray,
                     groups: list[set[int]],
                     node_causal_discovery_alg: str = 'pcmci',
                     node_causal_discovery_params: dict[str, Any] = None,
                     **kwargs):
-        '''
-        Create an object that is able to predict causalities over groups of time series variables.
-        
-        Parameters
-            data : np.array with the data, shape (n_samples, n_variables)
-            groups : list[set[int]] list with the sets that will compound each group of variables.
-                        We will suppose that the groups are known beforehand.
-                        The index of a group will be considered as its position in groups list.
-            node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
-                        relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
-            node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
-        '''
         super().__init__(data, groups, **kwargs)
         
         self.node_causal_discovery_alg = node_causal_discovery_alg
@@ -37,7 +34,8 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
     
     def extract_parents(self) -> dict[int, list[int]]:
         '''
-        Extract the parents of each group of variables using the dimension reduction algorithm
+        Extract the parents of each group of variables using the micro-level causal discovery algorithm
+        to extract the micro-level causal DAG and convert it in a group-level graph.
         
         Returns
             Dictionary with the parents of each group of variables.

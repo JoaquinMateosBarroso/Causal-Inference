@@ -8,13 +8,13 @@ from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBas
 
 class DynotearsWrapper(CausalDiscoveryBase):
     '''
-    Wrapper for Granger algorithm
+    Wrapper for DYNOTEARS algorithm
+    
+    Args:
+        data : np.array with the data, shape (n_samples, n_features)
+        max_lag : maximum lag to consider
     '''
     def __init__(self, data: np.ndarray, max_lag: int, **kwargs):
-        '''
-        Initialize the Granger object
-        Args:
-        '''
         super().__init__(data, **kwargs)
         
         self.df = pd.DataFrame(self.data, columns=range(self.data.shape[1]))
@@ -24,6 +24,7 @@ class DynotearsWrapper(CausalDiscoveryBase):
     def extract_parents(self) -> dict[int, list[int]]:
         '''
         Returns the parents dict
+        
         Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''
