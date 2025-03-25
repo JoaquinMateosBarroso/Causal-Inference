@@ -179,4 +179,4 @@ datasets/
 data/
 code/comparisons/main/custom_benchmark/benchmark_causal_discovery.py
 code/comparisons/main/custom_benchmark/docs/source/conf.py
-docs/
+src/docs

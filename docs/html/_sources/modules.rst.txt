@@ -1,0 +1,8 @@
+.. toctree::
+   :maxdepth: 4
+
+   causal_discovery_algorithms
+   causal_groups_extraction
+   group_causal_discovery
+   benchmark
+   create_toy_datasets

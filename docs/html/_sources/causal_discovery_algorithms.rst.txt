@@ -1,0 +1,58 @@
+causal\_discovery\_algorithms package
+=====================================
+
+causal\_discovery\_algorithms.causal\_discovery\_base module
+------------------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.causal_discovery_base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+causal\_discovery\_algorithms.causal\_discovery\_causalai module
+----------------------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.causal_discovery_causalai
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+causal\_discovery\_algorithms.causal\_discovery\_causalnex module
+-----------------------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.causal_discovery_causalnex
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+causal\_discovery\_algorithms.causal\_discovery\_custom module
+--------------------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.causal_discovery_custom
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+causal\_discovery\_algorithms.causal\_discovery\_tigramite module
+-----------------------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.causal_discovery_tigramite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+causal\_discovery\_algorithms.modified\_pcmci module
+----------------------------------------------------
+
+.. automodule:: causal_discovery_algorithms.modified_pcmci
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: causal_discovery_algorithms
+   :members:
+   :undoc-members:
+   :show-inheritance:
