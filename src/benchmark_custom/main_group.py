@@ -29,12 +29,12 @@ algorithms_parameters = {
     
     'particular_hybrid_principal_components': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
-                                                   'groups_division_method': 'subgroups'},
+                                                   'groups_division_method': 'principal_components'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
-    'particular_hybrid_subgroups': {'dimensionality_reduction': 'subgroups', 
+    'particular_hybrid_subgroups': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
