@@ -1,4 +1,3 @@
-from collections import defaultdict
 from copy import deepcopy
 import time
 # from bayes_opt import BayesianOptimization
@@ -6,7 +5,7 @@ import numpy as np
 
 from tigramite.pcmci import PCMCI, _nested_to_normal, _create_nested_dictionary
 
-from causal_discovery_algorithms.causal_discovery_custom import summarized_causality_multivariate_granger, summarized_causality_univariate_granger
+from group_causation.causal_discovery_algorithms.causal_discovery_custom import summarized_causality_multivariate_granger, summarized_causality_univariate_granger
 
 
 class PCMCI_Modified(PCMCI):

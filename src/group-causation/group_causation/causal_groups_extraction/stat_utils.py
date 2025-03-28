@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.metrics import normalized_mutual_info_score
 
-from group_causal_discovery import GroupCausalDiscoveryBase, DimensionReductionGroupCausalDiscovery
+from group_causation.group_causal_discovery import GroupCausalDiscoveryBase, DimensionReductionGroupCausalDiscovery
 
 from pgmpy.models import LinearGaussianBayesianNetwork
 from pgmpy.estimators import MaximumLikelihoodEstimator

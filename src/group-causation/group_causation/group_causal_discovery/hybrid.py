@@ -1,8 +1,9 @@
 import numpy as np
 from sklearn.decomposition import PCA
-from group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
-from group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
-from typing import Any, TypeVar
+from typing import Any
+
+from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
+from group_causation.group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
 
 class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
     '''

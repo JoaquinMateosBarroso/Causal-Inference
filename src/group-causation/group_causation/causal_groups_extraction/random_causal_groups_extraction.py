@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 
-from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
 
 
 

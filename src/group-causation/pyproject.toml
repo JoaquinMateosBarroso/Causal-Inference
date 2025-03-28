@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "group-causation"
+version = "0.1.0"
+description = "A python library to perform causal inference tasks over groups of time series"
+authors = [{ name = "Joaquín Mateos Barroso", email = "jmateosbarroso@gmail.com" }]
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = []

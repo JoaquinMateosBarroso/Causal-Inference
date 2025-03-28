@@ -5,16 +5,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
-from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
-from create_toy_datasets import CausalDataset, plot_ts_graph
-from functions_test_data import get_FN, get_FP, get_TP, get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
-from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
 from tqdm import tqdm
 
-from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase
-from group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
+# Inner library imports
+from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
+from group_causation.create_toy_datasets import CausalDataset, plot_ts_graph
+from group_causation.functions_test_data import get_FN, get_FP, get_TP, get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
+from group_causation.causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from group_causation.group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase
+from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
 
 # For printings
 BLUE = '\033[34m'

@@ -1,14 +1,14 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
-from benchmark import BenchmarkGroupCausalDiscovery
+from group_causation.benchmark import BenchmarkGroupCausalDiscovery
 import shutil
 import os
 
-from functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
-from group_causal_discovery import DimensionReductionGroupCausalDiscovery
-from group_causal_discovery import MicroLevelGroupCausalDiscovery
-from group_causal_discovery import HybridGroupCausalDiscovery
+from group_causation.functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
+from group_causation.group_causal_discovery import DimensionReductionGroupCausalDiscovery
+from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscovery
+from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'particular_hybrid_principal_components': HybridGroupCausalDiscovery,
@@ -92,8 +92,8 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    datasets_folder = 'results_group_hybrid_studying_threshold/toy_data'
-    results_folder = 'results_group_hybrid_studying_threshold'
+    datasets_folder = 'results/toy_data'
+    results_folder = 'results'
     execute_benchmark = True
     plot_graphs = True
     generate_toy_data = False

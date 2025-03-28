@@ -1,13 +1,13 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
-from benchmark import BenchmarkGroupsExtraction
+from group_causation.benchmark import BenchmarkGroupsExtraction
 import shutil
 import os
 
-from causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
-from functions_test_data import static_parameters
-from causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
+from group_causation.causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
+from group_causation.functions_test_data import static_parameters
+from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
     'exhaustive': ExhaustiveCausalGroupsExtractor,

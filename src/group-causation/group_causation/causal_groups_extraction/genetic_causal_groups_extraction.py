@@ -4,8 +4,8 @@ from typing import Callable
 
 from deap import base, creator, tools, algorithms
 
-from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from causal_groups_extraction.stat_utils import get_scores_getter
+from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.causal_groups_extraction.stat_utils import get_scores_getter
 
 
 

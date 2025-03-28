@@ -3,7 +3,6 @@ from typing import Union
 import numpy as np
 import tigramite
 import tigramite.data_processing
-from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.independence_tests.cmiknn import CMIknn
 from tigramite.independence_tests.robust_parcorr import RobustParCorr
@@ -14,7 +13,8 @@ from tigramite.lpcmci import LPCMCI
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from causal_discovery_algorithms.modified_pcmci import PCMCI_Modified
+from group_causation.causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from group_causation.causal_discovery_algorithms.modified_pcmci import PCMCI_Modified
 
 class PCMCIWrapper(CausalDiscoveryBase):
     '''

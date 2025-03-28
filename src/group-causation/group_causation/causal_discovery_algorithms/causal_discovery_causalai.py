@@ -1,12 +1,12 @@
 from typing import Any
 import numpy as np
-from causal_discovery_algorithms import CausalDiscoveryBase
 from causalai.models.time_series.granger import Granger
 from causalai.models.time_series.var_lingam import VARLINGAM
 
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
+from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
 
 class GrangerWrapper(CausalDiscoveryBase):
     '''

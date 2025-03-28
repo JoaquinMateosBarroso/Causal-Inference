@@ -3,10 +3,10 @@ from typing import Any, Iterator, Union
 from matplotlib import pyplot as plt
 import numpy as np
 
-from benchmark import BenchmarkCausalDiscovery
-from causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
-from causal_discovery_algorithms import DynotearsWrapper
+from group_causation.benchmark import BenchmarkCausalDiscovery
+from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
+from group_causation.causal_discovery_algorithms import DynotearsWrapper
 import shutil
 import os
 
@@ -14,8 +14,7 @@ import os
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-from functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
-
+from group_causation.functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
 
 algorithms = {
     'pcmci': PCMCIWrapper,
@@ -79,6 +78,7 @@ if __name__ == '__main__':
     datasets_folder = 'toy_data'
     results_folder = 'results'
     execute_benchmark = True
+    generate_toy_data = True
 
     if execute_benchmark:    
         options_generator, options_kwargs = benchmark_options[chosen_option]
@@ -91,6 +91,7 @@ if __name__ == '__main__':
                                             datasets_folder=datasets_folder,
                                             results_folder=results_folder,
                                             n_executions=5,
+                                            generate_toy_data=generate_toy_data,
                                             verbose=1)
     
     benchmark.plot_ts_datasets(datasets_folder)
