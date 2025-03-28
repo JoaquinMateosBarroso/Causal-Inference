@@ -1,12 +1,12 @@
 from fastapi import UploadFile
-from app.Algorithms.tigramiteAlgorithms import tigramite_algorithms, runTigramiteCausalDiscovery
 import pandas as pd
 
 
-
+from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
 from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
 from group_causation.causal_discovery_algorithms import DynotearsWrapper
+from group_causation.benchmark import plot_ts_graph
 
 # Ignore FutureWarnings, due to versions of libraries
 import warnings
@@ -33,7 +33,7 @@ algorithms_parameters = {
     'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
     'varlingam': {'min_lag': 0, 'max_lag': 5},
     'dynotears': {              'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
+    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'max_combinations': 100, 'max_conds_dim': 5},
     
     'pcmci-modified': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
                         'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
@@ -69,7 +69,7 @@ benchmark_options = {
 chosen_option = 'static'
 
 
-def runCausalDiscoveryFromTimeSeries(algorithm: str, datasetFIle: UploadFile)->dict:
+def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFile: UploadFile)->dict:
     """
     Run the causal discovery from time series algorithm.
     
@@ -80,13 +80,16 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, datasetFIle: UploadFile)->d
     Returns:
         dict: The result of the algorithm.
     """
-    if algorithm not in causal_discovery_from_time_series_algorithms:
+    if algorithm not in algorithms:
         raise ValueError(f'Unknown algorithm: {algorithm}')
-    
-    dataset = pd.read_csv(datasetFIle.file)
-    
-    if algorithm in tigramite_algorithms:
-        graph_image = runTigramiteCausalDiscovery(algorithm, dataset)
+    else:
+        df = pd.read_csv(datasetFile.file)
+        
+        algorithm_wrapper = algorithms[algorithm]
+        algorithm: CausalDiscoveryBase = algorithm_wrapper(data=df.values, **parameters)
+        
+        parents = algorithm.extract_parents()
+        graph_image = plot_ts_graph(parents)
         
         return {'graph_image': f"data:image/png;base64,{graph_image}"}
     

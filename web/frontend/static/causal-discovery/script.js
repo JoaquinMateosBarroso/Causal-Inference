@@ -1,6 +1,8 @@
 let chosenDatasetFile = null;
 
-function loadCSV(file) {
+function loadCSV() {
+    file = document.getElementById('csvFileInput').files[0];
+    
     if (file) {
         chosenDatasetFile = file;
 
@@ -13,7 +15,6 @@ function loadCSV(file) {
         reader.readAsText(file);
 
         document.getElementById('csvFileInput').disabled = true;
-        document.getElementById('toyDatasetChosal').disabled = true;
     }
 }
 
@@ -45,11 +46,6 @@ function displayColumnNames(columns) {
     }
 }
 
-document.getElementById('csvFileInput').addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    loadCSV(file);    
-});
-
 
 function allowDrop(event) {
     event.preventDefault();
@@ -69,30 +65,45 @@ function drop(event, columnId) {
 }
 
 
-function callBasicPC() {
+function callAlgorithm() {
     document.getElementById('loading-container').style.visibility = 'visible';
     document.getElementById('obtain-causalities-button').disabled = true;
+
+    algorithm_name = document.getElementById('algorithm-options').value;
+    
+    function extractFormValuesToJson(formId) {
+        const form = document.getElementById(formId);
+        if (!form) {
+          return null; // Or handle the error as needed
+        }
+        const formData = new FormData(form);
+        const json = {};
+        formData.forEach((value, key) => {
+          json[key] = value;
+        });
+        return json;
+      }
+
+    algorithm_parameters = extractFormValuesToJson('algorithm-params-container');
+    console.log('Algorithm name:', algorithm_name);
+    console.log('Algorithm parameters:', algorithm_parameters);
 
     const formData = new FormData();
     formData.append('datasetFile', chosenDatasetFile);
     
-    function getFeaturesFromElement(element) {
+    function getVariablesFromElement(element) {
         return Array.from(element.children)
             .map(column => column.id)
             .slice(1); // remove the first element which is the column name
     }
-    const defaultFeatures =  getFeaturesFromElement(document.getElementById('default-column'));
-    const exogeneousFeatures = getFeaturesFromElement(document.getElementById('exogeneous-column'));
-    const endogeneousFeatures = getFeaturesFromElement(document.getElementById('endogeneous-column'));
+
+    const defaultVariables =  getVariablesFromElement(document.getElementById('default-column'));
     
     let urlParams = '';
-    urlParams += `defaultFeatures=${defaultFeatures.toString()}`;
-    urlParams += `&exogeneousFeatures=${exogeneousFeatures.toString()}`;
-    urlParams += `&endogeneousFeatures=${endogeneousFeatures.toString()}`;
+    urlParams += `defaultVariables=${defaultVariables.toString()}`;
     
-    
-    const baseUrl = '/basic-pc';
-    const url = `${baseUrl}?${urlParams}`;
+    const baseUrl = '/ts-causal-discovery';
+    const url = `${baseUrl}/${algorithm_name}?${urlParams}`;
 
     fetch(url, {
         method: 'PUT',
@@ -144,6 +155,9 @@ function callBasicPC() {
         container.scrollIntoView({ behavior: 'smooth' });
     }
 }
+
+
+
 
 function callCausalDiscovery_TimeSeries() {
     document.getElementById('loading-container').style.visibility = 'visible';

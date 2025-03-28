@@ -4,7 +4,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.Algorithms.timeSeries import causal_discovery_from_time_series_algorithms, runCausalDiscoveryFromTimeSeries
+from app.Algorithms.timeSeries import algorithms_parameters as algs_params_cd_from_ts
+from app.Algorithms.timeSeries import runCausalDiscoveryFromTimeSeries
 
 app = FastAPI()
 favicon_path = "frontend/static/favicon.ico"
@@ -16,8 +17,8 @@ templates = Jinja2Templates(directory="frontend/templates")
 async def readIndex(request: Request):
     response = templates.TemplateResponse("index.html",
                     {"request": request,
-                    "causal_discovery_base_algorithms": ["basic-pc"],
-                    "causal_discovery_from_time_series_algorithms": causal_discovery_from_time_series_algorithms})
+                    "causal_discovery_base_algorithms": ["basic-pc"],})
+
     return response
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -54,18 +55,19 @@ async def executeBasicPC(defaultFeatures: str,
 @app.get("/ts-causal-discovery/")
 @app.get("/ts-causal-discovery/{algorithm}")
 async def read_causal_discovery_base(request: Request,
-                                     algorithm: str='pcmci'):
+                                     chosen_algorithm: str='pcmci'):
     response = templates.TemplateResponse("ts-causal-discovery/index.html",
-                                {"request": request,
-                                 'algorithms_names': causal_discovery_from_time_series_algorithms,
-                                 "algorithm": algorithm})    
+                                {'request': request,
+                                 'algs_params': algs_params_cd_from_ts,
+                                 'chosen_algorithm': chosen_algorithm})    
     return response
 
 @app.put("/ts-causal-discovery/{algorithm}")
 async def executeCusalDiscovery_TimeSeries(algorithm: str,
                                            datasetFile: UploadFile = File(...)):
     graph_image = runCausalDiscoveryFromTimeSeries(algorithm, datasetFile)
-
+    print(graph_image)
+    
     return graph_image
     return Response(content=graph_image, media_type="image/png")
 

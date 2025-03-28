@@ -46,3 +46,20 @@ a, a:visited, a:hover, a:active {
     color: black;
     text-decoration: none;
   }
+
+select {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+select:focus {
+    border-color: #405cc1f7;
+    box-shadow: 0 0 5px rgba(64, 92, 193, 0.5);
+}
+

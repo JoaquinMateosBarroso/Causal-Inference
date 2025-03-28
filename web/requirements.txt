@@ -1,14 +1,27 @@
 fastapi>=0.109.2
 pydantic>=2.6.1
 uvicorn>=0.27.0.post1
-scipy>=1.14.0
-pandas>=2.2.2
+scipy>=1.11.4
+pandas>=1.5.3
 jinja2>=3.1.0
 python-multipart>=0.0.9
-tigramite>=5.2
 joblib>=1.2
-
 matplotlib>=3.7.0
-seaborn>=0.12.2
+seaborn>=0.13.2
+memory-profiler>=0.61.0
 networkx>=3.0
+numba>=0.60.0
+dcor>=0.6
+more_itertools>=10.6.0
+deap>=1.4.2
 
+# Specific libraries for causal discovery
+tigramite>=5.2
+causalnex>=0.12.1
+
+
+# Causalai library, which is not published in pypi
+git+https://github.com/salesforce/causalai
+
+# My personal library
+git+https://github.com/JoaquinMateosBarroso/group-causation.git@main#egg=group-causation
