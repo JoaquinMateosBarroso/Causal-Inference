@@ -8,7 +8,7 @@ import copy
 from causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
 from causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
 from create_toy_datasets import CausalDataset, plot_ts_graph
-from functions_test_data import get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
+from functions_test_data import get_FN, get_FP, get_TP, get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
 from typing import Any, Iterator
 from tqdm import tqdm
@@ -526,6 +526,9 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             actual_parents = causal_dataset.parents_dict
             actual_parents_summary = window_to_summary_graph(actual_parents)
             
+            result['TP'] = get_TP(actual_parents, predicted_parents)
+            result['FP'] = get_FP(actual_parents, predicted_parents)
+            result['FN'] = get_FN(actual_parents, predicted_parents)
             result['precision'] = get_precision(actual_parents, predicted_parents)
             result['recall'] = get_recall(actual_parents, predicted_parents)
             result['f1'] = get_f1(actual_parents, predicted_parents)
@@ -533,6 +536,9 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
             # Obtain the same metrics in the summary graph
             predicted_parents_summary = window_to_summary_graph(predicted_parents)
+            result['TP'] = get_TP(actual_parents_summary, predicted_parents_summary)
+            result['FP'] = get_FP(actual_parents_summary, predicted_parents_summary)
+            result['FN'] = get_FN(actual_parents_summary, predicted_parents_summary)
             result['precision_summary'] = get_precision(actual_parents_summary, predicted_parents_summary)
             result['recall_summary'] = get_recall(actual_parents_summary, predicted_parents_summary)
             result['f1_summary'] = get_f1(actual_parents_summary, predicted_parents_summary)

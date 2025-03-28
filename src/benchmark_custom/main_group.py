@@ -11,7 +11,8 @@ from group_causal_discovery import MicroLevelGroupCausalDiscovery
 from group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'hybrid': HybridGroupCausalDiscovery,
+    'particular_hybrid_principal_components': HybridGroupCausalDiscovery,
+    'particular_hybrid_subgroups': HybridGroupCausalDiscovery,
     'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     'micro-level': MicroLevelGroupCausalDiscovery,
@@ -26,7 +27,14 @@ algorithms_parameters = {
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
-    'hybrid': {'dimensionality_reduction': 'pca', 
+    'particular_hybrid_principal_components': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
+                                                   'groups_division_method': 'subgroups'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                'verbose': 1},
+    
+    'particular_hybrid_subgroups': {'dimensionality_reduction': 'subgroups', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
@@ -84,11 +92,11 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    datasets_folder = 'toy_data'
-    results_folder = 'results'
+    datasets_folder = 'results_group_hybrid_studying_threshold/toy_data'
+    results_folder = 'results_group_hybrid_studying_threshold'
     execute_benchmark = True
     plot_graphs = True
-    generate_toy_data = True
+    generate_toy_data = False
     n_executions = 5
     
     dataset_iteration_to_plot = -1
