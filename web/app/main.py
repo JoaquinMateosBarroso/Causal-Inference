@@ -51,16 +51,17 @@ async def executeBasicPC(defaultFeatures: str,
     response = await callBasicPC(datasetFile, pcParameters)
     return response
 
-
-@app.get("/causal-discovery-ts/{algorithm}")
-async def read_causal_discovery_base(algorithm: str,
-                                     request: Request):
-    response = templates.TemplateResponse("causal-discovery-ts/index.html",
+@app.get("/ts-causal-discovery/")
+@app.get("/ts-causal-discovery/{algorithm}")
+async def read_causal_discovery_base(request: Request,
+                                     algorithm: str='pcmci'):
+    response = templates.TemplateResponse("ts-causal-discovery/index.html",
                                 {"request": request,
+                                 'algorithms_names': causal_discovery_from_time_series_algorithms,
                                  "algorithm": algorithm})    
     return response
 
-@app.put("/causal-discovery-ts/{algorithm}")
+@app.put("/ts-causal-discovery/{algorithm}")
 async def executeCusalDiscovery_TimeSeries(algorithm: str,
                                            datasetFile: UploadFile = File(...)):
     graph_image = runCausalDiscoveryFromTimeSeries(algorithm, datasetFile)
@@ -69,7 +70,7 @@ async def executeCusalDiscovery_TimeSeries(algorithm: str,
     return Response(content=graph_image, media_type="image/png")
 
 
-@app.get("/causal-discovery-compare-ts")
+@app.get("/benchmark-ts-causal-discovery")
 async def read_causal_discovery_compare_ts(request: Request):
     response = templates.TemplateResponse("causal-discovery-compare-ts/index.html",
                                 {"request": request,

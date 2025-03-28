@@ -7,8 +7,12 @@ WORKDIR /app
 # 
 COPY ./requirements.txt /app/requirements.txt
 
+
 # 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+# Install personal library
+RUN pip install --no-cache-dir --upgrade ../src/group-causation
 
 # 
 COPY ./app /app

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Inference</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link rel="stylesheet" href="/frontend/static/style.css">
+    <link rel="stylesheet" href="/frontend/static/causal-discovery/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Causal Discovery from Time Series</h1>
+        <input class="choose-file" type="file" id="csvFileInput" accept=".csv"/>
+    </div>
+    
+    <div class="container">
+        <div class="text-item">
+            <h2>Algorithm: {{ algorithm }}</h2>
+            <select id="algorithm-options" class="dropdown">
+                { for algorithm_name in  }<option value="pc">PC Algorithm</option>
+                <option value="fci">FCI Algorithm</option>
+                <option value="ges">GES Algorithm</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="columns" class="column-container">
+            <div class="column" id="default-column" ondrop="drop(event, 'default-column')" ondragover="allowDrop(event)">
+                <h2>Default</h2>
+            </div>
+            <!-- <div class="column" id="exogeneous-column" ondrop="drop(event, 'exogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Exogeneous</h2>
+            </div>
+            <div class="column" id="endogeneous-column" ondrop="drop(event, 'endogeneous-column')" ondragover="allowDrop(event)">
+                <h2>Endogeneous</h2>
+            </div> -->
+        </div>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/frontend/static/causal-discovery/script.js"></script>
+
+    <div class="calling-container">
+        <button onclick="callBasicPC()" class="calling-button" id="obtain-causalities-button">Obtain causalities</button>
+        <div id="loading-container">
+            <img src="/frontend/static/images/loading.gif" alt="Loading..." class="loading-gif">
+        </div>
+    </div>
+
+    <div id="graph-container"></div>
+
+</body>
+</html>

@@ -13,11 +13,11 @@ import base64
 import matplotlib.pyplot as plt
 
 # === IMPORTS FROM THE ORIGINAL CODE ===
-from src.benchmark_custom.benchmark import BenchmarkCausalDiscovery
-from src.benchmark_custom.causal_discovery_algorithms.causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from src.benchmark_custom.causal_discovery_algorithms.causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
-from src.benchmark_custom.causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
-from src.benchmark_custom.functions_test_data import changing_N_variables, changing_preselection_alpha
+from group_causation.benchmark import BenchmarkCausalDiscovery
+from group_causation.causal_discovery_algorithms.causal_discovery_tigramite import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery_algorithms.causal_discovery_causalai import GrangerWrapper, VARLINGAMWrapper
+from group_causation.causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
+from group_causation.functions_test_data import changing_N_variables, changing_preselection_alpha
 
 # === Global definitions as in the original script ===
 algorithms = {
