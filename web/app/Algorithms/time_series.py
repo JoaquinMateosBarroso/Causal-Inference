@@ -11,6 +11,8 @@ from group_causation.causal_discovery_algorithms import DynotearsWrapper
 from group_causation.benchmark import plot_ts_graph
 from group_causation.benchmark import BenchmarkCausalDiscovery
 
+from fastapi.responses import JSONResponse
+
 # Ignore FutureWarnings, due to versions of libraries
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -106,12 +108,19 @@ def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: 
         pd.DataFrame: The generated dataset.
     """
     benchmark = BenchmarkCausalDiscovery()
-    datasets_folder = 'toy_data'
 
-    options_generator, options_kwargs = benchmark_options[chosen_option]
-    parameters_iterator = options_generator(dataset_parameters,
-                                            algorithms_parameters,
-                                            **options_kwargs)
+    # Modify 2 parameters that need to be change from frontend
+    try:
+        dataset_parameters['auto_coeffs'] = [float(i) for i in dataset_parameters['auto_coeffs'].split(',')]
+        dataset_parameters['dependency_coeffs'] = [float(i) for i in dataset_parameters['dependency_coeffs'].split(',')]
+        dataset_parameters['dependency_funcs'] = dataset_parameters['dependency_funcs'].split(',')
+        dataset_parameters['noise_dists'] = dataset_parameters['noise_dists'].split(',')
+        dataset_parameters['noise_sigmas'] = [float(i) for i in dataset_parameters['noise_sigmas'].split(',')]
+    except Exception as e:
+        raise ValueError(f'Error in dataset parameters: {e}')
+    
+    datasets_folder = f'toy_data/{aux_folder_name}'
+    
     # Delete previous toy data
     if os.path.exists(datasets_folder):
         for filename in os.listdir(datasets_folder):
@@ -120,8 +129,20 @@ def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: 
         os.makedirs(datasets_folder)
 
     causal_datasets = benchmark.generate_datasets(0, n_datasets, datasets_folder, dataset_parameters)
-    
     benchmark.plot_ts_datasets(datasets_folder)
+    
+    # Get all CSV and PNG files
+    files_data = []
+    
+    for filename in os.listdir(datasets_folder):
+        if filename.endswith((".csv", ".png", ".pdf")):
+            file_path = os.path.join(datasets_folder, filename)
+            with open(file_path, "rb") as f:
+                encoded_content = base64.b64encode(f.read()).decode("utf-8")
+                files_data.append({"filename": filename, "content": encoded_content})
+
+    return JSONResponse(content={"files": files_data})
+    
     
     
     

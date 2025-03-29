@@ -5,15 +5,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from fastapi_sessions.frontends.primitive import CookieParameters
-from fastapi_sessions.backends.implicit import InMemoryBackend
-import uuid
-
-
-from app.Algorithms.time_series import algorithms_parameters as algs_params_cd_from_ts, generateDataset
+from app.Algorithms.time_series import algorithms_parameters as algs_params_cd_from_ts
 from app.Algorithms.time_series import data_generation_options
-from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries
+from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, generateDataset
 
+import uuid
 
 # Create and mount the FastAPI app
 app = FastAPI()
@@ -21,10 +17,6 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 templates = Jinja2Templates(directory="frontend/templates")
 favicon_path = "frontend/static/favicon.ico"
-
-# Prepare the Session IDs
-cookie_params = CookieParameters(secure=False, httponly=True, samesite="lax")
-session_backend = InMemoryBackend()
 
 @app.get("/")
 async def readIndex(request: Request):
@@ -74,13 +66,13 @@ async def read_ts_causal_discovery(request: Request,):
 @app.put("/create-toy-data/")
 async def execute_create_toy_data(request: Request, dataset_parameters_str: str = Form(...)):
     dataset_parameters = json.loads(dataset_parameters_str)
-    print(f'{dataset_parameters=}')
-    sesion_name = request.session
+    n_datasets = dataset_parameters.pop('n_datasets')
+    aux_folder_name = f'toy_data_{str(uuid.uuid4())}'
     
     # Call the function to create the toy data
-    generateDataset(dataset_parameters)
+    response = generateDataset(aux_folder_name, dataset_parameters, n_datasets)
     
-    return {"message": "Toy data created successfully!"}
+    return response
 
 
 @app.get("/ts-causal-discovery/")

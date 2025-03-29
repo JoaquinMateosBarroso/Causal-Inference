@@ -39,26 +39,31 @@
 
             const params = {{ dataset_creation_params | tojson }};
             
+            function createParamItem(paramName, paramValue) {
+                const paramItem = document.createElement('div');
+                paramItem.className = 'param-item';
+
+                const label = document.createElement('label');
+                label.setAttribute('for', paramName);
+                label.textContent = `${paramName}:`;
+                label.style.display = 'inline-block';
+                label.style.width = '200px'; // Adjust width as needed
+
+                const input = document.createElement('input');
+                input.type = typeof paramValue === 'number' ? 'number' : 'text';
+                input.id = paramName;
+                input.name = paramName;
+                input.value = paramValue;
+                input.style.width = '250px';
+
+                paramItem.appendChild(label);
+                paramItem.appendChild(input);
+                paramsContainer.appendChild(paramItem);
+            }
+
+            createParamItem('n_datasets', 5);
             for (const [paramName, paramValue] of Object.entries(params)) {
-            const paramItem = document.createElement('div');
-            paramItem.className = 'param-item';
-
-            const label = document.createElement('label');
-            label.setAttribute('for', paramName);
-            label.textContent = `${paramName}:`;
-            label.style.display = 'inline-block';
-            label.style.width = '200px'; // Adjust width as needed
-
-            const input = document.createElement('input');
-            input.type = typeof paramValue === 'number' ? 'number' : 'text';
-            input.id = paramName;
-            input.name = paramName;
-            input.value = paramValue;
-            input.style.width = '250px';
-
-            paramItem.appendChild(label);
-            paramItem.appendChild(input);
-            paramsContainer.appendChild(paramItem);
+                createParamItem(paramName, paramValue);
             }
         }
 

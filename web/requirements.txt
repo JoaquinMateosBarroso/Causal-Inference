@@ -1,5 +1,4 @@
 fastapi>=0.109.2
-fastapi-sessions>=0.3.2
 pydantic>=2.6.1
 uvicorn>=0.27.0.post1
 scipy>=1.11.4

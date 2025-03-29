@@ -29,19 +29,34 @@ async function callDatasetCreation() {
         method: 'PUT',
         body: formData
     })
-        .then(response => {
-            if (!response.ok)
-                throw new Error('Network response was not ok');dataset_parameters_str
-        })
 
-    const blob = await response.blob();
+
+    if (!response.ok) {
+        console.error("Failed to fetch files");
+        return;
+    }
+
+    const data = await response.json();
     const zip = new JSZip();
-    zip.file("data.csv", blob, { binary: true });
 
+    // Process each file separately
+    data.files.forEach(file => {
+        const binaryData = atob(file.content); // Decode Base64
+        const arrayBuffer = new Uint8Array(binaryData.length);
+        
+        for (let i = 0; i < binaryData.length; i++) {
+            arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+        
+        zip.file(file.filename, arrayBuffer, { binary: true });
+    });
+
+    // Generate ZIP and trigger download
     zip.generateAsync({ type: "blob" }).then(function(content) {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(content);
-        a.download = "files.zip";
+        a.download = "datasets.zip";
         a.click();
     });
 }
+
