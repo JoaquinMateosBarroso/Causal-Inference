@@ -42,7 +42,7 @@ body {
 }
 
 /* Avoid the blue color when clicking on a link */
-a, a:visited, a:hover, a:active {
+a:visited, a:hover, a:active {
     color: black;
     text-decoration: none;
   }

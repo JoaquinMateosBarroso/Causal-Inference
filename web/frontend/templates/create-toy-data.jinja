@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Inference</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link rel="stylesheet" href="/frontend/static/style.css">
+    <link rel="stylesheet" href="/frontend/static/causal-discovery/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="text-item">
+            <h2>Dataset generation options:</h2>
+            <form id="dataset-params-container">
+                <!-- Parameters will be set here -->
+            </form>
+        </div>
+    </div>
+
+    <div class="calling-container">
+        <button onclick="callDatasetCreation()" class="calling-button"
+            id="obtain-causalities-button" style="display:inline-block">Generate dataset</button>
+        <div id="loading-container">
+            <img src="/frontend/static/images/loading.gif" alt="Loading..." class="loading-gif">
+        </div>
+    </div>
+
+    <div id="graph-container" display="none"></div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="/frontend/static/dataset-creation/script.js"></script>
+
+    <script>
+        function updateDatasetParams() {
+            const paramsContainer = document.getElementById('dataset-params-container');
+            paramsContainer.innerHTML = ''; // Clear existing parameters
+
+            const params = {{ dataset_creation_params | tojson }};
+            
+            for (const [paramName, paramValue] of Object.entries(params)) {
+            const paramItem = document.createElement('div');
+            paramItem.className = 'param-item';
+
+            const label = document.createElement('label');
+            label.setAttribute('for', paramName);
+            label.textContent = `${paramName}:`;
+            label.style.display = 'inline-block';
+            label.style.width = '200px'; // Adjust width as needed
+
+            const input = document.createElement('input');
+            input.type = typeof paramValue === 'number' ? 'number' : 'text';
+            input.id = paramName;
+            input.name = paramName;
+            input.value = paramValue;
+            input.style.width = '250px';
+
+            paramItem.appendChild(label);
+            paramItem.appendChild(input);
+            paramsContainer.appendChild(paramItem);
+            }
+        }
+
+        updateDatasetParams();
+    </script>
+</body>
+</html>

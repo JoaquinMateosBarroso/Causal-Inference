@@ -103,7 +103,9 @@ function callAlgorithm() {
     let urlParams = '';
     urlParams += `defaultVariables=${defaultVariables.toString()}`;
     
-    const baseUrl = '/ts-causal-discovery';
+    // Get the current URL path
+    const baseUrl = window.location.pathname.split('/').slice(0, -1).join('/');
+    // Add the algorithm name to the URL and append some parameters
     const url = `${baseUrl}/${algorithm_name}?${urlParams}`;
 
     fetch(url, {

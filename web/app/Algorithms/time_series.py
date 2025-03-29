@@ -1,13 +1,15 @@
+import os
 from fastapi import UploadFile
 from matplotlib import pyplot as plt
 import pandas as pd
 
 
 from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
-from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery_algorithms import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
 from group_causation.causal_discovery_algorithms import DynotearsWrapper
 from group_causation.benchmark import plot_ts_graph
+from group_causation.benchmark import BenchmarkCausalDiscovery
 
 # Ignore FutureWarnings, due to versions of libraries
 import warnings
@@ -59,11 +61,6 @@ data_generation_options = {
 }
 
 benchmark_options = {
-    'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [5]}),
-    
-    'changing_preselection_alpha': (changing_preselection_alpha,
-                                    {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
     'static': (static_parameters, {}),
 }
 chosen_option = 'static'
@@ -91,22 +88,54 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFi
         parents = algorithm.extract_parents()
         plot_ts_graph(parents)
         
-        def get_image():
-            # Save the plot to a BytesIO object
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png')
-            buf.seek(0)
-
-            # Encode the image in base64
-            graph_image = base64.b64encode(buf.getvalue()).decode('utf-8')
-            buf.close()
-
-            # Clear the plot to avoid overlapping in future plots
-            plt.close()
-            
-            return graph_image
-        
         graph_image = get_image()
         
         return {'graph_image': f"data:image/png;base64,{graph_image}"}
 
+
+def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: int=5) -> pd.DataFrame:
+    """
+    Generate a dataset based on the given parameters.
+    
+    Args:
+        aux_folder_name (str): The name of the auxiliary folder where the dataset will be created.
+        dataset_parameters (dict): The parameters for generating the dataset.
+        n_datasets (int): The number of datasets to generate.
+        
+    Returns:
+        pd.DataFrame: The generated dataset.
+    """
+    benchmark = BenchmarkCausalDiscovery()
+    datasets_folder = 'toy_data'
+
+    options_generator, options_kwargs = benchmark_options[chosen_option]
+    parameters_iterator = options_generator(dataset_parameters,
+                                            algorithms_parameters,
+                                            **options_kwargs)
+    # Delete previous toy data
+    if os.path.exists(datasets_folder):
+        for filename in os.listdir(datasets_folder):
+            os.remove(f'{datasets_folder}/{filename}')
+    else:
+        os.makedirs(datasets_folder)
+
+    causal_datasets = benchmark.generate_datasets(0, n_datasets, datasets_folder, dataset_parameters)
+    
+    benchmark.plot_ts_datasets(datasets_folder)
+    
+    
+    
+def get_image():
+    # Save a plot to a BytesIO object
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+
+    # Encode the image in base64
+    graph_image = base64.b64encode(buf.getvalue()).decode('utf-8')
+    buf.close()
+
+    # Clear the plot to avoid overlapping in future plots
+    plt.close()
+    
+    return graph_image

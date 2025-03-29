@@ -70,7 +70,7 @@
 
 
 .calling-button {
-    display: inline-block;
+    display: none;
     padding: 10px 20px;
     margin: 20px 0;
     font-size: 24px;
@@ -83,8 +83,6 @@
     text-align: center;
     text-decoration: none;
     transition: background-color 0.3s;
-
-    visibility: hidden;
 }
 
 .calling-button:hover {
