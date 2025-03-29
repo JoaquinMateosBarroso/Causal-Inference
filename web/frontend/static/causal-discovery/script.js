@@ -1,7 +1,7 @@
 let chosenDatasetFile = null;
 
 function loadCSV() {
-    file = document.getElementById('csvFileInput').files[0];
+    file = document.getElementById('load-csv-button').files[0];
 
     if (file) {
         chosenDatasetFile = file;
@@ -14,7 +14,10 @@ function loadCSV() {
         };
         reader.readAsText(file);
 
-        document.getElementById('csvFileInput').disabled = true;
+        document.getElementById('load-csv-button').disabled = true;
+        Array.from(document.getElementsByClassName('calling-button')).forEach( (element) => {
+            console.log(element);
+            element.style.display = 'inline-block';})
     }
 }
 
@@ -140,7 +143,6 @@ function callAlgorithm() {
             graph_container.scrollIntoView({ behavior: 'smooth' });
 
             document.getElementById('loading-container').style.display = 'none';
-
             document.getElementById('obtain-causalities-button').disabled = false;
         })
     

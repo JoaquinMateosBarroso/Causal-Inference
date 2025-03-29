@@ -58,5 +58,8 @@ async function callDatasetCreation() {
         a.download = "datasets.zip";
         a.click();
     });
+
+    document.getElementById('loading-container').style.display = 'none';
+    document.getElementById('obtain-causalities-button').disabled = false;
 }
 

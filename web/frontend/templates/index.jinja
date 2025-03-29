@@ -2,36 +2,24 @@
 
 {% block content %}
 
+
+
+
     <div class="container">
-        <h1 class="title">Causal Discovery (In development)</h1>
+        <h1 class="title">Causal Discovery</h1>
     </div>
     
     <div class="container">
-        <div>
-            <!-- {% for algorithm in causal_discovery_from_time_series_algorithms %}
-                <a href="/causal-discovery-ts/{{ algorithm }}">
-                    <div class="text-item">
-                            <h2> {{ algorithm }} </h2>
-                        </href>
-                    </div>
-                </a>
-            {% endfor %} -->
-            
+        <div>    
             <a href="/ts-causal-discovery/">
                 <div class="text-item">
-                        <h2> Time Series </h2>
+                    <h2> Time Series </h2>
                     </href>
                 </div>
             </a>
             <a href="/group-ts-causal-discovery/">
                 <div class="text-item">
-                        <h2> Groups of Time Series </h2>
-                    </href>
-                </div>
-            </a>
-            <a href="/group-extraction-ts-causal-discovery/">
-                <div class="text-item">
-                        <h2> Extraction of Groups of Time Series </h2>
+                        <h2> Groups of Time Series  (In development)</h2>
                     </href>
                 </div>
             </a>
@@ -40,33 +28,51 @@
 
 
     <div class="container">
-        <h1 class="title">Benchmarks (In development)</h1>
+        <h1 class="title">Benchmarks</h1>
     </div>
     
     <div class="container">
         <div>
             <a href="/benchmark-ts-causal-discovery/">
                 <div class="text-item">
-                        <h2> Time Series </h2>
+                        <h2> Time Series  (In development)</h2>
                     </href>
                 </div>
             </a>
             <a href="/benchmark-group-ts-causal-discovery/">
                 <div class="text-item">
-                        <h2> Groups of Time Series </h2>
+                    <h2> Groups of Time Series  (In development)</h2>
                     </href>
                 </div>
             </a>
-            <a href="/group-extraction-benchmark-ts-causal-discovery/">
+            </a>
+        </div>
+    </div>
+
+    
+
+
+    <div class="container">
+        <h1 class="title">Toy Datasets Generation</h1>
+    </div>
+    
+    <div class="container">
+        <div>    
+            <a href="/create-toy-data/">
                 <div class="text-item">
-                        <h2> Extraction of Groups of Time Series </h2>
+                        <h2> Time Series </h2>
+                    </href>
+                </div>
+            </a>
+            <a href="/">
+                <div class="text-item">
+                    <h2> Groups of Time Series  (In development)</h2>
                     </href>
                 </div>
             </a>
         </div>
     </div>
 
-    
     <div class="container">
         <h1 class="title">Static Causal Discovery</h1>
     </div>
@@ -83,5 +89,4 @@
             {% endfor %}
         </div>
     </div>
-
 {% endblock %}

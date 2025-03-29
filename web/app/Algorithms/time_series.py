@@ -135,7 +135,7 @@ def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: 
     files_data = []
     
     for filename in os.listdir(datasets_folder):
-        if filename.endswith((".csv", ".png", ".pdf")):
+        if filename.endswith((".csv", ".png", ".pdf", ".txt")):
             file_path = os.path.join(datasets_folder, filename)
             with open(file_path, "rb") as f:
                 encoded_content = base64.b64encode(f.read()).decode("utf-8")

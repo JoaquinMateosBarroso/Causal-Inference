@@ -1,22 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Causal Inference</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-    <link rel="stylesheet" href="/frontend/static/style.css">
+{% extends 'base.html' %}
+
+
+{% block extra_head %}
     <link rel="stylesheet" href="/frontend/static/causal-discovery/style.css">
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1>Causal Discovery from Time Series</h1>
         <div class="text-item" style="background-color:rgb(171, 170, 170)">
             <h2>Upload CSV file:</h2>
             <p>Upload a CSV file with time series data. The first row should contain the variable names.</p>
             <p>If you want to use toy data, create it 
-                <a href="/create-toy-data" style="color:blue;text-decoration:underline">here</a>.</p>
-            <input type="file" class="choose-file" id="load-csv-button" onclick="loadCSV()" accept=".csv"></button>
+                <a href="/create-toy-data" style="color:blue;text-decoration:underline" target="_blank">here</a>.</p>
+            <input type="file" class="choose-file" id="load-csv-button" onchange="loadCSV()" accept=".csv"></button>
         </div>
         
     </div>
@@ -97,5 +94,5 @@
 
         updateAlgorithmParams();
     </script>
-</body>
-</html>
+
+{% endblock %}
