@@ -98,7 +98,7 @@ async def execute_ts_causal_discovery(algorithm: str,
 @app.get("/benchmark-ts-causal-discovery/{algorrithm}")
 async def read_benchmark_causal_discovery_base(request: Request,
                                      chosen_algorithm: str='pcmci'):
-    return templates.TemplateResponse("ts-causal-discovery.jinja",
+    return templates.TemplateResponse("benchmark-ts-causal-discovery.jinja",
                                 {'request': request,
                                  'algs_params': algs_params_cd_from_ts,
                                  'chosen_algorithm': chosen_algorithm})
