@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Request, Response, UploadFile, File
+import json
+from fastapi import FastAPI, Form, Request, Response, UploadFile, File
 from fastapi.responses import FileResponse
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.Algorithms.timeSeries import algorithms_parameters as algs_params_cd_from_ts
-from app.Algorithms.timeSeries import runCausalDiscoveryFromTimeSeries
+from app.Algorithms.time_series import algorithms_parameters as algs_params_cd_from_ts
+from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries
+# from app.Algorithms.bench_time_series import 
 
 app = FastAPI()
 favicon_path = "frontend/static/favicon.ico"
@@ -15,7 +17,7 @@ templates = Jinja2Templates(directory="frontend/templates")
 
 @app.get("/")
 async def readIndex(request: Request):
-    response = templates.TemplateResponse("index.html",
+    response = templates.TemplateResponse("index.jinja",
                     {"request": request,
                     "causal_discovery_base_algorithms": ["basic-pc"],})
 
@@ -29,7 +31,7 @@ async def favicon():
 @app.get("/causal-discovery-base/{algorithm}")
 async def read_causal_discovery_base(algorithm: str,
                                      request: Request):
-    response = templates.TemplateResponse("causal-discovery-base/index.html",
+    response = templates.TemplateResponse("causal-discovery-base/index.jinja",
                                 {"request": request,
                                  "algorithm": algorithm})
     
@@ -54,28 +56,29 @@ async def executeBasicPC(defaultFeatures: str,
 
 @app.get("/ts-causal-discovery/")
 @app.get("/ts-causal-discovery/{algorithm}")
-async def read_causal_discovery_base(request: Request,
+async def read_ts_causal_discovery(request: Request,
                                      chosen_algorithm: str='pcmci'):
-    response = templates.TemplateResponse("ts-causal-discovery/index.html",
+    return templates.TemplateResponse("ts-causal-discovery.jinja",
                                 {'request': request,
                                  'algs_params': algs_params_cd_from_ts,
-                                 'chosen_algorithm': chosen_algorithm})    
-    return response
+                                 'chosen_algorithm': chosen_algorithm})
 
 @app.put("/ts-causal-discovery/{algorithm}")
-async def executeCusalDiscovery_TimeSeries(algorithm: str,
-                                           datasetFile: UploadFile = File(...)):
-    graph_image = runCausalDiscoveryFromTimeSeries(algorithm, datasetFile)
-    print(graph_image)
+async def execute_ts_causal_discovery(algorithm: str,
+                                        algorithm_parameters_str: str = Form(...),
+                                        datasetFile: UploadFile = File(...)):
+    algorithm_parameters = json.loads(algorithm_parameters_str)
+    print(f'{algorithm_parameters=}')
+    graph_image = runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
     
     return graph_image
-    return Response(content=graph_image, media_type="image/png")
 
 
 @app.get("/benchmark-ts-causal-discovery")
-async def read_causal_discovery_compare_ts(request: Request):
-    response = templates.TemplateResponse("causal-discovery-compare-ts/index.html",
-                                {"request": request,
-                                 "algorithms": causal_discovery_from_time_series_algorithms})
-    
-    return response
+@app.get("/benchmark-ts-causal-discovery/{algorrithm}")
+async def read_benchmark_causal_discovery_base(request: Request,
+                                     chosen_algorithm: str='pcmci'):
+    return templates.TemplateResponse("ts-causal-discovery.jinja",
+                                {'request': request,
+                                 'algs_params': algs_params_cd_from_ts,
+                                 'chosen_algorithm': chosen_algorithm})

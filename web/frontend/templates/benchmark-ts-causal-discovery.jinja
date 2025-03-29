@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <h1 class="title">Causal Discovery from Time Series</h1>
-        <input class="choose-file" type="file" id="csvFileInput" accept=".csv" 
+        <input class="choose-file" type="file" id="csvFileInput" accept=".csv"
                     onchange="loadCSV()"/>
     </div>
     
@@ -36,12 +36,6 @@
             <div class="column" id="default-column" ondrop="drop(event, 'default-column')" ondragover="allowDrop(event)">
                 <h2>Default variables</h2>
             </div>
-            <!-- <div class="column" id="exogeneous-column" ondrop="drop(event, 'exogeneous-column')" ondragover="allowDrop(event)">
-                <h2>Exogeneous</h2>
-            </div>
-            <div class="column" id="endogeneous-column" ondrop="drop(event, 'endogeneous-column')" ondragover="allowDrop(event)">
-                <h2>Endogeneous</h2>
-            </div> -->
         </div>
     </div>
 
@@ -52,7 +46,7 @@
         </div>
     </div>
 
-    <div id="graph-container"></div>
+    <div id="graph-container" display="none"></div>
 
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -62,9 +56,9 @@
         function updateAlgorithmParams() {
             const selectedAlgorithm = document.getElementById('algorithm-options').value;
             const paramsContainer = document.getElementById('algorithm-params-container');
-            paramsContainer.innerHTML = ''; // Clear existing parameters
+            paramsContainer.innerHTML = ''; // Clear exist,ing parameters
 
-            const algsParams = {{ algs_params|tojson }};
+            const algsParams = {{ algs_params | tojson }};
             const params = algsParams[selectedAlgorithm];
 
             for (const [paramName, paramValue] of Object.entries(params)) {
@@ -78,10 +72,11 @@
             label.style.width = '150px'; // Adjust width as needed
 
             const input = document.createElement('input');
-            input.type = 'text';
+            input.type = typeof paramValue === 'number' ? 'number' : 'text';
             input.id = paramName;
             input.name = paramName;
             input.value = paramValue;
+
 
             paramItem.appendChild(label);
             paramItem.appendChild(input);

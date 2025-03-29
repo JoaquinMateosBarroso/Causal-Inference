@@ -1,12 +1,14 @@
-from fastapi import UploadFile
-import pandas as pd
+from typing import Any, Iterator, Union
 
+from matplotlib import pyplot as plt
+import numpy as np
 
-from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
+from group_causation.benchmark import BenchmarkCausalDiscovery
 from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
 from group_causation.causal_discovery_algorithms import DynotearsWrapper
-from group_causation.benchmark import plot_ts_graph
+import shutil
+import os
 
 # Ignore FutureWarnings, due to versions of libraries
 import warnings
@@ -23,9 +25,6 @@ algorithms = {
     
     'fullpcmci': PCMCIWrapper,
     'lpcmci': LPCMCIWrapper,
-    
-    # This works bad with big datasets
-    'pcmci-modified': PCMCIModifiedWrapper,
 }
 algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha
@@ -33,7 +32,7 @@ algorithms_parameters = {
     'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
     'varlingam': {'min_lag': 0, 'max_lag': 5},
     'dynotears': {              'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'max_combinations': 100, 'max_conds_dim': 5},
+    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
     
     'pcmci-modified': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
                         'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
@@ -69,29 +68,42 @@ benchmark_options = {
 chosen_option = 'static'
 
 
-def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFile: UploadFile)->dict:
-    """
-    Run the causal discovery from time series algorithm.
+def complete_benchmark_time_series_causal_discovery(execute_benchmark = True,
+                                                    generate_toy_data = True,
+                                                    datasets_folder = 'toy_data',
+                                                    results_folder = 'results'):
+    plt.style.use('ggplot')
+    benchmark = BenchmarkCausalDiscovery()
+
+    if execute_benchmark:    
+        options_generator, options_kwargs = benchmark_options[chosen_option]
+        parameters_iterator = options_generator(data_generation_options,
+                                                    algorithms_parameters,
+                                                    **options_kwargs)
+        
+        results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+                                            parameters_iterator=parameters_iterator,
+                                            datasets_folder=datasets_folder,
+                                            results_folder=results_folder,
+                                            n_executions=5,
+                                            generate_toy_data=generate_toy_data,
+                                            verbose=1)
     
-    Args:
-        algorithm (str): The algorithm to run.
-        datasetFile (UploadFile): The file containing the dataset.
-        
-    Returns:
-        dict: The result of the algorithm.
-    """
-    if algorithm not in algorithms:
-        raise ValueError(f'Unknown algorithm: {algorithm}')
-    else:
-        df = pd.read_csv(datasetFile.file)
-        
-        algorithm_wrapper = algorithms[algorithm]
-        algorithm: CausalDiscoveryBase = algorithm_wrapper(data=df.values, **parameters)
-        
-        parents = algorithm.extract_parents()
-        graph_image = plot_ts_graph(parents)
-        
-        return {'graph_image': f"data:image/png;base64,{graph_image}"}
+    benchmark.plot_ts_datasets(datasets_folder)
     
-        
-causal_discovery_from_time_series_algorithms = algorithms.keys()
+    benchmark.plot_moving_results(results_folder, x_axis='N_vars')
+    # Save results for whole graph scores
+    benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
+    # Save results for summary graph scores
+    benchmark.plot_particular_result(results_folder, results_folder + '/summary',
+                                     scores=[f'{score}_summary' for score in \
+                                                    ['shd', 'f1', 'precision', 'recall']],
+                                     dataset_iteration_to_plot=0)
+
+    # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
+    destination_folder = os.path.join(results_folder, datasets_folder)
+    if os.path.exists(destination_folder):
+        shutil.rmtree(destination_folder)
+    shutil.copytree(datasets_folder, destination_folder)
+    
+

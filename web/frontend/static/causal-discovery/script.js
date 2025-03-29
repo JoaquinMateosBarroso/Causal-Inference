@@ -2,7 +2,7 @@ let chosenDatasetFile = null;
 
 function loadCSV() {
     file = document.getElementById('csvFileInput').files[0];
-    
+
     if (file) {
         chosenDatasetFile = file;
 
@@ -66,7 +66,9 @@ function drop(event, columnId) {
 
 
 function callAlgorithm() {
-    document.getElementById('loading-container').style.visibility = 'visible';
+    loading_container = document.getElementById('loading-container');
+    loading_container.style.display = 'flex';
+    loading_container.scrollIntoView({ behavior: 'smooth' });
     document.getElementById('obtain-causalities-button').disabled = true;
 
     algorithm_name = document.getElementById('algorithm-options').value;
@@ -74,21 +76,20 @@ function callAlgorithm() {
     function extractFormValuesToJson(formId) {
         const form = document.getElementById(formId);
         if (!form) {
-          return null; // Or handle the error as needed
+            return null; // Or handle the error as needed
         }
         const formData = new FormData(form);
         const json = {};
         formData.forEach((value, key) => {
-          json[key] = value;
+            type = form.elements[key].type;
+            json[key] = (type !== 'number') ? value : parseFloat(value);
         });
         return json;
-      }
-
+    }
     algorithm_parameters = extractFormValuesToJson('algorithm-params-container');
-    console.log('Algorithm name:', algorithm_name);
-    console.log('Algorithm parameters:', algorithm_parameters);
 
     const formData = new FormData();
+    formData.append('algorithm_parameters_str', JSON.stringify(algorithm_parameters));
     formData.append('datasetFile', chosenDatasetFile);
     
     function getVariablesFromElement(element) {
@@ -116,92 +117,47 @@ function callAlgorithm() {
             return response.json();
         })
         .then(data => {
-            console.log(data);
-            drawGraph(data.graph);
-            document.getElementById('loading-container').style.visibility = 'hidden';
-            document.getElementById('graph-container').style.visibility = 'visible';
+            image = data.graph_image;
+            if (!image) {
+                if (!data.graph) {
+                    alert('No graph found. Please try again.');
+                    return;
+                }
+                drawGraph(data.graph);
+            }
+            else {
+                const container = document.getElementById('graph-container');
+                const img = document.createElement('img');
+                img.src = image;
+                img.style.width = "100%";
+                container.appendChild(img);
+            }
+            
+            graph_container = document.getElementById('graph-container');
+            graph_container.style.display = 'flex';
+            graph_container.scrollIntoView({ behavior: 'smooth' });
+
+            document.getElementById('loading-container').style.display = 'none';
+
+            document.getElementById('obtain-causalities-button').disabled = false;
         })
     
-    async function drawGraph(graph) {
-        // Transform data into nodes and edges
-        const nodes = [];
-        const edges = [];
-
-        Object.keys(graph).forEach((key) => {
-            nodes.push({ id: key, label: key });
-            graph[key].forEach((target) => {
-                edges.push({ from: key, to: target });
+        async function drawGraph(graph) {
+            // Transform data into nodes and edges
+            const nodes = [];
+            const edges = [];
+    
+            Object.keys(graph).forEach((key) => {
+                nodes.push({ id: key, label: key });
+                graph[key].forEach((target) => {
+                    edges.push({ from: key, to: target });
+                });
             });
-        });
-
-        // Create a network
-        const container = document.getElementById('graph-container');
-        const visData = {
-            nodes: new vis.DataSet(nodes),
-            edges: new vis.DataSet(edges)
-        };
-        const options = {
-            edges: {
-                arrows: {
-                    to: true // Show arrows indicating the direction of edges
-                }
-            }
-        };
-
-        // Initialize the network
-        const network = new vis.Network(container, visData, options);
-
-        // Scroll to the graph
-        container.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-
-
-
-function callCausalDiscovery_TimeSeries() {
-    document.getElementById('loading-container').style.visibility = 'visible';
-    document.getElementById('obtain-causalities-button').disabled = true;
-
-    const formData = new FormData();
-    formData.append('datasetFile', chosenDatasetFile);
-
-    // The algorithm name is the last element in the URL
-    const algorithm = window.location.pathname.split('/').at(-1);
-
-    const baseUrl = '/causal-discovery-ts';
-    const url = `${baseUrl}/${algorithm}`;
-
-    try {
-        fetch(url, {
-            method: 'PUT',
-            body: formData
-        })
-            .then(response => {
-                console.log(response);
-                if (!response.ok)
-                    throw new Error('Network response was not ok');
-
-                return response.json();
-            })
-            .then(data => {
-                drawGraphImage(data.graph_image);
-                document.getElementById('loading-container').style.visibility = 'hidden';
-                document.getElementById('graph-container').style.visibility = 'visible';
-            })
-        
-        async function drawGraphImage(graph_image) {
-            console.log('graph_image', graph_image);
+    
+            // Create a network
             const container = document.getElementById('graph-container');
-            const img = document.createElement('img');
-            img.src = graph_image;
-            container.appendChild(img);
-
+            
             // Scroll to the graph
             container.scrollIntoView({ behavior: 'smooth' });
         }
-    } catch (error) {
-        alert('An error occurred looking for the graph. Please try again.');
-        console.error('Error:', error);
-    }
 }
