@@ -73,20 +73,4 @@
         </div>
     </div>
 
-    <div class="container">
-        <h1 class="title">Static Causal Discovery</h1>
-    </div>
-    
-    <div class="container">
-        <div>
-            {% for algorithm in causal_discovery_base_algorithms %}
-                <a href="/causal-discovery-base/{{ algorithm }}">
-                    <div class="text-item">
-                            <h2>{{ algorithm }}</h2>
-                        </href>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    </div>
 {% endblock %}

@@ -1,22 +1,32 @@
 let chosenDatasetFile = null;
 
-function loadCSV() {
-    file = document.getElementById('load-csv-button').files[0];
+function loadCSV(file=null) {
+    if (file === null)
+        file = document.getElementById('load-csv-button').files[0];
 
+    chosenDatasetFile = file;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const csvData = e.target.result;
+        const parsedData = d3.csvParse(csvData);
+        displayColumnNames(parsedData.columns);
+    };
+    reader.readAsText(file);
+
+    document.getElementById('load-csv-button').disabled = true;
+    // Show the calling buttons
+    Array.from(document.getElementsByClassName('calling-button')).forEach( (element) => {
+        element.style.display = 'inline-block';})
+}
+
+function loadZIP() {
+    file = document.getElementById('load-zip-button').files[0];
+    chosenDatasetFile = file;
     if (file) {
-        chosenDatasetFile = file;
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const csvData = e.target.result;
-            const parsedData = d3.csvParse(csvData);
-            displayColumnNames(parsedData.columns);
-        };
-        reader.readAsText(file);
-
-        document.getElementById('load-csv-button').disabled = true;
+        document.getElementById('load-zip-button').disabled = true;
+        // Show the calling buttons
         Array.from(document.getElementsByClassName('calling-button')).forEach( (element) => {
-            console.log(element);
             element.style.display = 'inline-block';})
     }
 }
@@ -66,7 +76,6 @@ function drop(event, columnId) {
     target = document.getElementById(columnId);
     target.appendChild(draggedElement);
 }
-
 
 function callAlgorithm() {
     loading_container = document.getElementById('loading-container');
@@ -124,19 +133,15 @@ function callAlgorithm() {
         .then(data => {
             image = data.graph_image;
             if (!image) {
-                if (!data.graph) {
-                    alert('No graph found. Please try again.');
-                    return;
-                }
-                drawGraph(data.graph);
+                alert('No graph found. Please reload page and try again.');
+                return;
             }
-            else {
-                const container = document.getElementById('graph-container');
-                const img = document.createElement('img');
-                img.src = image;
-                img.style.width = "100%";
-                container.appendChild(img);
-            }
+            // Display the graph image in the container
+            const container = document.getElementById('graph-container');
+            const img = document.createElement('img');
+            img.src = image;
+            img.style.width = "100%";
+            container.appendChild(img);
             
             graph_container = document.getElementById('graph-container');
             graph_container.style.display = 'flex';
@@ -145,23 +150,68 @@ function callAlgorithm() {
             document.getElementById('loading-container').style.display = 'none';
             document.getElementById('obtain-causalities-button').disabled = false;
         })
-    
-        async function drawGraph(graph) {
-            // Transform data into nodes and edges
-            const nodes = [];
-            const edges = [];
-    
-            Object.keys(graph).forEach((key) => {
-                nodes.push({ id: key, label: key });
-                graph[key].forEach((target) => {
-                    edges.push({ from: key, to: target });
-                });
-            });
-    
-            // Create a network
-            const container = document.getElementById('graph-container');
-            
-            // Scroll to the graph
-            container.scrollIntoView({ behavior: 'smooth' });
-        }
 }
+
+function callBenchmark() {
+    
+    loading_container = document.getElementById('loading-container');
+    loading_container.style.display = 'flex';
+    loading_container.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('obtain-causalities-button').disabled = true;
+
+    
+    function extractFormValuesToJson(formId) {
+        const form = document.getElementById(formId);
+        if (!form) {
+            return null; // Or handle the error as needed
+        }
+        const formData = new FormData(form);
+        const json = {};
+        formData.forEach((value, key) => {
+            type = form.elements[key].type;
+            json[key] = (type !== 'number') ? value : parseFloat(value);
+        });
+        return json;
+    }
+    
+    // Read parameters of all algorithms
+    let algorithmCounter = 0;
+    let algorithms_parameters = Array();
+    while (document.getElementById(`algorithm-options-${algorithmCounter}`)) {
+        let current_parameters = extractFormValuesToJson(`algorithm-params-container-${algorithmCounter}`);
+        current_parameters.algorithm_name = document.getElementById(`algorithm-options-${algorithmCounter++}`).value;
+        algorithms_parameters.push(current_parameters);
+    }
+
+    const formData = new FormData();
+    formData.append('algorithms_parameters_str', JSON.stringify(algorithms_parameters));
+    formData.append('datasetFile', chosenDatasetFile);
+    
+    
+    
+    // Get the current URL path
+    const url = window.location.pathname.split('/').slice(0, -1).join('/');
+
+    fetch(url, {
+        method: 'PUT',
+        body: formData
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+
+            document.getElementById('loading-container').style.display = 'none';
+            document.getElementById('obtain-causalities-button').disabled = false;
+        })
+    
+    
+}
+
+
+
+

@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI, Form, Request, Response, UploadFile, File
+from fastapi import FastAPI, Form, Request, UploadFile, File
 from fastapi.responses import FileResponse
 
 from fastapi.staticfiles import StaticFiles
@@ -18,45 +18,19 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 templates = Jinja2Templates(directory="frontend/templates")
 favicon_path = "frontend/static/favicon.ico"
 
+
 @app.get("/")
 async def readIndex(request: Request):
-    response = templates.TemplateResponse("index.jinja",
-                    {"request": request,
-                    "causal_discovery_base_algorithms": ["basic-pc"],})
-
-    return response
-
+    return templates.TemplateResponse("index.jinja",
+                    {"request": request})
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse(favicon_path)
 
 
-@app.get("/causal-discovery-base/{algorithm}")
-async def read_causal_discovery_base(algorithm: str,
-                                     request: Request):
-    response = templates.TemplateResponse("causal-discovery-base/index.jinja",
-                                {"request": request,
-                                 "algorithm": algorithm})
-    return response
-
-from app.parametersDefinition import Parameters_CausalDiscoveryBase
-from app.Algorithms.basicPC import callBasicPC  
-@app.put("/basic-pc")
-async def executeBasicPC(defaultFeatures: str,
-                endogeneousFeatures: str,
-                exogeneousFeatures: str,
-                datasetFile: UploadFile = File(...)):
-    
-    pcParameters = Parameters_CausalDiscoveryBase(
-            # I use the list comprehension to avoid empty strings
-            defaultFeatures=[feature for feature in defaultFeatures.split(",") if feature],
-            endogeneousFeatures=[feature for feature in endogeneousFeatures.split(",") if feature],
-            exogeneousFeatures=[feature for feature in exogeneousFeatures.split(",") if feature])
-    
-    response = await callBasicPC(datasetFile, pcParameters)
-    return response
-
-
+'''
+Functions for the Dataset Creation
+'''
 @app.get("/create-toy-data/")
 async def read_ts_causal_discovery(request: Request,):
     return templates.TemplateResponse("create-toy-data.jinja",
@@ -70,11 +44,13 @@ async def execute_create_toy_data(request: Request, dataset_parameters_str: str 
     aux_folder_name = f'toy_data_{str(uuid.uuid4())}'
     
     # Call the function to create the toy data
-    response = generateDataset(aux_folder_name, dataset_parameters, n_datasets)
+    return generateDataset(aux_folder_name, dataset_parameters, n_datasets)
     
-    return response
 
 
+'''
+Functions for the Causal Discovery from Time Series
+'''
 @app.get("/ts-causal-discovery/")
 @app.get("/ts-causal-discovery/{algorithm}")
 async def read_ts_causal_discovery(request: Request,
@@ -85,20 +61,28 @@ async def read_ts_causal_discovery(request: Request,
                                  'chosen_algorithm': chosen_algorithm})
 
 @app.put("/ts-causal-discovery/{algorithm}")
-async def execute_ts_causal_discovery(algorithm: str,
-                                        algorithm_parameters_str: str = Form(...),
-                                        datasetFile: UploadFile = File(...)):
+async def run_ts_causal_discovery(algorithm: str,
+                                    algorithm_parameters_str: str = Form(...),
+                                    datasetFile: UploadFile = File(...)):
     algorithm_parameters = json.loads(algorithm_parameters_str)
-    graph_image = runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
-    
-    return graph_image
+    return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
 
 
+
+'''
+Functions for the Benchmarking of Causal Discovery from Time Series
+'''
 @app.get("/benchmark-ts-causal-discovery")
-@app.get("/benchmark-ts-causal-discovery/{algorrithm}")
-async def read_benchmark_causal_discovery_base(request: Request,
+async def read_benchmark_causal_discovery(request: Request,
                                      chosen_algorithm: str='pcmci'):
     return templates.TemplateResponse("benchmark-ts-causal-discovery.jinja",
                                 {'request': request,
                                  'algs_params': algs_params_cd_from_ts,
                                  'chosen_algorithm': chosen_algorithm})
+
+@app.put("/benchmark-ts-causal-discovery")
+async def run_benchmark_causal_discovery(algorithms_parameters_str: str = Form(...),
+                                        datasetFile: UploadFile = File(...)):
+    algorithms_parameters = json.loads(algorithms_parameters_str)
+    print(f'{algorithms_parameters=}')
+    print(f'{datasetFile.filename=}')
