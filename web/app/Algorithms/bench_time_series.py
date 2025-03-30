@@ -1,5 +1,10 @@
+import base64
+import io
 from typing import Any, Iterator, Union
+import zipfile
 
+from fastapi import UploadFile
+from fastapi.responses import JSONResponse
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -68,42 +73,60 @@ benchmark_options = {
 chosen_option = 'static'
 
 
-def complete_benchmark_time_series_causal_discovery(execute_benchmark = True,
-                                                    generate_toy_data = True,
-                                                    datasets_folder = 'toy_data',
-                                                    results_folder = 'results'):
+async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
+                                  datasetsFile: UploadFile,
+                                  aux_folder_name):
     plt.style.use('ggplot')
     benchmark = BenchmarkCausalDiscovery()
 
-    if execute_benchmark:    
-        options_generator, options_kwargs = benchmark_options[chosen_option]
-        parameters_iterator = options_generator(data_generation_options,
-                                                    algorithms_parameters,
-                                                    **options_kwargs)
+    options_generator, options_kwargs = benchmark_options[chosen_option]
+    parameters_iterator = options_generator(data_generation_options,
+                                                algorithms_parameters,
+                                                **options_kwargs)
+    
+    datasets_folder = f'toy_data/{aux_folder_name}'
+    results_folder = f'results/{aux_folder_name}'
+    
+    # Delete previous toy data
+    if os.path.exists(datasets_folder):
+        for filename in os.listdir(datasets_folder):
+            os.remove(f'{datasets_folder}/{filename}')
+    else:
+        os.makedirs(datasets_folder)
+    
+    # Unzip the datasets
+    dataset_contents = await datasetsFile.read()
+    with zipfile.ZipFile(io.BytesIO(dataset_contents), "r") as zip_ref:
+        zip_ref.extractall(datasets_folder)
+    
+    # Delete previous results
+    if os.path.exists(results_folder):
+        for filename in os.listdir(results_folder):
+            os.remove(f'{results_folder}/{filename}')
+    else:
+        os.makedirs(results_folder)
+    
+    results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+                                        parameters_iterator=parameters_iterator,
+                                        datasets_folder=datasets_folder,
+                                        results_folder=results_folder,
+                                        verbose=1)
         
-        results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
-                                            parameters_iterator=parameters_iterator,
-                                            datasets_folder=datasets_folder,
-                                            results_folder=results_folder,
-                                            n_executions=5,
-                                            generate_toy_data=generate_toy_data,
-                                            verbose=1)
-    
-    benchmark.plot_ts_datasets(datasets_folder)
-    
-    benchmark.plot_moving_results(results_folder, x_axis='N_vars')
     # Save results for whole graph scores
-    benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
+    benchmark.plot_particular_result(results_folder)
     # Save results for summary graph scores
     benchmark.plot_particular_result(results_folder, results_folder + '/summary',
                                      scores=[f'{score}_summary' for score in \
                                                     ['shd', 'f1', 'precision', 'recall']],
                                      dataset_iteration_to_plot=0)
+    # Get all necessary files
+    files_data = []
+    for filename in os.listdir(results_folder):
+        with open(os.path.join(results_folder, filename), "rb") as f:
+            files_data.append({"filename": filename, 
+                               "content": base64.b64encode(f.read()).decode("utf-8")})
+    # Clean folders
+    shutil.rmtree(datasets_folder)
+    shutil.rmtree(results_folder)
 
-    # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
-    destination_folder = os.path.join(results_folder, datasets_folder)
-    if os.path.exists(destination_folder):
-        shutil.rmtree(destination_folder)
-    shutil.copytree(datasets_folder, destination_folder)
-    
-
+    return JSONResponse(content={"files": files_data})

@@ -176,11 +176,11 @@ function callBenchmark() {
     
     // Read parameters of all algorithms
     let algorithmCounter = 0;
-    let algorithms_parameters = Array();
+    let algorithms_parameters = {};
     while (document.getElementById(`algorithm-options-${algorithmCounter}`)) {
         let current_parameters = extractFormValuesToJson(`algorithm-params-container-${algorithmCounter}`);
-        current_parameters.algorithm_name = document.getElementById(`algorithm-options-${algorithmCounter++}`).value;
-        algorithms_parameters.push(current_parameters);
+        algorithm_name = document.getElementById(`algorithm-options-${algorithmCounter++}`).value;
+        algorithms_parameters[algorithm_name] = current_parameters;
     }
 
     const formData = new FormData();

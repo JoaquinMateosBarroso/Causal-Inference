@@ -1,4 +1,6 @@
+import asyncio
 import os
+import shutil
 from fastapi import UploadFile
 from matplotlib import pyplot as plt
 import pandas as pd
@@ -17,7 +19,7 @@ from fastapi.responses import JSONResponse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-from group_causation.functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
+from group_causation.functions_test_data import static_parameters
 import io
 import base64
 
@@ -95,7 +97,7 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFi
         return {'graph_image': f"data:image/png;base64,{graph_image}"}
 
 
-def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: int=5) -> pd.DataFrame:
+async def generateDataset(dataset_parameters: dict, n_datasets: int, aux_folder_name: str) -> pd.DataFrame:
     """
     Generate a dataset based on the given parameters.
     
@@ -128,26 +130,24 @@ def generateDataset(aux_folder_name: str, dataset_parameters: dict, n_datasets: 
     else:
         os.makedirs(datasets_folder)
 
-    causal_datasets = benchmark.generate_datasets(0, n_datasets, datasets_folder, dataset_parameters)
-    benchmark.plot_ts_datasets(datasets_folder)
+    # Generate the datasets asynchronously
+    await asyncio.to_thread( benchmark.generate_datasets, 0, n_datasets, datasets_folder, dataset_parameters )
+    await asyncio.to_thread( benchmark.plot_ts_datasets, datasets_folder )
     
-    # Get all CSV and PNG files
+    # Get all necessary files
     files_data = []
-    
     for filename in os.listdir(datasets_folder):
-        if filename.endswith((".csv", ".png", ".pdf", ".txt")):
-            file_path = os.path.join(datasets_folder, filename)
-            with open(file_path, "rb") as f:
-                encoded_content = base64.b64encode(f.read()).decode("utf-8")
-                files_data.append({"filename": filename, "content": encoded_content})
+        with open(os.path.join(datasets_folder, filename), "rb") as f:
+            files_data.append({"filename": filename, 
+                               "content": base64.b64encode(f.read()).decode("utf-8")})
 
+    # Clean the datasets folder
+    shutil.rmtree(datasets_folder)
+    
     return JSONResponse(content={"files": files_data})
-    
-    
-    
-    
+
 def get_image():
-    # Save a plot to a BytesIO object
+    # Save plot to a BytesIO object
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)

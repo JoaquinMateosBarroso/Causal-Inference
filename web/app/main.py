@@ -11,6 +11,8 @@ from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, generat
 
 import uuid
 
+from app.Algorithms.bench_time_series import runTimeSeriesBenchmarkFromZip
+
 # Create and mount the FastAPI app
 app = FastAPI()
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
@@ -41,10 +43,10 @@ async def read_ts_causal_discovery(request: Request,):
 async def execute_create_toy_data(request: Request, dataset_parameters_str: str = Form(...)):
     dataset_parameters = json.loads(dataset_parameters_str)
     n_datasets = dataset_parameters.pop('n_datasets')
-    aux_folder_name = f'toy_data_{str(uuid.uuid4())}'
+    aux_folder_name = str(uuid.uuid4())
     
     # Call the function to create the toy data
-    return generateDataset(aux_folder_name, dataset_parameters, n_datasets)
+    return await generateDataset(dataset_parameters, n_datasets, aux_folder_name)
     
 
 
@@ -84,5 +86,6 @@ async def read_benchmark_causal_discovery(request: Request,
 async def run_benchmark_causal_discovery(algorithms_parameters_str: str = Form(...),
                                         datasetFile: UploadFile = File(...)):
     algorithms_parameters = json.loads(algorithms_parameters_str)
-    print(f'{algorithms_parameters=}')
-    print(f'{datasetFile.filename=}')
+    aux_folder_name = str(uuid.uuid4())
+
+    return await runTimeSeriesBenchmarkFromZip(algorithms_parameters, datasetFile, aux_folder_name)

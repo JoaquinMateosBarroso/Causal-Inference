@@ -78,7 +78,7 @@ if __name__ == '__main__':
     datasets_folder = 'toy_data'
     results_folder = 'results'
     execute_benchmark = True
-    generate_toy_data = True
+    generate_toy_data = False
 
     if execute_benchmark:    
         options_generator, options_kwargs = benchmark_options[chosen_option]

@@ -432,6 +432,8 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
                                                             parents_dict=parents_dict))
         else:
             raise ValueError(f'The dataset folder {datasets_folder} does not exist')
+        
+        return causal_datasets
     
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalDiscovery: type[CausalDiscoveryBase],
