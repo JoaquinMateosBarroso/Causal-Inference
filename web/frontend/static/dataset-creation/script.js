@@ -29,8 +29,6 @@ async function callDatasetCreation() {
         method: 'PUT',
         body: formData
     })
-
-
     if (!response.ok) {
         console.error("Failed to fetch files");
         return;

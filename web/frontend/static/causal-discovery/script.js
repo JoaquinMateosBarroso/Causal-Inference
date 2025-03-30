@@ -31,13 +31,6 @@ function loadZIP() {
     }
 }
 
-
-function chooseToyDataset(datasetName) {
-    fetch('/frontend/static/toy-datasets/' + datasetName)
-        .then(response => response.blob())
-        .then(loadCSV);
-}
-
 function displayColumnNames(columns) {
     const columnContainer = document.getElementById('default-column');
 
@@ -77,7 +70,7 @@ function drop(event, columnId) {
     target.appendChild(draggedElement);
 }
 
-function callAlgorithm() {
+async function callAlgorithm() {
     loading_container = document.getElementById('loading-container');
     loading_container.style.display = 'flex';
     loading_container.scrollIntoView({ behavior: 'smooth' });
@@ -152,7 +145,7 @@ function callAlgorithm() {
         })
 }
 
-function callBenchmark() {
+async function callBenchmark() {
     
     loading_container = document.getElementById('loading-container');
     loading_container.style.display = 'flex';
@@ -192,24 +185,60 @@ function callBenchmark() {
     // Get the current URL path
     const url = window.location.pathname.split('/').slice(0, -1).join('/');
 
-    fetch(url, {
+    const response = await fetch(url, {
         method: 'PUT',
         body: formData
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
+    
+    if (!response.ok) {
+        console.error("Failed to fetch files");
+        return;
+    }
 
-            document.getElementById('loading-container').style.display = 'none';
-            document.getElementById('obtain-causalities-button').disabled = false;
-        })
+    const data = await response.json();
+    const zip = new JSZip();
+    const graphs_container = document.getElementById('graphs-container');
+    graphs_container.innerHTML = ""; // Clear previous graphs
+
+    // Process each file separately
+    data.files.forEach(file => {
+        const binaryData = atob(file.content); // Decode Base64
+        const arrayBuffer = new Uint8Array(binaryData.length);
+        
+        for (let i = 0; i < binaryData.length; i++)
+            arrayBuffer[i] = binaryData.charCodeAt(i);
+        
+        console.log(file.filename);
+        if (file.filename && (file.filename.endsWith(".png") || file.filename.endsWith(".pdf"))) {
+            const img = document.createElement("img");
+            if (file.filename.endsWith(".png")) {
+                img.src = `data:image/png;base64,${file.content}`;
+                img.style.width = "100%";
+                graphs_container.appendChild(img);
+            } else if (file.filename.endsWith(".pdf")) {
+                const iFrame = document.createElement("iframe");
+                iFrame.src = `data:application/pdf;base64,${file.content}#toolbar=0&scrollbar=0`;
+                iFrame.width = "50%";
+                iFrame.height = "500px";
+                graphs_container.appendChild(iFrame);
+            }
+            graphs_container.appendChild(document.createElement("br"));
+        }
+        zip.file(file.filename, arrayBuffer, { binary: true });
+    });
+    graphs_container.style.display = 'flex';
+
+    // Generate ZIP and trigger download
+    zip.generateAsync({ type: "blob" }).then(function(content) {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = "results.zip";
+        a.click();
+    });
     
-    
+    graphs_container.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('loading-container').style.display = 'none';
+    document.getElementById('obtain-causalities-button').disabled = false;
 }
 
 

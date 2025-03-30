@@ -40,49 +40,6 @@
                 <hr style="border: 2px solid black; margin: 20px 0;">
 
             </div>
-            
-            <script>
-                let algorithmCount = 1;
-
-                function addAlgorithm() {
-                    const algorithmContainer = document.getElementById('algorithm-container');
-                    
-                    const newAlgorithmDiv = document.createElement('div');
-                    newAlgorithmDiv.id = `algorithm-section-${algorithmCount}`;
-                    newAlgorithmDiv.innerHTML = `
-                        <select id="algorithm-options-${algorithmCount}" class="dropdown" onchange="updateAlgorithmParams(${algorithmCount})">
-                            {% for algorithm_name in algs_params.keys() %}
-                                <option value="{{ algorithm_name }}">{{algorithm_name}}</option>
-                            {% endfor %}
-                        </select>
-                        </br>
-                        <h3>Algorithm parameters:</h3>
-                        <form id="algorithm-params-container-${algorithmCount}">
-                        <!-- Parameters will be dynamically updated here -->
-                        </form>
-                        <button type="button" onclick="deleteAlgorithm(${algorithmCount})">Delete Algorithm</button>
-                        
-                        <hr style="border: 2px solid black; margin: 20px 0;">
-                    `;
-                    algorithmContainer.appendChild(newAlgorithmDiv);
-
-                    updateAlgorithmParams(algorithmCount); // Initialize parameters for the new algorithm
-                    algorithmCount++;
-                }
-
-                function deleteAlgorithm(id = null) {
-                    if (id) {
-                        const algorithmDiv = document.getElementById(`algorithm-section-${id}`);
-                        if (algorithmDiv)
-                            algorithmDiv.remove();
-                    } else {
-                        const algorithmSection = document.getElementById('algorithm-section');
-                        if (algorithmSection)
-                            algorithmSection.remove();
-                    }
-                    algorithmCount--;
-                }
-            </script>
         </div>
     </div>
 </div>
@@ -94,10 +51,11 @@
         </div>
     </div>
 
-    <div id="graph-container" display="none"></div>
+    <div id="graphs-container"></div>
 
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="/frontend/static/causal-discovery/script.js"></script>
 
     {# This script must be in the html because it uses jinja2 variables. #}
@@ -139,6 +97,51 @@
         });
 
         updateAlgorithmParams(0);
+    </script>
+
+
+    <script>
+        let algorithmCount = 1;
+
+        function addAlgorithm() {
+            const algorithmContainer = document.getElementById('algorithm-container');
+            
+            const newAlgorithmDiv = document.createElement('div');
+            newAlgorithmDiv.id = `algorithm-section-${algorithmCount}`;
+            newAlgorithmDiv.innerHTML = `
+                <select id="algorithm-options-${algorithmCount}" class="dropdown" onchange="updateAlgorithmParams(${algorithmCount})">
+                    {% for algorithm_name in algs_params.keys() %}
+                        <option value="{{ algorithm_name }}">{{algorithm_name}}</option>
+                    {% endfor %}
+                </select>
+                </br>
+                <h3>Algorithm parameters:</h3>
+                <form id="algorithm-params-container-${algorithmCount}">
+                <!-- Parameters will be dynamically updated here -->
+                </form>
+                <br/>
+                <button type="button" onclick="deleteAlgorithm(${algorithmCount})">Delete Algorithm</button>
+                
+                <hr style="border: 2px solid black; margin: 20px 0;">
+            `;
+            algorithmContainer.appendChild(newAlgorithmDiv);
+
+            updateAlgorithmParams(algorithmCount); // Initialize parameters for the new algorithm
+            algorithmCount++;
+        }
+
+        function deleteAlgorithm(id = null) {
+            if (id) {
+                const algorithmDiv = document.getElementById(`algorithm-section-${id}`);
+                if (algorithmDiv)
+                    algorithmDiv.remove();
+            } else {
+                const algorithmSection = document.getElementById('algorithm-section');
+                if (algorithmSection)
+                    algorithmSection.remove();
+            }
+            algorithmCount--;
+        }
     </script>
 
 {% endblock %}

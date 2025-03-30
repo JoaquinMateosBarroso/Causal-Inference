@@ -47,7 +47,6 @@ async def execute_create_toy_data(request: Request, dataset_parameters_str: str 
     
     # Call the function to create the toy data
     return await generateDataset(dataset_parameters, n_datasets, aux_folder_name)
-    
 
 
 '''

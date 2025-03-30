@@ -106,12 +106,14 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
     else:
         os.makedirs(results_folder)
     
-    results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
+    chosen_algorithms = {f'{algorithm}': algorithms[algorithm] \
+                                    for algorithm in algorithms_parameters.keys()}
+    results = benchmark.benchmark_causal_discovery(algorithms=chosen_algorithms,
                                         parameters_iterator=parameters_iterator,
                                         datasets_folder=datasets_folder,
                                         results_folder=results_folder,
                                         verbose=1)
-        
+    
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder)
     # Save results for summary graph scores
@@ -119,12 +121,18 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
                                      scores=[f'{score}_summary' for score in \
                                                     ['shd', 'f1', 'precision', 'recall']],
                                      dataset_iteration_to_plot=0)
-    # Get all necessary files
+    
+    # Get all necessary files, including those in subfolders
     files_data = []
-    for filename in os.listdir(results_folder):
-        with open(os.path.join(results_folder, filename), "rb") as f:
-            files_data.append({"filename": filename, 
-                               "content": base64.b64encode(f.read()).decode("utf-8")})
+    for root, _, files in os.walk(results_folder):
+        for filename in files:
+            file_path = os.path.join(root, filename)
+            relative_path = os.path.relpath(file_path, results_folder)  # Preserve folder structure in filenames
+            with open(file_path, "rb") as f:
+                files_data.append({
+                    "filename": relative_path,  # Use relative path instead of just filename
+                    "content": base64.b64encode(f.read()).decode("utf-8")})
+                
     # Clean folders
     shutil.rmtree(datasets_folder)
     shutil.rmtree(results_folder)
