@@ -17,6 +17,8 @@ import os
 
 # Ignore FutureWarnings, due to versions of libraries
 import warnings
+
+import pandas as pd
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from group_causation.functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
@@ -114,6 +116,23 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
                                         results_folder=results_folder,
                                         verbose=1)
     
+    
+    
+    files = os.listdir(results_folder)
+    results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
+    get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
+    results_dataframes = {get_algo_name(filename): pd.read_csv(f'{results_folder}/{filename}')\
+                            for filename in results_files}
+    
+    
+    ###################################
+    for score in ['f1', 'precision', 'recall', 'shd', 'time', 'memory']:
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+        all_results = []
+        for algorithm_name, df_results in results_dataframes.items():
+            print(f'{algorithm_name=}')
+            print(f'{df_results=}')
+    #############################################3
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder)
     # Save results for summary graph scores

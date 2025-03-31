@@ -218,7 +218,7 @@ async function callBenchmark() {
             } else if (file.filename.endsWith(".pdf")) {
                 const iFrame = document.createElement("iframe");
                 iFrame.src = `data:application/pdf;base64,${file.content}#toolbar=0&scrollbar=0`;
-                iFrame.width = "50%";
+                iFrame.width = "70%";
                 iFrame.height = "500px";
                 graphs_container.appendChild(iFrame);
             }
