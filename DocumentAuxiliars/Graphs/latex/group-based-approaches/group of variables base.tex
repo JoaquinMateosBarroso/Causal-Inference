@@ -1,0 +1,24 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usepackage{ifthen}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \node[shape=ellipse,draw=black] (A) at (-2,5)   {A};
+    \node[shape=ellipse,draw=black] (B) at (2,5)    {B};
+    \node[shape=ellipse,draw=black] (C) at (0,7)    {C};
+    \node[shape=ellipse,draw=black] (D) at (4,2)    {D};
+    \node[shape=ellipse,draw=black] (E) at (4.66,-0.61) {E};
+    \node[shape=ellipse,draw=black] (F) at (2,-1)   {F};
+    \node[shape=ellipse,draw=black] (G) at (-2,-1)  {G};
+    \node[shape=ellipse,draw=black] (H) at (-4,2)   {H};
+
+    \draw[dashed, black] (0, 5.67) ellipse (3cm and 2cm);
+    \draw[dashed, black, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
+    \draw[dashed, black, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm);
+
+\end{tikzpicture}
+
+\end{document}

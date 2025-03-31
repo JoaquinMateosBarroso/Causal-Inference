@@ -1,0 +1,25 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usepackage{ifthen}
+\definecolor{darkgreen}{rgb}{0, 0.5, 0}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \node[shape=circle,draw=darkgreen,text=darkgreen] (A) at (-2,5)   {$W^1$};
+    \node[shape=circle,draw=red,text=red] (B) at (2,5)    {$W^2$};
+    \node[shape=circle,draw=blue,text=blue] (C) at (0,7)    {$W^3$};
+    \node[shape=circle,draw=purple,text=purple] (D) at (4,2)    {$W^4$};
+    \node[shape=circle,draw=yellow,text=yellow] (E) at (4.66,-0.61) {$W^5$};
+    \node[shape=circle,draw=orange,text=orange] (F) at (2,-1)   {$W^6$};
+    \node[shape=circle,draw=brown,text=brown] (G) at (-2,-1)  {$W^7$};
+    \node[shape=circle,draw=violet,text=violet] (H) at (-4,2)   {$W^8$};
+
+    \draw[dashed, black] (0, 5.67) ellipse (3cm and 2cm);
+    \draw[dashed, black, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
+    \draw[dashed, black, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm);
+
+\end{tikzpicture}
+
+\end{document}
