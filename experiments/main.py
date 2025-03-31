@@ -46,7 +46,7 @@ algorithms_parameters = {
 data_generation_options = {
     'min_lag': 0,
     'max_lag': 5,
-    'contemp_fraction': 1, # Fraction of contemporaneous links; between 0 and 1
+    'contemp_fraction': 0.2, # Fraction of contemporaneous links; between 0 and 1
     'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 2000, # Number of time points in the dataset
     'N_vars': 5, # Number of variables in the dataset

@@ -85,8 +85,8 @@ class CausalDataset:
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func
                                 for func in dependency_funcs ]
         
-        L = int(N_vars * crosslinks_density / (1 - crosslinks_density)) # Forcing crosslinks_density = L / (N + L)
-        L = L*(1+contemp_fraction) # So that the contemp links are not counted in L
+        L = N_vars * crosslinks_density / (1 - crosslinks_density) # Forcing crosslinks_density = L / (N + L)
+        L = int(L*(1+contemp_fraction)) # So that the contemp links are not counted in L
         
         total_generating_vars = int(N_vars * (1 + confounders_density))
         
