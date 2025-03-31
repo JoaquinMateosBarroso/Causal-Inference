@@ -17,6 +17,7 @@ deap>=1.4.2
 
 # Specific libraries for causal discovery
 lingam==1.5.5 # There are some issues with the latest version
+statsmodels==0.13.4
 tigramite>=5.2
 causalnex>=0.12.1
 
