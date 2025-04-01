@@ -1,7 +1,4 @@
-from typing import Any, Iterator, Union
-
 from matplotlib import pyplot as plt
-import numpy as np
 
 from group_causation.benchmark import BenchmarkCausalDiscovery
 from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
