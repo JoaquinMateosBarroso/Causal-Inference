@@ -3,6 +3,7 @@
 \usetikzlibrary{shapes.geometric}
 \usepackage{ifthen}
 \definecolor{darkgreen}{rgb}{0, 0.5, 0}
+\definecolor{mygray}{rgb}{0.8, 0.8, 0.8}
 
 \begin{document}
 
@@ -16,9 +17,9 @@
     \node[shape=circle,draw=brown,text=brown] (G) at (-2,-1)  {$W^7$};
     \node[shape=circle,draw=violet,text=violet] (H) at (-4,2)   {$W^8$};
 
-    \draw[dashed, black] (0, 5.67) ellipse (3cm and 2cm);
-    \draw[dashed, black, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
-    \draw[dashed, black, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm);
+    \draw[dashed, mygray] (0, 5.67) ellipse (3cm and 2cm);
+    \draw[dashed, mygray, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
+    \draw[dashed, mygray, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm);
 
 \end{tikzpicture}
 

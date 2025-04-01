@@ -1,0 +1,49 @@
+.. ts-causal-discovery-benchmark documentation master file, created by
+   sphinx-quickstart on Tue Mar 25 10:12:02 2025.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Causal Inference for Time Series Analysis documentation!
+===================================================================
+
+.. image:: _static/Causal-Discovery-Example-horizontal.png
+   :alt: My Image Description
+   :width: 1200px
+   :align: center
+
+Causal Discovery Class Diagram
+==============================
+..   inheritance-diagram::
+	causal_discovery_algorithms.CausalDiscoveryBase
+	causal_discovery_algorithms.GrangerWrapper
+	causal_discovery_algorithms.VARLINGAMWrapper
+	causal_discovery_algorithms.DynotearsWrapper
+	causal_discovery_algorithms.PCStableWrapper
+	causal_discovery_algorithms.PCMCIWrapper
+	causal_discovery_algorithms.LPCMCIWrapper
+	group_causal_discovery.GroupCausalDiscoveryBase
+	group_causal_discovery.MicroLevelGroupCausalDiscovery
+	group_causal_discovery.DimensionReductionGroupCausalDiscovery
+	group_causal_discovery.HybridGroupCausalDiscovery
+	:parts: 1
+	:caption: ABC stands for Abstract Base Class
+	
+	
+
+Group Extraction Class Diagram
+==============================
+..   inheritance-diagram::
+	causal_groups_extraction.CausalGroupsExtractorBase
+	causal_groups_extraction.ExhaustiveCausalGroupsExtractor
+	causal_groups_extraction.RandomCausalGroupsExtractor
+	causal_groups_extraction.GeneticCausalGroupsExtractor
+	:parts: 1
+	:caption: ABC stands for Abstract Base Class
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   modules
+   code_examples.rst

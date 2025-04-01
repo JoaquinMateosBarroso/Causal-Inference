@@ -2,22 +2,28 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
 \usepackage{ifthen}
+\definecolor{darkgreen}{rgb}{0, 0.5, 0}
+\definecolor{mygray}{rgb}{0.8, 0.8, 0.8}
+
 
 \begin{document}
 
 \begin{tikzpicture}
-    \node[shape=ellipse,draw=black] (A) at (-2,5)   {A};
-    \node[shape=ellipse,draw=black] (B) at (2,5)    {B};
-    \node[shape=ellipse,draw=black] (C) at (0,7)    {C};
-    \node[shape=ellipse,draw=black] (D) at (4,2)    {D};
-    \node[shape=ellipse,draw=black] (E) at (4.66,-0.61) {E};
-    \node[shape=ellipse,draw=black] (F) at (2,-1)   {F};
-    \node[shape=ellipse,draw=black] (G) at (-2,-1)  {G};
-    \node[shape=ellipse,draw=black] (H) at (-4,2)   {H};
+    \node[shape=circle,draw=darkgreen,text=darkgreen] (A) at (-2,5)   {$W^1$};
+    \node[shape=ellipse,draw=mygray, text=mygray] (B) at (2,5)    {B};
+    \node[shape=ellipse,draw=mygray, text=mygray] (C) at (0,7)    {C};
+    \node[shape=ellipse,draw=mygray, text=mygray] (D) at (4,2)    {D};
+    \node[shape=ellipse,draw=mygray, text=mygray] (E) at (4.66,-0.61) {E};
+    \node[shape=circle,draw=purple, text=purple] (F) at (2,-1)   {$W^4$};
+    \node[shape=ellipse,draw=mygray, text=mygray] (G) at (-2,-1)  {G};
+    \node[shape=ellipse,draw=mygray, text=mygray] (H) at (-4,2)   {H};
 
-    \draw[dashed, black] (0, 5.67) ellipse (3cm and 2cm);
-    \draw[dashed, black, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
-    \draw[dashed, black, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm);
+    \draw[dashed, blue, rotate around={45:(1,6)}] (1, 6) ellipse (1cm and 2cm) node {$W^2$};
+    \draw[dashed, red, rotate around={15:(4.33, 0.7)}]  (4.33, 0.55) ellipse (1cm and 2cm) node {$W^3$};
+    \draw[dashed, orange, rotate around={-45:(-3, 0.5)}] (-3, 0.5) ellipse (3cm and 1.5cm) node {$W^5$};
+
+    \draw[dashed, mygray] (0, 5.67) ellipse (3cm and 2cm);
+    \draw[dashed, mygray, rotate around={45:(3.75, 0.13)}]  (3.75, 0.13) ellipse (3cm and 2cm);
 
 \end{tikzpicture}
 
