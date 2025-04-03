@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>benchmark &mdash; Causal Inference for Time Series Analysis  documentation</title>
+  <title>benchmark &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            Causal Inference for Time Series Analysis
+            Group Causation, a library for Group Time Series Analysis
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,7 +58,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Causal Inference for Time Series Analysis</a>
+          <a href="../index.html">Group Causation, a library for Group Time Series Analysis</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -84,16 +84,17 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_groups_extraction.causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalGroupsExtractorBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_groups_extraction.stat_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_average_pc1_explained_variance</span><span class="p">,</span> <span class="n">get_normalized_mutual_information</span><span class="p">,</span> <span class="n">get_explainability_score</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">create_toy_datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalDataset</span><span class="p">,</span> <span class="n">plot_ts_graph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_f1</span><span class="p">,</span> <span class="n">get_precision</span><span class="p">,</span> <span class="n">get_recall</span><span class="p">,</span> <span class="n">get_shd</span><span class="p">,</span> <span class="n">window_to_summary_graph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_discovery_algorithms.causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalDiscoveryBase</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery.direction_extraction.direction_extraction_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectionExtractorBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery.group_causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupCausalDiscoveryBase</span>
+<span class="c1"># Inner library imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction.causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalGroupsExtractorBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction.stat_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_average_pc1_explained_variance</span><span class="p">,</span> <span class="n">get_normalized_mutual_information</span><span class="p">,</span> <span class="n">get_explainability_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.create_toy_datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalDataset</span><span class="p">,</span> <span class="n">plot_ts_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_FN</span><span class="p">,</span> <span class="n">get_FP</span><span class="p">,</span> <span class="n">get_TP</span><span class="p">,</span> <span class="n">get_f1</span><span class="p">,</span> <span class="n">get_precision</span><span class="p">,</span> <span class="n">get_recall</span><span class="p">,</span> <span class="n">get_shd</span><span class="p">,</span> <span class="n">window_to_summary_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms.causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalDiscoveryBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery.direction_extraction.direction_extraction_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectionExtractorBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery.group_causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupCausalDiscoveryBase</span>
 
 <span class="c1"># For printings</span>
 <span class="n">BLUE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[34m&#39;</span>
@@ -296,8 +297,8 @@
             <span class="n">current_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_algorithms</span><span class="p">(</span><span class="n">causal_datasets</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">,</span>
                                                     <span class="n">current_algorithms_parameters</span><span class="p">)</span>
             
-            <span class="n">iteration</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">algorithm_results</span> <span class="ow">in</span> <span class="n">current_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">iteration</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                 <span class="k">for</span> <span class="n">particular_result</span> <span class="ow">in</span> <span class="n">algorithm_results</span><span class="p">:</span>
                     <span class="n">particular_result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data_option</span><span class="p">)</span> <span class="c1"># Include the parameters in the information for results</span>
                     <span class="n">particular_result</span><span class="p">[</span><span class="s1">&#39;dataset_iteration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">iteration</span><span class="o">:=</span><span class="n">iteration</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_executions_per_data_param</span>
@@ -481,7 +482,8 @@
                 <span class="n">all_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_dataset_results</span><span class="p">)</span>
             
             <span class="n">all_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_results</span><span class="p">)</span>
-            <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">score</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">all_results_df</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">score</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">all_results_df</span><span class="p">,</span>
+                           <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
             
             
@@ -555,7 +557,9 @@
                     <span class="n">causal_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CausalDataset</span><span class="p">(</span><span class="n">time_series</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                                                             <span class="n">parents_dict</span><span class="o">=</span><span class="n">parents_dict</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The dataset folder </span><span class="si">{</span><span class="n">datasets_folder</span><span class="si">}</span><span class="s1"> does not exist&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The dataset folder </span><span class="si">{</span><span class="n">datasets_folder</span><span class="si">}</span><span class="s1"> does not exist&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">causal_datasets</span></div>
 
     
 <div class="viewcode-block" id="BenchmarkCausalDiscovery.test_particular_algorithm_particular_dataset">
@@ -666,6 +670,9 @@
             <span class="n">actual_parents</span> <span class="o">=</span> <span class="n">causal_dataset</span><span class="o">.</span><span class="n">parents_dict</span>
             <span class="n">actual_parents_summary</span> <span class="o">=</span> <span class="n">window_to_summary_graph</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">)</span>
             
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_TP</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_FP</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_FN</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_precision</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;recall&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_recall</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_f1</span><span class="p">(</span><span class="n">actual_parents</span><span class="p">,</span> <span class="n">predicted_parents</span><span class="p">)</span>
@@ -673,6 +680,9 @@
             
             <span class="c1"># Obtain the same metrics in the summary graph</span>
             <span class="n">predicted_parents_summary</span> <span class="o">=</span> <span class="n">window_to_summary_graph</span><span class="p">(</span><span class="n">predicted_parents</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_TP</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_FP</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_FN</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;precision_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_precision</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;recall_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_recall</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;f1_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_f1</span><span class="p">(</span><span class="n">actual_parents_summary</span><span class="p">,</span> <span class="n">predicted_parents_summary</span><span class="p">)</span>

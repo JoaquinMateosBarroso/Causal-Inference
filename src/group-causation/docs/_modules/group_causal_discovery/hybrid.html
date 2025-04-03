@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>group_causal_discovery.hybrid &mdash; Causal Inference for Time Series Analysis  documentation</title>
+  <title>group_causal_discovery.hybrid &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -32,7 +32,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Causal Inference for Time Series Analysis
+            Group Causation, a library for Group Time Series Analysis
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -58,7 +58,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Causal Inference for Time Series Analysis</a>
+          <a href="../../index.html">Group Causation, a library for Group Time Series Analysis</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -79,9 +79,10 @@
   <h1>Source code for group_causal_discovery.hybrid</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery.group_causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupCausalDiscoveryBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery.micro_level</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroLevelGroupCausalDiscovery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery.group_causal_discovery_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupCausalDiscoveryBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery.micro_level</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroLevelGroupCausalDiscovery</span>
 
 <div class="viewcode-block" id="HybridGroupCausalDiscovery">
 <a class="viewcode-back" href="../../group_causal_discovery.html#group_causal_discovery.hybrid.HybridGroupCausalDiscovery">[docs]</a>
@@ -151,7 +152,7 @@
     
     
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_micro_groups_pca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explained_variance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
-                                    <span class="n">groups_division_method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;principal_components&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+                                    <span class="n">groups_division_method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;group_embedding&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Execute the PCA dimensionality reduction algorithm to the groups of variables,</span>
 <span class="sd">        in order to obtain a univariate time series for each group.</span>
@@ -160,7 +161,7 @@
 <span class="sd">            explained_variance_threshold : float indicating the minimum explained variance that the PCA</span>
 <span class="sd">                        algorithm must achieve to stop the dimensionality reduction.</span>
 <span class="sd">            groups_compresion_method : string indicating the method that will be used to compress the</span>
-<span class="sd">                        groups of variables. options=[&#39;principal_components&#39;, &#39;subgroups&#39;]</span>
+<span class="sd">                        groups of variables. options=[&#39;group_embedding&#39;, &#39;subgroups&#39;]</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            micro_groups : list[ set[int] ] where keys are original groups, and values are the indexes of</span>
@@ -172,7 +173,7 @@
         <span class="n">micro_data</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List where each element is the ts data of a microgroup</span>
         <span class="n">current_number_of_variables</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">groups_division_method</span> <span class="o">==</span> <span class="s1">&#39;principal_components&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">groups_division_method</span> <span class="o">==</span> <span class="s1">&#39;group_embedding&#39;</span><span class="p">:</span>
                 <span class="c1"># Standarize data, so that the PCA algorithm works properly</span>
                 <span class="n">group_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="p">)]</span>
                 <span class="n">group_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">group_data</span> <span class="o">-</span> <span class="n">group_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">group_data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_groups_extraction package &mdash; Causal Inference for Time Series Analysis  documentation</title>
+  <title>causal_groups_extraction package &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -35,7 +35,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Causal Inference for Time Series Analysis
+            Group Causation, a library for Group Time Series Analysis
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -102,7 +102,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Causal Inference for Time Series Analysis</a>
+          <a href="index.html">Group Causation, a library for Group Time Series Analysis</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -173,7 +173,7 @@ memory : volatile memory used by the process, in MB</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">causal_groups_extraction.exhaustive_causal_groups_extraction.</span></span><span class="sig-name descname"><span class="pre">ExhaustiveCausalGroupsExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/causal_groups_extraction/exhaustive_causal_groups_extraction.html#ExhaustiveCausalGroupsExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase" title="causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></p>
 <p>Class to extract a set of groups of variables by using an exhaustive search.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -201,7 +201,7 @@ memory : volatile memory used by the process, in MB</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="causal_groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">causal_groups_extraction.genetic_causal_groups_extraction.</span></span><span class="sig-name descname"><span class="pre">GeneticCausalGroupsExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores_weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/causal_groups_extraction/genetic_causal_groups_extraction.html#GeneticCausalGroupsExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#causal_groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase" title="causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></p>
 <p>Class to extract a set of groups of variables by using an exhaustive search</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -230,7 +230,7 @@ memory : volatile memory used by the process, in MB</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="causal_groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">causal_groups_extraction.random_causal_groups_extraction.</span></span><span class="sig-name descname"><span class="pre">RandomCausalGroupsExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/causal_groups_extraction/random_causal_groups_extraction.html#RandomCausalGroupsExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#causal_groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase" title="causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></p>
 <p>Class to extract a set of groups of variables by using an exhaustive search</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -265,7 +265,7 @@ for each group.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="causal_groups_extraction.stat_utils.get_bic">
-<span class="sig-prename descclassname"><span class="pre">causal_groups_extraction.stat_utils.</span></span><span class="sig-name descname"><span class="pre">get_bic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discovery_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="group_causal_discovery.html#group_causal_discovery.group_causal_discovery_base.GroupCausalDiscoveryBase" title="group_causal_discovery.group_causal_discovery_base.GroupCausalDiscoveryBase"><span class="pre">GroupCausalDiscoveryBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/causal_groups_extraction/stat_utils.html#get_bic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#causal_groups_extraction.stat_utils.get_bic" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">causal_groups_extraction.stat_utils.</span></span><span class="sig-name descname"><span class="pre">get_bic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discovery_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GroupCausalDiscoveryBase</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/causal_groups_extraction/stat_utils.html#get_bic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#causal_groups_extraction.stat_utils.get_bic" title="Link to this definition"></a></dt>
 <dd><p>Get the BIC score of the causal model inferred by the groups. A Dynamic Bayesian Network with linear Gaussian CPDs
 is assumed to calculate the BIC score.</p>
 <dl class="field-list simple">

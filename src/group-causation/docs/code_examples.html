@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples of Benchmarks Usage &mdash; Causal Inference for Time Series Analysis  documentation</title>
+  <title>Examples of Benchmarks Usage &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -34,7 +34,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Causal Inference for Time Series Analysis
+            Group Causation, a library for Group Time Series Analysis
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -65,7 +65,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Causal Inference for Time Series Analysis</a>
+          <a href="index.html">Group Causation, a library for Group Time Series Analysis</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -89,15 +89,12 @@
 <h2>Usage of Base Time Series Causal Discovery Benchmark<a class="headerlink" href="#usage-of-base-time-series-causal-discovery-benchmark" title="Link to this heading"></a></h2>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Code used to create synthetic data and benchmark different time series algorithms over this data.</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Union</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkCausalDiscovery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCMCIModifiedWrapper</span><span class="p">,</span> <span class="n">PCMCIWrapper</span><span class="p">,</span> <span class="n">LPCMCIWrapper</span><span class="p">,</span> <span class="n">PCStableWrapper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GrangerWrapper</span><span class="p">,</span> <span class="n">VARLINGAMWrapper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynotearsWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkCausalDiscovery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCMCIModifiedWrapper</span><span class="p">,</span> <span class="n">PCMCIWrapper</span><span class="p">,</span> <span class="n">LPCMCIWrapper</span><span class="p">,</span> <span class="n">PCStableWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GrangerWrapper</span><span class="p">,</span> <span class="n">VARLINGAMWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynotearsWrapper</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -105,8 +102,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">changing_N_variables</span><span class="p">,</span> <span class="n">changing_preselection_alpha</span><span class="p">,</span> <span class="n">static_parameters</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">changing_N_variables</span><span class="p">,</span> <span class="n">changing_preselection_alpha</span><span class="p">,</span> <span class="n">static_parameters</span>
 
 <span class="n">algorithms</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;pcmci&#39;</span><span class="p">:</span> <span class="n">PCMCIWrapper</span><span class="p">,</span>
@@ -138,7 +134,7 @@
 <span class="n">data_generation_options</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;min_lag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s1">&#39;max_lag&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s1">&#39;contemp_fraction&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># Fraction of contemporaneous links; between 0 and 1</span>
+    <span class="s1">&#39;contemp_fraction&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="c1"># Fraction of contemporaneous links; between 0 and 1</span>
     <span class="s1">&#39;crosslinks_density&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># Portion of links that won&#39;t be in the kind of X_{t-1}-&gt;X_t; between 0 and 1</span>
     <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="c1"># Number of time points in the dataset</span>
     <span class="s1">&#39;N_vars&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="c1"># Number of variables in the dataset</span>
@@ -170,6 +166,7 @@
     <span class="n">datasets_folder</span> <span class="o">=</span> <span class="s1">&#39;toy_data&#39;</span>
     <span class="n">results_folder</span> <span class="o">=</span> <span class="s1">&#39;results&#39;</span>
     <span class="n">execute_benchmark</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">generate_toy_data</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">execute_benchmark</span><span class="p">:</span>    
         <span class="n">options_generator</span><span class="p">,</span> <span class="n">options_kwargs</span> <span class="o">=</span> <span class="n">benchmark_options</span><span class="p">[</span><span class="n">chosen_option</span><span class="p">]</span>
@@ -182,6 +179,7 @@
                                             <span class="n">datasets_folder</span><span class="o">=</span><span class="n">datasets_folder</span><span class="p">,</span>
                                             <span class="n">results_folder</span><span class="o">=</span><span class="n">results_folder</span><span class="p">,</span>
                                             <span class="n">n_executions</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                            <span class="n">generate_toy_data</span><span class="o">=</span><span class="n">generate_toy_data</span><span class="p">,</span>
                                             <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     
     <span class="n">benchmark</span><span class="o">.</span><span class="n">plot_ts_datasets</span><span class="p">(</span><span class="n">datasets_folder</span><span class="p">)</span>
@@ -213,17 +211,18 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkGroupCausalDiscovery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkGroupCausalDiscovery</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">changing_N_groups</span><span class="p">,</span> <span class="n">changing_N_variables</span><span class="p">,</span> <span class="n">changing_N_vars_per_group</span><span class="p">,</span> <span class="n">changing_alg_params</span><span class="p">,</span> <span class="n">changing_preselection_alpha</span><span class="p">,</span> <span class="n">static_parameters</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionReductionGroupCausalDiscovery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroLevelGroupCausalDiscovery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">HybridGroupCausalDiscovery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">changing_N_groups</span><span class="p">,</span> <span class="n">changing_N_variables</span><span class="p">,</span> <span class="n">changing_N_vars_per_group</span><span class="p">,</span> <span class="n">changing_alg_params</span><span class="p">,</span> <span class="n">changing_preselection_alpha</span><span class="p">,</span> <span class="n">static_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionReductionGroupCausalDiscovery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroLevelGroupCausalDiscovery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">HybridGroupCausalDiscovery</span>
 
 <span class="n">algorithms</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;hybrid&#39;</span><span class="p">:</span> <span class="n">HybridGroupCausalDiscovery</span><span class="p">,</span>
+    <span class="s1">&#39;group_embedding&#39;</span><span class="p">:</span> <span class="n">HybridGroupCausalDiscovery</span><span class="p">,</span>
+    <span class="s1">&#39;subgroups&#39;</span><span class="p">:</span> <span class="n">HybridGroupCausalDiscovery</span><span class="p">,</span>
     <span class="s1">&#39;pca+pcmci&#39;</span><span class="p">:</span> <span class="n">DimensionReductionGroupCausalDiscovery</span><span class="p">,</span>
     <span class="s1">&#39;pca+dynotears&#39;</span><span class="p">:</span> <span class="n">DimensionReductionGroupCausalDiscovery</span><span class="p">,</span>
     <span class="s1">&#39;micro-level&#39;</span><span class="p">:</span> <span class="n">MicroLevelGroupCausalDiscovery</span><span class="p">,</span>
@@ -238,7 +237,14 @@
     <span class="s1">&#39;micro-level&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;node_causal_discovery_alg&#39;</span><span class="p">:</span> <span class="s1">&#39;pcmci&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;node_causal_discovery_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min_lag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max_lag&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;pc_alpha&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">}},</span>
     
-    <span class="s1">&#39;hybrid&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;dimensionality_reduction&#39;</span><span class="p">:</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;group_embedding&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;dimensionality_reduction&#39;</span><span class="p">:</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;dimensionality_reduction_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;explained_variance_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                                                   <span class="s1">&#39;groups_division_method&#39;</span><span class="p">:</span> <span class="s1">&#39;group_embedding&#39;</span><span class="p">},</span>
+                <span class="s1">&#39;node_causal_discovery_alg&#39;</span><span class="p">:</span> <span class="s1">&#39;pcmci&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;node_causal_discovery_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;min_lag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max_lag&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;pc_alpha&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">},</span>
+                <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    
+    <span class="s1">&#39;subgroups&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;dimensionality_reduction&#39;</span><span class="p">:</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> 
                <span class="s1">&#39;dimensionality_reduction_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;explained_variance_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
                                                    <span class="s1">&#39;groups_division_method&#39;</span><span class="p">:</span> <span class="s1">&#39;subgroups&#39;</span><span class="p">},</span>
                 <span class="s1">&#39;node_causal_discovery_alg&#39;</span><span class="p">:</span> <span class="s1">&#39;pcmci&#39;</span><span class="p">,</span>
@@ -250,15 +256,15 @@
     <span class="s1">&#39;min_lag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s1">&#39;max_lag&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
     <span class="s1">&#39;contemp_fraction&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
-    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1"># Number of time points in the dataset</span>
+    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="c1"># Number of time points in the dataset</span>
     <span class="s1">&#39;N_vars&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="c1"># Number of variables in the dataset</span>
     <span class="s1">&#39;N_groups&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="c1"># Number of groups in the dataset</span>
-    <span class="s1">&#39;inner_group_crosslinks_density&#39;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
-    <span class="s1">&#39;outer_group_crosslinks_density&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="s1">&#39;inner_group_crosslinks_density&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s1">&#39;outer_group_crosslinks_density&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="s1">&#39;n_node_links_per_group_link&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="c1"># These parameters are used in generate_structural_causal_process:</span>
     <span class="s1">&#39;dependency_coeffs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="c1"># default: [-0.5, 0.5]</span>
-    <span class="s1">&#39;auto_coeffs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">],</span> <span class="c1"># default: [0.5, 0.7]</span>
+    <span class="s1">&#39;auto_coeffs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">],</span> <span class="c1"># default: [0.5, 0.7]</span>
     <span class="s1">&#39;noise_dists&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gaussian&#39;</span><span class="p">],</span> <span class="c1"># deafult: [&#39;gaussian&#39;]</span>
     <span class="s1">&#39;noise_sigmas&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">],</span> <span class="c1"># default: [0.5, 2]</span>
     
@@ -296,11 +302,11 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;ggplot&#39;</span><span class="p">)</span>
     
     <span class="n">benchmark</span> <span class="o">=</span> <span class="n">BenchmarkGroupCausalDiscovery</span><span class="p">()</span>
-    <span class="n">datasets_folder</span> <span class="o">=</span> <span class="s1">&#39;toy_data&#39;</span>
+    <span class="n">datasets_folder</span> <span class="o">=</span> <span class="s1">&#39;results/toy_data&#39;</span>
     <span class="n">results_folder</span> <span class="o">=</span> <span class="s1">&#39;results&#39;</span>
     <span class="n">execute_benchmark</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">plot_graphs</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">generate_toy_data</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">generate_toy_data</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">n_executions</span> <span class="o">=</span> <span class="mi">5</span>
     
     <span class="n">dataset_iteration_to_plot</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -364,13 +370,13 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkGroupsExtraction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BenchmarkGroupsExtraction</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_groups_extraction.random_causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomCausalGroupsExtractor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">static_parameters</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExhaustiveCausalGroupsExtractor</span><span class="p">,</span> <span class="n">GeneticCausalGroupsExtractor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction.random_causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomCausalGroupsExtractor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.functions_test_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">static_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExhaustiveCausalGroupsExtractor</span><span class="p">,</span> <span class="n">GeneticCausalGroupsExtractor</span>
 
 <span class="n">algorithms</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;exhaustive&#39;</span><span class="p">:</span> <span class="n">ExhaustiveCausalGroupsExtractor</span><span class="p">,</span>

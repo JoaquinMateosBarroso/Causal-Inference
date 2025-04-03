@@ -11,8 +11,8 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'particular_hybrid_principal_components': HybridGroupCausalDiscovery,
-    'particular_hybrid_subgroups': HybridGroupCausalDiscovery,
+    'group_embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
     'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     'micro-level': MicroLevelGroupCausalDiscovery,
@@ -27,14 +27,14 @@ algorithms_parameters = {
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
-    'particular_hybrid_principal_components': {'dimensionality_reduction': 'pca', 
+    'group_embedding': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
-                                                   'groups_division_method': 'principal_components'},
+                                                   'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
-    'particular_hybrid_subgroups': {'dimensionality_reduction': 'pca', 
+    'subgroups': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
@@ -46,15 +46,15 @@ data_generation_options = {
     'min_lag': 0,
     'max_lag': 5,
     'contemp_fraction': 0.25,
-    'T': 1000, # Number of time points in the dataset
+    'T': 2000, # Number of time points in the dataset
     'N_vars': 8, # Number of variables in the dataset
     'N_groups': 3, # Number of groups in the dataset
-    'inner_group_crosslinks_density': 0.75,
-    'outer_group_crosslinks_density': 0.2,
+    'inner_group_crosslinks_density': 0.5,
+    'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.4], # default: [0.5, 0.7]
+    'auto_coeffs': [0.5], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     

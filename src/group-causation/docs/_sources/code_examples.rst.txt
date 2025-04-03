@@ -4,7 +4,7 @@ Examples of Benchmarks Usage
 Usage of Base Time Series Causal Discovery Benchmark
 ----------------------------------------------------
 
-.. literalinclude:: /../benchmark_custom/main.py
+.. literalinclude:: /../../experiments/main.py
    :language: python
    :caption: Code used to create synthetic data and benchmark different time series algorithms over this data.
 	
@@ -12,7 +12,7 @@ Usage of Base Time Series Causal Discovery Benchmark
 Usage of Group Time Series Causal Discovery Benchmark
 -----------------------------------------------------
 
-.. literalinclude:: /../benchmark_custom/main_group.py
+.. literalinclude:: /../../experiments/main_group.py
    :language: python
    :caption: Code used to create synthetic data and benchmark different group time series algorithms over this data.
 	
@@ -20,6 +20,6 @@ Usage of Group Time Series Causal Discovery Benchmark
 Usage of Time Series Causal Groups Extraction
 ---------------------------------------------
 
-.. literalinclude:: /../benchmark_custom/main_groups_extraction.py
+.. literalinclude:: /../../experiments/main_groups_extraction.py
    :language: python
    :caption: Code used to create synthetic data and benchmark different causal groups extraction algorithms over this data.

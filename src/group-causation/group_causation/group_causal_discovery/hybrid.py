@@ -68,7 +68,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
     
     
     def _prepare_micro_groups_pca(self, explained_variance_threshold: float = 0.9,
-                                    groups_division_method: str='principal_components') -> list[np.ndarray]:
+                                    groups_division_method: str='group_embedding') -> list[np.ndarray]:
         '''
         Execute the PCA dimensionality reduction algorithm to the groups of variables,
         in order to obtain a univariate time series for each group.
@@ -77,7 +77,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             explained_variance_threshold : float indicating the minimum explained variance that the PCA
                         algorithm must achieve to stop the dimensionality reduction.
             groups_compresion_method : string indicating the method that will be used to compress the
-                        groups of variables. options=['principal_components', 'subgroups']
+                        groups of variables. options=['group_embedding', 'subgroups']
         
         Returns:
             micro_groups : list[ set[int] ] where keys are original groups, and values are the indexes of
@@ -89,7 +89,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         micro_data = [] # List where each element is the ts data of a microgroup
         current_number_of_variables = 0
         for i, group in enumerate(self.groups):
-            if groups_division_method == 'principal_components':
+            if groups_division_method == 'group_embedding':
                 # Standarize data, so that the PCA algorithm works properly
                 group_data = self.data[:, list(group)]
                 group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>create_toy_datasets &mdash; Causal Inference for Time Series Analysis  documentation</title>
+  <title>create_toy_datasets &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            Causal Inference for Time Series Analysis
+            Group Causation, a library for Group Time Series Analysis
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,7 +58,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Causal Inference for Time Series Analysis</a>
+          <a href="../index.html">Group Causation, a library for Group Time Series Analysis</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -171,8 +171,8 @@
         <span class="n">dependency_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dependency_funcs_dict</span><span class="p">[</span><span class="n">func</span><span class="p">]</span> <span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency_funcs_dict</span> <span class="k">else</span> <span class="n">func</span>
                                 <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">dependency_funcs</span> <span class="p">]</span>
         
-        <span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N_vars</span> <span class="o">*</span> <span class="n">crosslinks_density</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">crosslinks_density</span><span class="p">))</span> <span class="c1"># Forcing crosslinks_density = L / (N + L)</span>
-        <span class="n">L</span> <span class="o">=</span> <span class="n">L</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">contemp_fraction</span><span class="p">)</span> <span class="c1"># So that the contemp links are not counted in L</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">N_vars</span> <span class="o">*</span> <span class="n">crosslinks_density</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">crosslinks_density</span><span class="p">)</span> <span class="c1"># Forcing crosslinks_density = L / (N + L)</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">L</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">contemp_fraction</span><span class="p">))</span> <span class="c1"># So that the contemp links are not counted in L</span>
         
         <span class="n">total_generating_vars</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N_vars</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">confounders_density</span><span class="p">))</span>
         

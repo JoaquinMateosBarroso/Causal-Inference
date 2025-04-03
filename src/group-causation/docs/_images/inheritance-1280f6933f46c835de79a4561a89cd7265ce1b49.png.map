@@ -1,6 +1,6 @@
 <map id="inheritance77949c1b13" name="inheritance77949c1b13">
-<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="5,173,66,195"/>
-<area shape="rect" id="node2" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_base.CausalDiscoveryBase" target="_top" title="Base class for causal discovery algorithms" alt="" coords="107,173,246,195"/>
+<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="5,153,66,175"/>
+<area shape="rect" id="node2" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_base.CausalDiscoveryBase" target="_top" title="Base class for causal discovery algorithms" alt="" coords="107,153,246,175"/>
 <area shape="rect" id="node4" href="group_causal_discovery.html#group_causal_discovery.group_causal_discovery_base.GroupCausalDiscoveryBase" target="_top" title="Base class for causal discovery on groups of variables algorithms" alt="" coords="288,47,461,68"/>
 <area shape="rect" id="node5" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalnex.DynotearsWrapper" target="_top" title="Wrapper for DYNOTEARS algorithm" alt="" coords="313,89,436,111"/>
 <area shape="rect" id="node6" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.GrangerWrapper" target="_top" title="Wrapper for Granger algorithm" alt="" coords="319,131,430,153"/>

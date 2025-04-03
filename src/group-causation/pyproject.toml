@@ -4,9 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "group-causation"
-version = "0.1.0"
+version = "0.0.1"
 description = "A python library to perform causal inference tasks over groups of time series"
 authors = [{ name = "Joaquín Mateos Barroso", email = "jmateosbarroso@gmail.com" }]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 readme = "README.md"
-dependencies = []
+requires-python = "==3.9"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "scipy>=1.11.4",
+    "pandas>=1.5.3",
+    "lingam==1.5.5", # There are some issues with the latest version
+    "statsmodels==0.13.4",
+    "tigramite>=5.2",
+    "causalnex>=0.12.1"
+]
+
+[project.urls]
+Homepage = "https://github.com/JoaquinMateosBarroso/group-causation"
