@@ -13,9 +13,9 @@ from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 algorithms = {
     'group_embedding': HybridGroupCausalDiscovery,
     'subgroups': HybridGroupCausalDiscovery,
-    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    # 'micro-level': MicroLevelGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_group_hybrid_studying_threshold'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
