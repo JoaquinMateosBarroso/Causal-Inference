@@ -74,7 +74,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'chaning_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12]}),
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'hybrid',
