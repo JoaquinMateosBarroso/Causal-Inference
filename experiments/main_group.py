@@ -45,7 +45,7 @@ algorithms_parameters = {
 data_generation_options = {
     'min_lag': 0,
     'max_lag': 5,
-    'contemp_fraction': 0.25,
+    'contemp_fraction': 0.2,
     'T': 2000, # Number of time points in the dataset
     'N_vars': 10, # Number of variables in the dataset
     'N_groups': 10, # Number of groups in the dataset
@@ -54,7 +54,7 @@ data_generation_options = {
     'n_node_links_per_group_link': 2,
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.5], # default: [0.5, 0.7]
+    'auto_coeffs': [0.4], # default: [0.5, 0.7]
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
@@ -74,7 +74,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'chaning_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]}),
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'hybrid',
