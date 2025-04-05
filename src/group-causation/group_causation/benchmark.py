@@ -540,9 +540,9 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             
             # Obtain the same metrics in the summary graph
             predicted_parents_summary = window_to_summary_graph(predicted_parents)
-            result['TP'] = get_TP(actual_parents_summary, predicted_parents_summary)
-            result['FP'] = get_FP(actual_parents_summary, predicted_parents_summary)
-            result['FN'] = get_FN(actual_parents_summary, predicted_parents_summary)
+            result['TP_summary'] = get_TP(actual_parents_summary, predicted_parents_summary)
+            result['FP_summary'] = get_FP(actual_parents_summary, predicted_parents_summary)
+            result['FN_summary'] = get_FN(actual_parents_summary, predicted_parents_summary)
             result['precision_summary'] = get_precision(actual_parents_summary, predicted_parents_summary)
             result['recall_summary'] = get_recall(actual_parents_summary, predicted_parents_summary)
             result['f1_summary'] = get_f1(actual_parents_summary, predicted_parents_summary)

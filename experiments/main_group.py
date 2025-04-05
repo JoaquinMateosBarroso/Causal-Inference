@@ -13,9 +13,9 @@ from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 algorithms = {
     'group_embedding': HybridGroupCausalDiscovery,
     'subgroups': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
+    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    # 'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -47,8 +47,8 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.25,
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 8, # Number of variables in the dataset
-    'N_groups': 3, # Number of groups in the dataset
+    'N_vars': 10, # Number of variables in the dataset
+    'N_groups': 10, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -74,7 +74,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'chaning_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]}),
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'hybrid',
@@ -92,15 +92,15 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    datasets_folder = 'results/toy_data'
-    results_folder = 'results'
+    results_folder = 'results_group_hybrid_studying_threshold'
+    datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = True
-    generate_toy_data = False
-    n_executions = 5
+    plot_graphs = False
+    generate_toy_data = True
+    n_executions = 100
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'f1'
+    plot_x_axis = 'N_vars_per_group'
     
     
     
