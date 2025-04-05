@@ -84,7 +84,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'static_parameters'
+chosen_option = 'changing_N_groups'
 
 
 
