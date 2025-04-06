@@ -197,9 +197,7 @@ class CausalDataset:
                                                                         dependency_funcs=dependency_funcs,
                                                                         contemp_fraction=contemp_fraction,
                                                                         dependency_coeffs=dependency_coeffs,
-                                                                        auto_coeffs=auto_coeffs,
-                                                                        noise_dists=noise_dists,
-                                                                        noise_sigmas=noise_sigmas,)
+                                                                        auto_coeffs=auto_coeffs,)
                 
                 # Change the keys of the causal process to the global index
                 groups_causal_processes[index] = self._change_keys(causal_process, group)
@@ -210,13 +208,15 @@ class CausalDataset:
             outer_causal_process, _ = generate_structural_causal_process(N=N_groups, L=L, max_lag=max_lag,
                                                                         dependency_funcs=dependency_funcs,
                                                                         contemp_fraction=contemp_fraction,
-                                                                        **kw_generation_args)
+                                                                        dependency_coeffs=dependency_coeffs,
+                                                                        auto_coeffs=auto_coeffs,)
             
             global_causal_process = self._join_processes( outer_causal_process, groups_causal_processes,
                                                         n_node_links_per_group_link)
             
             # Generate noise
-            _, noise = generate_structural_causal_process(N=N_vars, **kw_generation_args)
+            _, noise = generate_structural_causal_process(N=N_vars, noise_dists=noise_dists,
+                                                          noise_sigmas=noise_sigmas)
             
             self.node_parents_dict = get_parents_dict(global_causal_process)
             self.parents_dict = self.extract_group_parents(self.node_parents_dict)

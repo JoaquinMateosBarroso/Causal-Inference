@@ -32,14 +32,14 @@ algorithms_parameters = {
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 1},
+                'verbose': 0},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 1},
+                'verbose': 0},
 }
 
 data_generation_options = {
@@ -95,9 +95,9 @@ if __name__ == '__main__':
     results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = False
+    plot_graphs = True
     generate_toy_data = True
-    n_executions = 5
+    n_executions = 25
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'

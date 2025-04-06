@@ -32,7 +32,7 @@ pip install -e .
 ```python
 import pandas as pd
 import matplotlib.pyplot as plt
-from group_causation.causal_discovery_algorithms import PCMCIWrapper
+from group_causation.causal_discovery import PCMCIWrapper
 from group_causation.create_toy_datasets import plot_ts_graph
 
 data = pd.read_csv('your_dataset.csv').values
@@ -47,7 +47,7 @@ plt.show()
 ```python
 from group_causation.benchmark import BenchmarkCausalDiscovery
 from group_causation.functions_test_data import static_parameters
-from group_causation.causal_discovery_algorithms import PCMCIWrapper, GrangerWrapper
+from group_causation.causal_discovery import PCMCIWrapper, GrangerWrapper
 
 algorithms = {'pcmci': PCMCIWrapper, 'granger': GrangerWrapper}
 dataset_options = {

@@ -169,9 +169,9 @@ class BenchmarkBase(ABC):
                 
                     # Include current result in the list of result
                     self.results[name].append(particular_result)
-            
-            self.all_algorithms_parameters[name].\
-                        append(copy.deepcopy(current_algorithms_parameters[name]))
+                
+                    self.all_algorithms_parameters[name].\
+                                append(copy.deepcopy(current_algorithms_parameters[name]))
                 
             self.save_results()
             if self.verbose > 0:

@@ -1,10 +1,7 @@
-import time
 import numpy as np
-from abc import ABC, abstractmethod
-from memory_profiler import memory_usage
+from abc import abstractmethod
 
 from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
-
 
 
 class GroupCausalDiscoveryBase(CausalDiscoveryBase): # Abstract class
