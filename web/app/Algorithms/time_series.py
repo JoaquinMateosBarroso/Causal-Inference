@@ -6,10 +6,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 
-from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
-from group_causation.causal_discovery_algorithms import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
-from group_causation.causal_discovery_algorithms import DynotearsWrapper
+from group_causation.causal_discovery import CausalDiscoveryBase
+from group_causation.causal_discovery import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery import GrangerWrapper, VARLINGAMWrapper
+from group_causation.causal_discovery import DynotearsWrapper
 from group_causation.benchmark import plot_ts_graph
 from group_causation.benchmark import BenchmarkCausalDiscovery
 

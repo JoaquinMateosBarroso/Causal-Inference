@@ -6,7 +6,7 @@ from causalai.models.time_series.var_lingam import VARLINGAM
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from group_causation.causal_discovery_algorithms import CausalDiscoveryBase
+from group_causation.causal_discovery import CausalDiscoveryBase
 
 class GrangerWrapper(CausalDiscoveryBase):
     '''

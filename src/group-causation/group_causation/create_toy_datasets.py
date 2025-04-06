@@ -139,6 +139,8 @@ class CausalDataset:
                                 inner_group_crosslinks_density=0.5, outer_group_crosslinks_density=0.5,
                                 n_node_links_per_group_link=2, contemp_fraction=.0,
                                 max_lag=3, min_lag=1, dependency_funcs=['nonlinear'],
+                                dependency_coeffs=[-0.5, 0.5], auto_coeffs=[0.5, 0.7],
+                                noise_dists=['gaussian'], noise_sigmas=[0.5, 2],
                                 datasets_folder = None, maximum_tries=100, **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]], dict[int, list[int]], list[list[int]]]:
         '''
@@ -194,7 +196,10 @@ class CausalDataset:
                 causal_process, _ = generate_structural_causal_process(N=len(group), L=L, max_lag=max_lag,
                                                                         dependency_funcs=dependency_funcs,
                                                                         contemp_fraction=contemp_fraction,
-                                                                        **kw_generation_args)
+                                                                        dependency_coeffs=dependency_coeffs,
+                                                                        auto_coeffs=auto_coeffs,
+                                                                        noise_dists=noise_dists,
+                                                                        noise_sigmas=noise_sigmas,)
                 
                 # Change the keys of the causal process to the global index
                 groups_causal_processes[index] = self._change_keys(causal_process, group)

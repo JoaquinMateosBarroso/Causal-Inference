@@ -73,7 +73,7 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
     
-    'chaning_N_vars_per_group': (changing_N_vars_per_group,
+    'changing_N_vars_per_group': (changing_N_vars_per_group,
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12]}),
     
     'changing_alg_params': (changing_alg_params,
@@ -84,7 +84,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_N_groups'
+chosen_option = 'changing_N_vars_per_group'
 
 
 
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     execute_benchmark = True
     plot_graphs = False
     generate_toy_data = True
-    n_executions = 100
+    n_executions = 5
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'

@@ -13,8 +13,8 @@ from tigramite.lpcmci import LPCMCI
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from group_causation.causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
-from group_causation.causal_discovery_algorithms.modified_pcmci import PCMCI_Modified
+from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
+from group_causation.causal_discovery.modified_pcmci import PCMCI_Modified
 
 class PCMCIWrapper(CausalDiscoveryBase):
     '''

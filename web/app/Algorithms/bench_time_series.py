@@ -9,9 +9,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from group_causation.benchmark import BenchmarkCausalDiscovery
-from group_causation.causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from group_causation.causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
-from group_causation.causal_discovery_algorithms import DynotearsWrapper
+from group_causation.causal_discovery import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery import GrangerWrapper, VARLINGAMWrapper
+from group_causation.causal_discovery import DynotearsWrapper
 import shutil
 import os
 

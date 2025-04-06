@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from group_causation.causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
 
 
 class DynotearsWrapper(CausalDiscoveryBase):

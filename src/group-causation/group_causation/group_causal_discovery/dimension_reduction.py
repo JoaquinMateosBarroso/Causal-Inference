@@ -3,9 +3,9 @@ from sklearn.decomposition import PCA
 from typing import Any
 
 from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
-from group_causation.causal_discovery_algorithms.causal_discovery_causalnex import DynotearsWrapper
-from group_causation.causal_discovery_algorithms.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
-from group_causation.causal_discovery_algorithms.causal_discovery_base import CausalDiscoveryBase
+from group_causation.causal_discovery.causal_discovery_causalnex import DynotearsWrapper
+from group_causation.causal_discovery.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
+from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
 
 class DimensionReductionGroupCausalDiscovery(GroupCausalDiscoveryBase):
     '''

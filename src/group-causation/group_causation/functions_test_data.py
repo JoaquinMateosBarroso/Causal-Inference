@@ -59,7 +59,7 @@ def changing_N_groups(options, algorithms_parameters,
 def changing_N_vars_per_group(options, algorithms_parameters,
                       list_N_vars_per_group=None):
     if list_N_vars_per_group is None:
-        list_N_vars_per_group = [5, 10, 20, 50]
+        list_N_vars_per_group = [2, 4, 6, 8, 10, 12]
     
     for N_vars_per_group in list_N_vars_per_group:
         options['N_vars_per_group'] = N_vars_per_group
