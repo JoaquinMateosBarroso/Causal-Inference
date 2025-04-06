@@ -12,10 +12,10 @@ from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'group_embedding': HybridGroupCausalDiscovery,
-    'subgroups': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
+    # 'subgroups': HybridGroupCausalDiscovery,
+    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    # 'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -84,7 +84,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_N_vars_per_group'
+chosen_option = 'changing_alg_params'
 
 
 
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = True
-    generate_toy_data = True
+    plot_graphs = False
+    generate_toy_data = False
     n_executions = 25
     
     dataset_iteration_to_plot = -1
