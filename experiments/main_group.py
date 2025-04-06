@@ -47,7 +47,7 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.2,
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 10, # Number of variables in the dataset
+    'N_vars': 80, # Number of variables in the dataset
     'N_groups': 10, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
@@ -77,14 +77,14 @@ benchmark_options = {
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12]}),
     
     'changing_alg_params': (changing_alg_params,
-                                    {'alg_name': 'hybrid',
+                                    {'alg_name': 'group_embedding',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance,
                                                                              'groups_division_method': 'subgroups'}}\
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_N_vars_per_group'
+chosen_option = 'changing_alg_params'
 
 
 
@@ -92,12 +92,12 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group'
+    results_folder = 'results_group_studying_threshold'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = True
+    execute_benchmark = False
     plot_graphs = True
     generate_toy_data = True
-    n_executions = 25
+    n_executions = 100
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'

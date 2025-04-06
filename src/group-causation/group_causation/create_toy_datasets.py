@@ -222,10 +222,10 @@ class CausalDataset:
             self.parents_dict = self.extract_group_parents(self.node_parents_dict)
             
             # Generate time series data from the causal process
-            self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise, transient_fraction=.0)
+            self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise)
 
-            # If dataset has no NaNs, use it
-            if not np.isnan(self.time_series).any():
+            # If dataset has no NaNs nor infinites, use it
+            if np.isfinite(self.time_series).all():
                 break
         
         # If the maximum number of tries is reached, raise an error
