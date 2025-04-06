@@ -563,7 +563,7 @@ def _check_input_from_pandas(time_series: List[pd.DataFrame], columns: list[str]
                 "Index for dataframe must be provided in increasing order"
             )
 
-        if not t.index.is_integer():
+        if not pd.api.types.is_integer_dtype(t.index):
             raise TypeError("Index must be integers")
 
         missing_cols = [c for c in columns if c not in t.columns]
