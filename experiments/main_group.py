@@ -84,7 +84,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_alg_params'
+chosen_option = 'changing_N_vars_per_group'
 
 
 
@@ -92,15 +92,15 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_group_studying_threshold'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = False
+    plot_graphs = True
+    generate_toy_data = True
     n_executions = 25
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'N_vars'
+    plot_x_axis = 'N_vars_per_group'
     
     
     options_generator, options_kwargs = benchmark_options[chosen_option]
