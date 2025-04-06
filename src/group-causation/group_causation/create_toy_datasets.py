@@ -227,6 +227,8 @@ class CausalDataset:
             # If dataset has no NaNs nor infinites, use it
             if np.isfinite(self.time_series).all():
                 break
+            else:
+                print(f'Dataset has NaNs or infinites, trying again... {it+1}/{maximum_tries}')
         
         # If the maximum number of tries is reached, raise an error
         if it == maximum_tries:

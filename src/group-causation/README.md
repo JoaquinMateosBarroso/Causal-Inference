@@ -13,7 +13,7 @@ Group Causation is an open source Python library for causal discovery on time se
 
 ## Installation
 
-You can install the library via pip:
+This library has been tested using Python 3.9, and it is recommended to install it in this version. You can install the library via pip:
 ```sh
 pip install git+https://github.com/JoaquinMateosBarroso/group-causation
 ```
