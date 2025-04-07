@@ -95,7 +95,7 @@ if __name__ == '__main__':
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
-    generate_toy_data = True
+    generate_toy_data = False
     n_executions = 25
     
     dataset_iteration_to_plot = -1
