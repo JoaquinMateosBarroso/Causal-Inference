@@ -11,11 +11,11 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'group_embedding': HybridGroupCausalDiscovery,
-    # 'subgroups': HybridGroupCausalDiscovery,
-    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    # 'micro-level': MicroLevelGroupCausalDiscovery,
+    'group-embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -27,19 +27,19 @@ algorithms_parameters = {
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
-    'group_embedding': {'dimensionality_reduction': 'pca', 
+    'group-embedding': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 0},
+                'verbose': 1},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 0},
+                'verbose': 1},
 }
 
 data_generation_options = {
@@ -47,8 +47,8 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.2,
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 40, # Number of variables in the dataset
-    'N_groups': 8, # Number of groups in the dataset
+    'N_vars': 50, # Number of variables in the dataset
+    'N_groups': 6, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -73,8 +73,8 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
     
-    'changing_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10]}),
+    'increasing_N_vars_per_group': (changing_N_vars_per_group,
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'group_embedding',
@@ -84,7 +84,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_alg_params'
+chosen_option = 'increasing_N_vars_per_group'
 
 
 
@@ -92,12 +92,12 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group'
+    results_folder = 'increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = False
-    n_executions = 25
+    plot_graphs = True
+    generate_toy_data = True
+    n_executions = 10
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
@@ -141,10 +141,3 @@ if __name__ == '__main__':
                                                         ['shd', 'f1', 'precision', 'recall']],
                                         dataset_iteration_to_plot=dataset_iteration_to_plot)
     
-    # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
-    destination_folder = os.path.join(results_folder, datasets_folder)
-    if os.path.exists(destination_folder):
-        shutil.rmtree(destination_folder)
-    shutil.copytree(datasets_folder, destination_folder)
-    
-
