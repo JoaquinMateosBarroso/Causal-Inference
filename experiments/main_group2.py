@@ -10,8 +10,8 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'group-embedding': HybridGroupCausalDiscovery,
-    # 'subgroups': HybridGroupCausalDiscovery,
+    # 'group-embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
     # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     # 'micro-level': MicroLevelGroupCausalDiscovery,
