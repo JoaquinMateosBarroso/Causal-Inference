@@ -20,14 +20,22 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
     Args:
         data : np.array with the data, shape (n_samples, n_variables)
         groups : list[set[int]] list with the sets that will compound each group of variables.
-                    We will suppose that the groups are known beforehand.
-                    The index of a group will be considered as its position in groups list.
+                We will suppose that the groups are known beforehand.
+                The index of a group will be considered as its position in groups list.
         dimensionality_reduction : str indicating the type of dimensionality reduction technique
-                    that is applied to groups. options=['pca']. default='pca'
+                that is applied to groups. options=['pca']. default='pca'
         dimensionality_reduction_params : dict with the parameters for the dimensionality reduction algorithm.
         node_causal_discovery_alg : str indicating the algorithm that will be used to discover the causal
-                    relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
+                relationships between the variables of each group. options=['pcmci', 'pc-stable', 'dynotears']
         node_causal_discovery_params : dict with the parameters for the node causal discovery algorithm.
+        link_assumptions (dict) : Dictionary of form {j:{(i, -tau): link_type, …}, …} specifying assumptions about links.
+                This initializes the graph with entries graph[i,j,tau] = link_type. For example, graph[i,j,0] = ‘–>’ 
+                implies that a directed link from i to j at lag 0 must exist. Valid link types are ‘o-o’, ‘–>’, ‘<–’.
+                In addition, the middle mark can be ‘?’ instead of ‘-’. Then ‘-?>’ implies that this link may not 
+                exist, but if it exists, its orientation is ‘–>’. Link assumptions need to be consistent, i.e., 
+                graph[i,j,0] = ‘–>’ requires graph[j,i,0] = ‘<–’ and acyclicity must hold. If a link does not appear
+                in the dictionary, it is assumed absent. That is, if link_assumptions is not None, then all links have 
+                to be specified or the links are assumed absent.
     '''
     def __init__(self, data: np.ndarray,
                     groups: list[set[int]],
@@ -35,6 +43,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     dimensionality_reduction_params: dict[str, Any] = None,
                     node_causal_discovery_alg: str = 'pcmci',
                     node_causal_discovery_params: dict[str, Any] = None,
+                    link_assumptions: dict[int, dict[tuple[int, int], str]] = None,
                     verbose: int = 0,
                     **kwargs):
         super().__init__(data, groups, **kwargs)
@@ -50,6 +59,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         else:
             raise ValueError(f'Dimensionality reduction technique {dimensionality_reduction} not supported.')
         
+        micro_link_assumptions = _convert_link_assumptions(link_assumptions, self.micro_groups)
+        
+        node_causal_discovery_params['link_assumptions'] = micro_link_assumptions
         self.micro_level_causal_discovery = MicroLevelGroupCausalDiscovery(self.micro_data, self.micro_groups,
                                                                     node_causal_discovery_alg, node_causal_discovery_params)
     
@@ -67,7 +79,8 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         return group_parents
     
     
-    def _prepare_micro_groups_pca(self, explained_variance_threshold: float = 0.9,
+    def _prepare_micro_groups_pca(self, explained_variance_threshold: float = 0.5,
+                                    embedding_ratio: float = None,
                                     groups_division_method: str='group_embedding') -> list[np.ndarray]:
         '''
         Execute the PCA dimensionality reduction algorithm to the groups of variables,
@@ -76,6 +89,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         Args:
             explained_variance_threshold : float indicating the minimum explained variance that the PCA
                         algorithm must achieve to stop the dimensionality reduction.
+            embedding_ratio : float indicating the ratio between the number of variables in the original dataset
+                        and the number of variables in the reduced dataset. If None, the explained_variance_threshold
+                        will be used to calculate the explained variance threshold.
             groups_compresion_method : string indicating the method that will be used to compress the
                         groups of variables. options=['group_embedding', 'subgroups']
         
@@ -85,6 +101,12 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             micro_groups_data : np.ndarray where each column is the univariate time series of each group
                             of variables after the dimensionality reduction
         '''
+        if embedding_ratio is not None:
+            explained_variance_threshold = self._get_variance_threshold_from_embedding_ratio_pca(embedding_ratio,
+                                                                                                    groups_division_method)
+        if explained_variance_threshold <= 0 or explained_variance_threshold >= 1:
+            raise ValueError(f'Explained variance threshold must be between 0 and 1. Obtained: {explained_variance_threshold}'
+                             'Note that if you specified embedding_ratio, the explained variance threshold will be calculated from it.')
         micro_groups = []
         micro_data = [] # List where each element is the ts data of a microgroup
         current_number_of_variables = 0
@@ -107,17 +129,17 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                 micro_data.append(group_data_pca)
                 
             elif groups_division_method == 'subgroups':
-                def _prepare_subgroups(current_subgroup: set[int]) -> tuple[ list[set[int]], np.ndarray]:
+                get_pc1explained_variance_and_group_data = lambda group: \
+                    ((pca:=PCA(n_components=1)).fit_transform(self.data[:, list(group)]),  
+                       pca.explained_variance_ratio_[0])
+                def _divide_subgroups(current_subgroup: set[int]) -> tuple[ list[set[int]], np.ndarray]:
                     '''
                     Recursive function that divides the group in 2 subgroups until the explained variance
                     of the first PC represents at least a "explained_variance_threshold" fraction of the total
                     '''
-                    group_data = self.data[:, list(current_subgroup)]
-                    pca = PCA(n_components=1)
-                    group_data_pca = pca.fit_transform(group_data)
-                    explained_variance = pca.explained_variance_ratio_[0]
+                    group_data_pca, pc1explained_variance = get_pc1explained_variance_and_group_data(current_subgroup)
                     
-                    if explained_variance >= explained_variance_threshold:
+                    if pc1explained_variance >= explained_variance_threshold:
                         # We have reached the desired explained variance; one single pc is enough
                         nonlocal current_number_of_variables
                         used_subgroup = [current_number_of_variables]
@@ -129,11 +151,11 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                         half = len(current_subgroup) // 2
                         first_half = ordered_nodes[:half]
                         second_half = ordered_nodes[half:]
-                        first_subgroup, first_subgroup_data = _prepare_subgroups([current_subgroup[i] for i in first_half])
-                        second_subgroup, second_subgroup_data = _prepare_subgroups([current_subgroup[i] for i in second_half])
+                        first_subgroup, first_subgroup_data = _divide_subgroups([current_subgroup[i] for i in first_half])
+                        second_subgroup, second_subgroup_data = _divide_subgroups([current_subgroup[i] for i in second_half])
                         return first_subgroup + second_subgroup, np.concatenate([first_subgroup_data, second_subgroup_data], axis=1)
                 
-                micro_group, group_data_pca = _prepare_subgroups(group)
+                micro_group, group_data_pca = _divide_subgroups(group)
                 micro_groups.append( set(micro_group) )
                 micro_data.append(group_data_pca)
             
@@ -148,6 +170,33 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
 
         return micro_groups, micro_data
     
+    def _get_variance_threshold_from_embedding_ratio_pca(self, embedding_ratio: float,
+                                                         groups_division_method: str) -> float:
+        '''
+        Function that calculates the explained variance threshold from the embedding ratio.
+        The embedding ratio is the ratio between the number of variables in the original dataset
+        and the number of variables in the reduced dataset.
+        The explained variance threshold is calculated as the average of the minimum explained 
+        variances that the PCA algorithm must achieve to stop the dimensionality reduction
+        in order to divide each group in embedding_ratio*n_vars_group single time series.
+        
+        Args:
+            embedding_ratio : float. Ratio between the number of variables in the original dataset
+                            and the number of variables in the reduced dataset.
+        Returns:
+            explained_variance_threshold : float. Minimum explained variance that the PCA algorithm
+                                        must achieve to stop the dimensionality reduction.
+        '''
+        variance_thresholds = []
+        for group in self.groups:
+            group_data = self.data[:, list(group)]
+            pca = PCA(n_components=int( embedding_ratio * len(group) ))
+            pca.fit(group_data)
+            explained_variance = pca.explained_variance_ratio_.sum()
+            variance_thresholds.append(explained_variance)
+        explained_variance_threshold = np.mean(variance_thresholds)            
+        
+        return explained_variance_threshold
     
     def _convert_micro_to_group_parents(self, micro_parents: dict[int, list[int]]) -> dict[int, list[int]]:
         '''
@@ -173,4 +222,28 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             group_parents[group_idx] = list(set(group_parents[group_idx]))
         
         return group_parents
+
+def _convert_link_assumptions(link_assumptions: dict[int, dict[tuple[int, int], str]], micro_groups: list[set[int]]) -> dict[int, dict[tuple[int, int], str]]:
+    '''
+    Convert the link assumptions from the original groups to the microgroups
     
+    Args:
+        link_assumptions : dict[int, dict[tuple[int, int], str]]. Dictionary with the link assumptions.
+        micro_groups : list[ set[int] ]. List with the microgroups.
+    
+    Returns:
+        micro_link_assumptions : dict[int, dict[tuple[int, int], str]]. Dictionary with the link assumptions for each microgroup.
+    '''
+    if link_assumptions is None:
+        return None
+    
+    micro_link_assumptions = {}
+    for son_group_idx, son_group in enumerate(micro_groups):
+        for son_node_idx in son_group:
+            if son_node_idx not in micro_link_assumptions:
+                micro_link_assumptions[son_node_idx] = {}
+            for (parent_group_idx, lag), link_type in link_assumptions[son_group_idx].items():
+                for parent_node_idx in micro_groups[parent_group_idx]:
+                    micro_link_assumptions[son_node_idx][(parent_node_idx, lag)] = link_type
+    
+    return micro_link_assumptions

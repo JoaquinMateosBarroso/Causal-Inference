@@ -391,14 +391,14 @@ class CausalDataset:
             f.write(node_parents_representation)
     
 
-def plot_ts_graph(parents_dict):
+def plot_ts_graph(parents_dict, var_names=None):
     '''
     Function to plot the graph structure of the time series
     '''
     graph = Graphs.get_graph_from_dict(parents_dict)
     tp.plot_time_series_graph(
         graph=graph,
-        var_names=list(parents_dict.keys()),
+        var_names=var_names,
         link_colorbar_label='cross-MCI (edges)',
     )
 

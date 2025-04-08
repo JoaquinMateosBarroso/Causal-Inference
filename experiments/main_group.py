@@ -11,7 +11,7 @@ from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
     'group-embedding': HybridGroupCausalDiscovery,
-    # 'subgroups': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
     # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     # 'micro-level': MicroLevelGroupCausalDiscovery,
@@ -27,14 +27,14 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
     'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.4,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.4,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
@@ -83,7 +83,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'changing_alg_params'
+chosen_option = 'increasing_N_vars_per_group'
 
 
 
@@ -91,12 +91,12 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_studying_threshold'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
     generate_toy_data = False
-    n_executions = 25
+    n_executions = 10
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
