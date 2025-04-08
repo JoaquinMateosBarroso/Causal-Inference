@@ -108,8 +108,11 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             explained_variance_threshold = self._get_variance_threshold_from_embedding_ratio_pca(embedding_ratio)
         elif embedding_size is not None:
             explained_variance_threshold = self._get_variance_threshold_from_embedding_size_pca(embedding_size)
+        # Admit a low error when explained_variance_threshold is 0.0
+        if explained_variance_threshold == 0.0:
+            explained_variance_threshold = 0.05
         
-        if explained_variance_threshold < 0 or explained_variance_threshold > 1:
+        if explained_variance_threshold < 0 or explained_variance_threshold >= 1:
             raise ValueError(f'Explained variance threshold must be between 0 and 1. Obtained: {explained_variance_threshold}.\n'
                              'Note that if you specified embedding_ratio, the explained variance threshold will be calculated from it.')
         micro_groups = []
