@@ -81,6 +81,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
     
     def _prepare_micro_groups_pca(self, explained_variance_threshold: float = 0.5,
                                     embedding_ratio: float = None,
+                                    embedding_size: int = None,
                                     groups_division_method: str='group_embedding') -> list[np.ndarray]:
         '''
         Execute the PCA dimensionality reduction algorithm to the groups of variables,
@@ -101,9 +102,13 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
             micro_groups_data : np.ndarray where each column is the univariate time series of each group
                             of variables after the dimensionality reduction
         '''
+        if embedding_ratio is not None and embedding_size is not None:
+            raise ValueError('Only one of embedding_ratio or embedding_size can be specified.')
         if embedding_ratio is not None:
-            explained_variance_threshold = self._get_variance_threshold_from_embedding_ratio_pca(embedding_ratio,
-                                                                                                    groups_division_method)
+            explained_variance_threshold = self._get_variance_threshold_from_embedding_ratio_pca(embedding_ratio)
+        elif embedding_size is not None:
+            explained_variance_threshold = self._get_variance_threshold_from_embedding_size_pca(embedding_size)
+        
         if explained_variance_threshold <= 0 or explained_variance_threshold >= 1:
             raise ValueError(f'Explained variance threshold must be between 0 and 1. Obtained: {explained_variance_threshold}'
                              'Note that if you specified embedding_ratio, the explained variance threshold will be calculated from it.')
@@ -170,27 +175,37 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
 
         return micro_groups, micro_data
     
-    def _get_variance_threshold_from_embedding_ratio_pca(self, embedding_ratio: float,
-                                                         groups_division_method: str) -> float:
+    def _get_variance_threshold_from_embedding_ratio_pca(self, embedding_ratio: float=None) -> float:
         '''
         Function that calculates the explained variance threshold from the embedding ratio.
         The embedding ratio is the ratio between the number of variables in the original dataset
         and the number of variables in the reduced dataset.
-        The explained variance threshold is calculated as the average of the minimum explained 
-        variances that the PCA algorithm must achieve to stop the dimensionality reduction
-        in order to divide each group in embedding_ratio*n_vars_group single time series.
-        
-        Args:
-            embedding_ratio : float. Ratio between the number of variables in the original dataset
-                            and the number of variables in the reduced dataset.
-        Returns:
-            explained_variance_threshold : float. Minimum explained variance that the PCA algorithm
-                                        must achieve to stop the dimensionality reduction.
         '''
         variance_thresholds = []
         for group in self.groups:
             group_data = self.data[:, list(group)]
             pca = PCA(n_components=int( embedding_ratio * len(group) ))
+            pca.fit(group_data)
+            explained_variance = pca.explained_variance_ratio_.sum()
+            variance_thresholds.append(explained_variance)
+        explained_variance_threshold = np.mean(variance_thresholds)            
+        
+        return explained_variance_threshold
+    
+    
+    def _get_variance_threshold_from_embedding_size_pca(self, embedding_size: int=None) -> float:
+        '''
+        Function that calculates the explained variance threshold from the embedding size.
+        The embedding ratio is the ratio between the number of variables in the original dataset
+        and the number of variables in the reduced dataset.
+        '''
+        variance_thresholds = []
+        for group in self.groups:
+            if embedding_size >= len(group):
+                variance_thresholds.append(1)
+                continue
+            group_data = self.data[:, list(group)]
+            pca = PCA(n_components=int( embedding_size ))
             pca.fit(group_data)
             explained_variance = pca.explained_variance_ratio_.sum()
             variance_thresholds.append(explained_variance)

@@ -12,9 +12,9 @@ from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 algorithms = {
     'group-embedding': HybridGroupCausalDiscovery,
     'subgroups': HybridGroupCausalDiscovery,
-    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    # 'micro-level': MicroLevelGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -27,14 +27,14 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
     'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.4,
+               'dimensionality_reduction_params': {'embedding_ratio': 0.4,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.4,
+               'dimensionality_reduction_params': {'embedding_ratio': 0.4,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
@@ -50,7 +50,7 @@ data_generation_options = {
     'N_groups': 6, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
-    'n_node_links_per_group_link': 2,
+    'n_node_links_per_group_link': 4,
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
     'auto_coeffs': [0.4], # default: [0.5, 0.7]
@@ -73,7 +73,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'increasing_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]}),
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'group-embedding',
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
-    generate_toy_data = False
-    n_executions = 10
+    generate_toy_data = True
+    n_executions = 25
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
