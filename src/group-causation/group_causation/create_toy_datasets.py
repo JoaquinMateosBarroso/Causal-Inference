@@ -27,7 +27,7 @@ def get_parents_dict(causal_process) -> dict[int, list[int]]:
     return parents_dict
 
 class CausalDataset:
-    def __init__(self, time_series=None, parents_dict=None, groups=None):
+    def __init__(self, time_series=None, parents_dict=None, groups=None, max_value_threshold=1e10):
         '''
         Initialize the CausalDataset object.
         
@@ -35,10 +35,12 @@ class CausalDataset:
             time_series : np.ndarray with shape (n_samples, n_variables)
             parents_dict : dictionary whose keys are each node, and values are the lists of parents, [... (i, -tau) ...].
             groups : List of lists, where each list is a group of variables. Just is used in case of group-based datasets.
+            max_value_threshold : Maximum value of the time series. If a value is greater than this, generation will be repeated.
         '''
         self.time_series = time_series
         self.parents_dict = parents_dict
         self.groups = groups
+        self.max_value_threshold = max_value_threshold
     
     dependency_funcs_dict = {
         'linear': lambda x: x,
@@ -224,7 +226,9 @@ class CausalDataset:
             self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise)
 
             # If dataset has no NaNs nor infinites, use it
-            if np.all(np.isfinite(self.time_series)) and not np.any(np.isnan(self.time_series)):
+            if np.all(np.isfinite(self.time_series)) and \
+                np.all(np.abs(self.time_series) < self.max_value_threshold) and \
+                not np.any(np.isnan(self.time_series)):
                 break
             else:
                 print(f'Dataset has NaNs or infinites, trying again... {it}/{maximum_tries}')
