@@ -27,14 +27,14 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
     'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'embedding_ratio': 0.5,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'embedding_ratio': 0.5,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
@@ -73,7 +73,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 3}),
     
     'increasing_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'group-embedding',

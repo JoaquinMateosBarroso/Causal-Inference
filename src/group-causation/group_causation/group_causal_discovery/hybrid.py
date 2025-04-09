@@ -122,14 +122,14 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         micro_data = [] # List where each element is the ts data of a microgroup
         current_number_of_variables = 0
         for i, group in enumerate(self.groups):
+            # Standarize data, so that the PCA algorithm works properly
+            group_data = self.data[:, list(group)]
+            group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
+            pca = PCA(n_components=explained_variance_threshold)
+            
             if groups_division_method == 'group_embedding':
-                # Standarize data, so that the PCA algorithm works properly
-                group_data = self.data[:, list(group)]
-                group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
                 # Extract the principal components of the group
-                pca = PCA(n_components=explained_variance_threshold)
                 group_data_pca = pca.fit_transform(group_data)
-                
                 # Append the microgroup variables indexes to the list    
                 n_variables = group_data_pca.shape[1]
                 current_number_of_variables = sum(arr.shape[1] for arr in micro_data)
