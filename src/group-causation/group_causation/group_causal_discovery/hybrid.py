@@ -150,8 +150,6 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     '''
                     current_subgroup_data = self.data[:, list(current_subgroup)]
                     pca = PCA(n_components=1)
-                    print(f'{current_subgroup=}')
-                    print(f'{current_subgroup_data.std()=}')
                     group_data_pca = pca.fit_transform(current_subgroup_data)
                     if pca.explained_variance_ratio_[0] >= explained_variance_threshold or len(current_subgroup) == 1:
                         # We have reached the desired explained variance; one single pc is enough
