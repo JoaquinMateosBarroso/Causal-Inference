@@ -124,7 +124,8 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         for i, group in enumerate(self.groups):
             # Standarize data, so that the PCA algorithm works properly
             group_data = self.data[:, list(group)]
-            group_data = (group_data - group_data.mean(axis=0)) / group_data.std(axis=0)
+            group_data = (group_data - group_data.mean(axis=0))
+            if np.all((std:=group_data.std(axis=0))!=0): group_data /= std
             pca = PCA(n_components=explained_variance_threshold)
             
             if groups_division_method == 'group_embedding':
