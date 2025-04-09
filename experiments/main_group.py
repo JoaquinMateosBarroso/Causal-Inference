@@ -70,6 +70,9 @@ def increasing_N_vars_per_group(options, algorithms_parameters,
         if N_vars_per_group > 6:
             algorithm_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
             algorithm_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+        elif N_vars_per_group > 10:
+            algorithm_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
+            algorithm_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
         options['N_vars_per_group'] = N_vars_per_group
         options['N_vars'] = options['N_groups'] * N_vars_per_group
         
