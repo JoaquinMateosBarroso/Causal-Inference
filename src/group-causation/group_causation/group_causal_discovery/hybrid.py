@@ -140,15 +140,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                 # Append the microgroup data to the list
                 micro_data.append(group_data_pca)
                 
-            elif groups_division_method == 'subgroups':
-                def _fit_pca_managing_null_variance(data: np.ndarray) -> tuple[np.ndarray, float]:
-                    if np.allclose(data.std(axis=0), 0):
-                        print('Warning: The data is constant. PCA will not be applied.')
-                        return np.zeros((data.shape[0], 1)), 0.0
-                    pca = PCA(n_components=1)
-                    data_pca = pca.fit(data)
-                    return data_pca, pca.explained_variance_ratio_[0]
-                
+            elif groups_division_method == 'subgroups':                
                 # Divide the group in 2 subgroups until the explained variance of the first PC represents
                 # at least a "explained_variance_threshold" fraction of the total
                 def _divide_subgroups(current_subgroup: set[int]) -> tuple[ list[set[int]], np.ndarray]:
@@ -157,8 +149,10 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     of the first PC represents at least a "explained_variance_threshold" fraction of the total
                     '''
                     current_subgroup_data = self.data[:, list(current_subgroup)]
-                    pca = _fit_pca_managing_null_variance(current_subgroup_data)
-                    group_data_pca = pca.transform(current_subgroup_data)
+                    pca = PCA(n_components=1)
+                    print(f'{current_subgroup=}')
+                    print(f'{current_subgroup_data.std()=}')
+                    group_data_pca = pca.fit_transform(current_subgroup_data)
                     if pca.explained_variance_ratio_[0] >= explained_variance_threshold or len(current_subgroup) == 1:
                         # We have reached the desired explained variance; one single pc is enough
                         nonlocal current_number_of_variables
