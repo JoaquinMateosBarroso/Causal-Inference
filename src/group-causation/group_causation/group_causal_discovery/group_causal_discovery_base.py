@@ -19,7 +19,8 @@ class GroupCausalDiscoveryBase(CausalDiscoveryBase): # Abstract class
     def __init__(self, data: np.ndarray, groups: list[set[int]]=None, 
                  standarize: bool=True, **kwargs):
         if standarize:
-            self.data = (data - data.mean(axis=0)) / data.std(axis=0)
+            self.data = data - data.mean(axis=0)
+            if np.all((std:=data.std(axis=0))!=0): data /=std
         else:
             self.data = data
         if groups is None:
