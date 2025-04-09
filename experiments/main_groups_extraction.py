@@ -6,7 +6,7 @@ import shutil
 import os
 
 from group_causation.causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
-from group_causation.functions_test_data import static_parameters
+from group_causation.utils import static_parameters
 from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {

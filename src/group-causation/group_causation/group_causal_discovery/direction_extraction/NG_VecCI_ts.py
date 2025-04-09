@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from functions_test_data import get_precision, get_recall
+from group_causation.utils import get_precision, get_recall
 from group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase, EdgeDirection
 
 

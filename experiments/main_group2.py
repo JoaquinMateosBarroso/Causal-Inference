@@ -4,7 +4,7 @@ import numpy as np
 from group_causation.benchmark import BenchmarkGroupCausalDiscovery
 import os
 
-from group_causation.functions_test_data import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
+from group_causation.utils import changing_N_groups, changing_N_variables, changing_N_vars_per_group, changing_alg_params, changing_preselection_alpha, static_parameters
 from group_causation.group_causal_discovery import DimensionReductionGroupCausalDiscovery
 from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscovery
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery

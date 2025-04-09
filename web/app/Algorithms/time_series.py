@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-from group_causation.functions_test_data import static_parameters
+from group_causation.utils import static_parameters
 import io
 import base64
 

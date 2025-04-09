@@ -11,7 +11,7 @@ import os
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-from group_causation.functions_test_data import changing_N_variables, changing_preselection_alpha, static_parameters
+from group_causation.utils import changing_N_variables, changing_preselection_alpha, static_parameters
 
 algorithms = {
     'pcmci': PCMCIWrapper,

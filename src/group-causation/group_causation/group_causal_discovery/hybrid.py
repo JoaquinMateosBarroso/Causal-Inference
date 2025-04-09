@@ -115,6 +115,9 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         if explained_variance_threshold < 0 or explained_variance_threshold >= 1:
             raise ValueError(f'Explained variance threshold must be between 0 and 1. Obtained: {explained_variance_threshold}.\n'
                              'Note that if you specified embedding_ratio, the explained variance threshold will be calculated from it.')
+        else:
+            explained_variance_threshold = float(explained_variance_threshold)
+        
         micro_groups = []
         micro_data = [] # List where each element is the ts data of a microgroup
         current_number_of_variables = 0
