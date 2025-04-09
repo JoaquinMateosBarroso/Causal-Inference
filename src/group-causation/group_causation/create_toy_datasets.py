@@ -225,7 +225,7 @@ class CausalDataset:
             self.time_series, _ = structural_causal_process(global_causal_process, T=T, noises=noise)
 
             # If dataset has no NaNs nor infinites, use it
-            if np.isfinite(self.time_series).all():
+            if np.isfinite(self.time_series).all() and not np.any(np.isnan(self.time_series)):
                 break
             else:
                 print(f'Dataset has NaNs or infinites, trying again... {it+1}/{maximum_tries}')

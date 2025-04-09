@@ -27,14 +27,14 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
     
     'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'embedding_ratio': 0.4,
+               'dimensionality_reduction_params': {'embedding_ratio': 0.5,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
                 'verbose': 1},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'embedding_ratio': 0.4,
+               'dimensionality_reduction_params': {'embedding_ratio': 0.5,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
