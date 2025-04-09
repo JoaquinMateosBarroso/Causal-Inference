@@ -181,12 +181,11 @@ class CausalDataset:
                                 for func in dependency_funcs]
         
         # Try to generate data until there are no NaNs
-        for it in range(maximum_tries):
+        for it in range(1, maximum_tries+1):
             self.groups = self._generate_groups(N_vars, N_groups)
             
             # Dictionary where keys will be the global index of the nodes, and values the causal processes
             groups_causal_processes = dict()
-            
             
             # Generate inner causal processes
             for index, group in enumerate(self.groups):
@@ -228,7 +227,7 @@ class CausalDataset:
             if np.isfinite(self.time_series).all() and not np.any(np.isnan(self.time_series)):
                 break
             else:
-                print(f'Dataset has NaNs or infinites, trying again... {it+1}/{maximum_tries}')
+                print(f'Dataset has NaNs or infinites, trying again... {it}/{maximum_tries}')
         
         # If the maximum number of tries is reached, raise an error
         if it == maximum_tries:

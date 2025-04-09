@@ -46,8 +46,8 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.2,
     'T': 2000, # Number of time points in the dataset
-    'N_vars': 60, # Number of variables in the dataset
-    'N_groups': 6, # Number of groups in the dataset
+    'N_vars': 50, # Number of variables in the dataset
+    'N_groups': 5, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 4,
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     n_executions = 25
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'N_vars_per_group'
+    plot_x_axis = 'N_vars'
     
     
     options_generator, options_kwargs = benchmark_options[chosen_option]
