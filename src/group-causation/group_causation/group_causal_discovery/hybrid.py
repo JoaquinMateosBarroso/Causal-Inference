@@ -152,7 +152,7 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                     '''
                     group_data_pca, pc1explained_variance = get_pc1explained_variance_and_group_data(current_subgroup)
                     
-                    if pc1explained_variance >= explained_variance_threshold:
+                    if pc1explained_variance >= explained_variance_threshold or len(current_subgroup) == 1:
                         # We have reached the desired explained variance; one single pc is enough
                         nonlocal current_number_of_variables
                         used_subgroup = [current_number_of_variables]
@@ -164,8 +164,8 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
                         half = len(current_subgroup) // 2
                         first_half = ordered_nodes[:half]
                         second_half = ordered_nodes[half:]
-                        first_subgroup, first_subgroup_data = _divide_subgroups([current_subgroup[i] for i in first_half])
-                        second_subgroup, second_subgroup_data = _divide_subgroups([current_subgroup[i] for i in second_half])
+                        first_subgroup, first_subgroup_data = _divide_subgroups(first_half)
+                        second_subgroup, second_subgroup_data = _divide_subgroups(second_half)
                         return first_subgroup + second_subgroup, np.concatenate([first_subgroup_data, second_subgroup_data], axis=1)
                 
                 micro_group, group_data_pca = _divide_subgroups(group)
