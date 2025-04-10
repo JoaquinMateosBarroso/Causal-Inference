@@ -7,6 +7,8 @@ from SpearmanCorrelation import spearmanCorrelation
 
 np.random.seed(43)
 
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.figsize'] = (6, 4)
 plt.rcParams['figure.dpi'] = 200
 plt.rcParams['axes.spines.right'] = False

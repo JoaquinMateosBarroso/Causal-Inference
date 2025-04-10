@@ -70,6 +70,8 @@ chosen_option = 'static'
 
 if __name__ == '__main__':
     plt.style.use('ggplot')
+    plt.rcParams['text.usetex'] = True
+    plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkCausalDiscovery()
     datasets_folder = 'toy_data'
