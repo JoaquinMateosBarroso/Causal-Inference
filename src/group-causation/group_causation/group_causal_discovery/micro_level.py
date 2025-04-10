@@ -46,7 +46,7 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
         node_parents = self.causal_discovery_alg.extract_parents()
 
         group_parents = self._convert_node_to_group_parents(node_parents)
-        
+        print(f'{group_parents=}')
         return group_parents
 
     def _convert_node_to_group_parents(self, node_parents: dict[int, list[int]]) -> dict[int, list[int]]:

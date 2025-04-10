@@ -74,7 +74,6 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         '''
         group_parents = self.micro_level_causal_discovery.extract_parents()
         
-        # group_parents = self._convert_micro_to_group_parents(micro_parents)
         
         return group_parents
     
@@ -219,31 +218,6 @@ class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
         
         return explained_variance_threshold
     
-    def _convert_micro_to_group_parents(self, micro_parents: dict[int, list[int]]) -> dict[int, list[int]]:
-        '''
-        Convert the parents of each microgroup to the parents of each group of variables
-        
-        Args:
-            micro_parents : dict[int, list[int]]. Dictionary with the parents of each microgroup.
-        
-        Returns:
-            group_parents : dict[int, list[int]]. Dictionary with the parents of each group of variables.
-        '''
-        group_parents = {}
-        for group_idx, group in enumerate(self.groups):
-            group_parents[group_idx] = []
-            for son_micro_idx in self.micro_groups[group_idx]:
-                # A group is son of another group iff any microgroup of the son has a parent microgroup that is in the parent group
-                for parent_micro_idx, lag in micro_parents[son_micro_idx]:
-                    [parent_group_idx] = [idx for idx, micro_group in enumerate(self.micro_groups)
-                                                if parent_micro_idx in micro_group]
-                    # Add the parent group (with microgroup's lag) to the parents of the son group
-                    group_parents[group_idx].append((parent_group_idx, lag))
-            # Remove duplicates
-            group_parents[group_idx] = list(set(group_parents[group_idx]))
-        
-        return group_parents
-
 def _convert_link_assumptions(link_assumptions: dict[int, dict[tuple[int, int], str]], micro_groups: list[set[int]]) -> dict[int, dict[tuple[int, int], str]]:
     '''
     Convert the link assumptions from the original groups to the microgroups

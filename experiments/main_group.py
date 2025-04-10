@@ -44,8 +44,8 @@ algorithms_parameters = {
 data_generation_options = {
     'min_lag': 0,
     'max_lag': 5,
-    'contemp_fraction': 0.2,
-    'T': 2000, # Number of time points in the dataset
+    'contemp_fraction': 0.25,
+    'T': 1000, # Number of time points in the dataset
     'N_vars': 50, # Number of variables in the dataset
     'N_groups': 5, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
@@ -59,27 +59,6 @@ data_generation_options = {
     
     'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }
-
-# TODO: Borrar cuando tenga las gráficas y cambiar el increasing por el changing abajo
-def increasing_N_vars_per_group(options, algorithms_parameters,
-                      list_N_vars_per_group=None):
-    if list_N_vars_per_group is None:
-        list_N_vars_per_group = [2, 4, 6, 8, 10, 12]
-    
-    for N_vars_per_group in list_N_vars_per_group:
-        if N_vars_per_group > 6:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-        elif N_vars_per_group > 10:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
-        options['N_vars_per_group'] = N_vars_per_group
-        options['N_vars'] = options['N_groups'] * N_vars_per_group
-        
-        for algorithm_parameters in algorithms_parameters.values():
-            algorithm_parameters['max_lag'] = options['max_lag']
-        
-        yield algorithms_parameters, options
     
 benchmark_options = {
     'static_parameters': (static_parameters, {}),
@@ -93,9 +72,7 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
     
-    # 'increasing_N_vars_per_group': (changing_N_vars_per_group, TODO: descomentar
-    #                                 {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
-    'increasing_N_vars_per_group': (increasing_N_vars_per_group,
+    'increasing_N_vars_per_group': (changing_N_vars_per_group,
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
     
     'changing_alg_params': (changing_alg_params,
@@ -121,7 +98,7 @@ if __name__ == '__main__':
     generate_toy_data = True
     n_executions = 25
     
-    dataset_iteration_to_plot = -1
+    dataset_iteration_to_plot = 4
     plot_x_axis = 'N_vars_per_group'
     
     
@@ -151,7 +128,7 @@ if __name__ == '__main__':
             causal_datasets = benchmark.generate_datasets(iteration, n_executions, datasets_folder, data_option)
     
     if plot_graphs:
-        benchmark.plot_ts_datasets(datasets_folder)
+        # benchmark.plot_ts_datasets(datasets_folder)
         
         benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
         # Save results for whole graph scores
