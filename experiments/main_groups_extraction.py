@@ -33,7 +33,7 @@ chosen_option = 'static_parameters'
 
 
 if __name__ == '__main__':
-    plt.style.use('ggplot')
+    # plt.style.use('ggplot')
     
     benchmark = BenchmarkGroupsExtraction()
     datasets_folder = 'toy_data'

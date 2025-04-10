@@ -10,8 +10,8 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'group-embedding': HybridGroupCausalDiscovery,
-    'subgroups': HybridGroupCausalDiscovery,
+    # 'group-embedding': HybridGroupCausalDiscovery,
+    # 'subgroups': HybridGroupCausalDiscovery,
     'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     'micro-level': MicroLevelGroupCausalDiscovery,
@@ -88,16 +88,16 @@ chosen_option = 'static_parameters'
 
 
 if __name__ == '__main__':
-    plt.style.use('ggplot')
+    # plt.style.use('ggplot')
     plt.rcParams['text.usetex'] = True
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
     results_folder = 'results_studying_threshold'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = False
+    execute_benchmark = True
     plot_graphs = False
-    generate_toy_data = True
+    generate_toy_data = False
     n_executions = 100
     
     dataset_iteration_to_plot = -1
