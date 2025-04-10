@@ -10,8 +10,8 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    'group-embedding': HybridGroupCausalDiscovery,
-    # 'subgroups': HybridGroupCausalDiscovery,
+    # 'group-embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
     # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
     # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
     # 'micro-level': MicroLevelGroupCausalDiscovery,
@@ -76,10 +76,10 @@ benchmark_options = {
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
     
     'changing_alg_params': (changing_alg_params,
-                                    {'alg_name': 'group-embedding',
+                                    {'alg_name': 'subgroups',
                                      'list_modifying_algorithms_params': [
                                         {'dimensionality_reduction_params': {'explained_variance_threshold': variance,
-                                                                             'groups_division_method': 'group_embedding'}}\
+                                                                             'groups_division_method': 'subgroups'}}\
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
