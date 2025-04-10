@@ -10,11 +10,11 @@ from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscover
 from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
 
 algorithms = {
-    # 'group-embedding': HybridGroupCausalDiscovery,
+    'group-embedding': HybridGroupCausalDiscovery,
     # 'subgroups': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
+    # 'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    # 'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    # 'micro-level': MicroLevelGroupCausalDiscovery,
 }
 algorithms_parameters = {
     'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
@@ -83,7 +83,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'static_parameters'
+chosen_option = 'changing_alg_params'
 
 
 
