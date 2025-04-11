@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 # from tigramite.plotting import plot_time_series_graph
 from tigramite_plotting_modified import plot_time_series_graph
 
+plt.style.use('default')
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
 
 ts_basic_window_graph = np.array([
                   [[0, 1, 0, 0], [1, 1, 0, 0], [0, 0, 0, 0]],
@@ -29,6 +32,6 @@ def plot_graph(graph, summary=False):
 
 
 if __name__ == '__main__':
-    plot_graph(ts_basic_extended_summary_graph, summary=True)
-    plt.savefig('figs/' + 'ts_basic_extended_summary_graph.pdf')
+    plot_graph(ts_basic_fully_connected_graph, summary=False)
+    plt.savefig('figs/' + 'ts_fully_connected_graph_more_lag.pdf')
 

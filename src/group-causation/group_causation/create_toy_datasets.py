@@ -402,7 +402,7 @@ def plot_ts_graph(parents_dict, var_names=None):
     graph = Graphs.get_graph_from_dict(parents_dict)
     tp.plot_time_series_graph(
         graph=graph,
-        var_names=var_names,
+        var_names=[f'$X^{name}$' for name in var_names],
         link_colorbar_label='cross-MCI (edges)',
     )
 

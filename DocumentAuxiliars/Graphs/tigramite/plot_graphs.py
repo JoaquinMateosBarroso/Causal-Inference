@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from tigramite.data_processing import DataFrame
-from tigramite.pcmci import PCMCI
-from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.plotting import plot_graph
 
+plt.style.use('default')
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
 
 
 

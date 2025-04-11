@@ -15,9 +15,9 @@ from group_causation.utils import changing_N_variables, changing_preselection_al
 
 algorithms = {
     'pcmci': PCMCIWrapper,
-    'dynotears': DynotearsWrapper,
-    'granger': GrangerWrapper,
-    'varlingam': VARLINGAMWrapper,
+    # 'dynotears': DynotearsWrapper,
+    # 'granger': GrangerWrapper,
+    # 'varlingam': VARLINGAMWrapper,
     # 'pc-stable': PCStableWrapper,
     
     # 'fullpcmci': PCMCIWrapper,
@@ -43,8 +43,8 @@ algorithms_parameters = {
 data_generation_options = {
     'min_lag': 0,
     'max_lag': 3,
-    'contemp_fraction': 0.2, # Fraction of contemporaneous links; between 0 and 1
-    'crosslinks_density': 0.4, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
+    'contemp_fraction': 0.3, # Fraction of contemporaneous links; between 0 and 1
+    'crosslinks_density': 0.7, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 50, # Number of time points in the dataset
     'N_vars': 3, # Number of variables in the dataset
     'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
@@ -54,7 +54,7 @@ data_generation_options = {
     'noise_dists': ['gaussian'], # deafult: ['gaussian']
     'noise_sigmas': [0.1], # default: [0.5, 2]
     
-    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
+    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'],
 }
 
 benchmark_options = {
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     benchmark = BenchmarkCausalDiscovery()
     results_folder = 'results'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = True
+    execute_benchmark = False
     generate_toy_data = True
 
     if execute_benchmark:    

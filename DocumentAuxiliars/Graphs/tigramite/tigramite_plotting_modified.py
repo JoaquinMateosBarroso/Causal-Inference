@@ -25,8 +25,6 @@ from mpl_toolkits.axisartist.axislines import Axes
 import csv
 
 
-# TODO: Add proper docstrings to internal functions...
-
 
 def _par_corr_trafo(cmi):
     """Transformation of CMI to partial correlation scale."""

@@ -266,7 +266,7 @@ class BenchmarkBase(ABC):
             plt.close('all')
             
             # Plot the graph structure
-            plot_ts_graph(parents_dict)
+            plot_ts_graph(parents_dict, var_names=range(len(parents_dict)))
             plt.savefig(f'{folder_name}/{data_name}_graph.pdf')
             
             # Plot the summary graph structure
@@ -274,7 +274,7 @@ class BenchmarkBase(ABC):
             # Make the graph more beautiful by setting parents as past variables
             for son, parents in summary_parents.items():
                 summary_parents[son] = [(p, -1) for p in parents]
-            plot_ts_graph(summary_parents)
+            plot_ts_graph(summary_parents, var_names=range(len(summary_parents)))
             plt.savefig(f'{folder_name}/{data_name}_summary_graph.pdf')
             plt.clf()
             
@@ -296,11 +296,11 @@ class BenchmarkBase(ABC):
             axs[i].set_ylabel(f'$X^{{{i}}}$')
             axs[i].grid()
             
-            axs[i].set_ylim(bottom=-2, top=2) # TODO: Delete this line
+            axs[i].set_ylim(bottom=-6, top=6) # TODO: Delete this line
             
             # Include the parents in the title
             parents = parents_dict.get(int(variable_name), [])
-            parents_str = ', '.join([f'$X^{{{p[0]}}}_{{{p[1]}}}$' for p in parents])
+            parents_str = ', '.join([f'$X^{{{p[0]}}}_{{t-{p[1]}}}$' for p in parents])
             axs[i].set_title(f'$X^{{{i}}}_t$ - Parents: {parents_str}')
         
         plt.subplots_adjust(hspace=0.5)
