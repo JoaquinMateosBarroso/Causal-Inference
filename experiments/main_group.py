@@ -59,7 +59,28 @@ data_generation_options = {
     
     'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }
+
+# TODO: Borrar cuando tenga terminado el benchmark completo
+def increasing_N_vars_per_group(options, algorithms_parameters,
+                      list_N_vars_per_group=None):
+    if list_N_vars_per_group is None:
+        list_N_vars_per_group = [2, 4, 6, 8, 10, 12]
     
+    for N_vars_per_group in list_N_vars_per_group:
+        if N_vars_per_group > 6:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.7
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.7
+        elif N_vars_per_group >= 10:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
+        options['N_vars_per_group'] = N_vars_per_group
+        options['N_vars'] = options['N_groups'] * N_vars_per_group
+        
+        for algorithm_parameters in algorithms_parameters.values():
+            algorithm_parameters['max_lag'] = options['max_lag']
+        
+        yield algorithms_parameters, options
+
 benchmark_options = {
     'static_parameters': (static_parameters, {}),
     'changing_N_variables': (changing_N_variables,
@@ -72,8 +93,11 @@ benchmark_options = {
                                     {'list_N_groups': [5, 10, 15, 20, 25, 30],
                                      'relation_vars_per_group': 3}),
     
-    'increasing_N_vars_per_group': (changing_N_vars_per_group,
-                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
+    # 'increasing_N_vars_per_group': (changing_N_vars_per_group,
+    #                                 {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14]}),
+    'increasing_N_vars_per_group': (increasing_N_vars_per_group,
+                                    {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
+    
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'subgroups',
@@ -83,7 +107,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'static_parameters'
+chosen_option = 'increasing_N_vars_per_group'
 
 
 
@@ -93,14 +117,14 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = True
     generate_toy_data = True
-    n_executions = 10
+    n_executions = 25
     
-    dataset_iteration_to_plot = 3
+    dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
     
     

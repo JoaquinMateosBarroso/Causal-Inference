@@ -104,7 +104,8 @@ class CausalDataset:
                                                                 **kw_generation_args)
             self.parents_dict = get_parents_dict(causal_process)
             # Generate time series data from the causal process
-            self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
+            self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise,
+                                                            transient_fraction=0.0) # TODO: Delete transient_fraction
             
             # Now we choose what variables will be kept and studied (the rest are hidden confounders)
             chosen_nodes = random.sample(range(total_generating_vars), N_vars)

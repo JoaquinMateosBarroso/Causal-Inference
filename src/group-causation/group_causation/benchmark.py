@@ -290,11 +290,13 @@ class BenchmarkBase(ABC):
         # Plot the time series
         fig, axs = plt.subplots(n_variables, 1, figsize=(10, 3*n_variables))
         for i, variable_name in enumerate(dataset.columns):
-            axs[i].plot(time_series[:, i])
+            axs[i].plot(time_series[:, i], color='red')
             axs[i].set_title(f'Variable {i}')
             axs[i].set_xlabel('Time')
             axs[i].set_ylabel(f'$X^{{{i}}}$')
+            axs[i].grid()
             
+            axs[i].set_ylim(bottom=-2, top=2) # TODO: Delete this line
             
             # Include the parents in the title
             parents = parents_dict.get(int(variable_name), [])
