@@ -326,7 +326,7 @@ class BenchmarkBase(ABC):
                 y = [group[score].mean() for group in datasets_groups]
                 ax.errorbar(x, y, yerr=std, label=algorithm_name,
                              fmt='.-', linewidth=1, capsize=3)
-                ax.grid()
+                ax.grid(axis='y')
             ax.set_xlabel(x_axis)
             ax.set_ylabel(score)
             ax.legend()
@@ -368,7 +368,7 @@ class BenchmarkBase(ABC):
             all_results_df = pd.concat(all_results)
             sns.violinplot(x='algorithm', y=score, data=all_results_df,
                            hue='algorithm',ax=ax)
-            ax.grid()
+            ax.grid(axis='y')
             
             
             if score in ['f1', 'precision', 'recall', 
