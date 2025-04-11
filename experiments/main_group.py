@@ -93,7 +93,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_stuyding_threshold'
+    results_folder = 'results'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = True
