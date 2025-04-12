@@ -121,8 +121,8 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     results_folder = 'results_increasing_N_vars_per_group2'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = False
-    plot_graphs = True
+    execute_benchmark = True
+    plot_graphs = False
     generate_toy_data = False
     n_executions = 25
     
