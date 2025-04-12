@@ -21,7 +21,7 @@ Causal Discovery Class Diagram
 	causal_discovery_algorithms.PCStableWrapper
 	causal_discovery_algorithms.PCMCIWrapper
 	causal_discovery_algorithms.LPCMCIWrapper
-	group_causal_discovery.GroupCausalDiscoveryBase
+	group_causal_discovery.GroupCausalDiscovery
 	group_causal_discovery.MicroLevelGroupCausalDiscovery
 	group_causal_discovery.DimensionReductionGroupCausalDiscovery
 	group_causal_discovery.HybridGroupCausalDiscovery

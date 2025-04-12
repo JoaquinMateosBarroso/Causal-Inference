@@ -1,13 +1,13 @@
 import numpy as np
 from typing import Any
 
-from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscovery
 from group_causation.micro_causal_discovery.causal_discovery_causalnex import DynotearsWrapper
 from group_causation.micro_causal_discovery.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
-from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
+from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscovery
 
 
-class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
+class MicroLevelGroupCausalDiscovery(GroupCausalDiscovery):
     '''
     Class that implements the dimension reduction algorithm for causal discovery on groups of variables.
     A causal discovery algorithm is applied to discover the causal relationships between all of the node-level
@@ -72,7 +72,7 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
         
         return group_parents
     
-    def _getCausalDiscoveryAlgorithm(self) -> MicroCausalDiscoveryBase:
+    def _getCausalDiscoveryAlgorithm(self) -> MicroCausalDiscovery:
         '''
         Get the causal discovery algorithm that will be used to discover the causal relationships
         between the variables of each group.

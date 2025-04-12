@@ -13,10 +13,10 @@ from tigramite.lpcmci import LPCMCI
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscovery
 from group_causation.micro_causal_discovery.modified_pcmci import PCMCI_Modified
 
-class PCMCIWrapper(MicroCausalDiscoveryBase):
+class PCMCIWrapper(MicroCausalDiscovery):
     '''
     Wrapper for PCMCI algorithm
     
@@ -102,7 +102,7 @@ class PCMCIModifiedWrapper(PCMCIWrapper):
 
 
 
-class LPCMCIWrapper(MicroCausalDiscoveryBase):
+class LPCMCIWrapper(MicroCausalDiscovery):
     '''
     Wrapper for LPCMCI algorithm
     
@@ -149,7 +149,7 @@ class LPCMCIWrapper(MicroCausalDiscoveryBase):
         
         return parents
     
-class PCStableWrapper(MicroCausalDiscoveryBase):
+class PCStableWrapper(MicroCausalDiscovery):
     '''
     Wrapper for PC Stable algorithm
     

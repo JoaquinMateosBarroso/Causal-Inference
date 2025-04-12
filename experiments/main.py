@@ -15,15 +15,14 @@ from group_causation.utils import changing_N_variables, changing_preselection_al
 
 algorithms = {
     'pcmci': PCMCIWrapper,
-    # 'dynotears': DynotearsWrapper,
-    # 'granger': GrangerWrapper,
-    # 'varlingam': VARLINGAMWrapper,
-    # 'pc-stable': PCStableWrapper,
+    'dynotears': DynotearsWrapper,
+    'granger': GrangerWrapper,
+    'varlingam': VARLINGAMWrapper,
+    'pc-stable': PCStableWrapper,
     
-    # 'fullpcmci': PCMCIWrapper,
-    # 'lpcmci': LPCMCIWrapper,
+    'fullpcmci': PCMCIWrapper,
+    'lpcmci': LPCMCIWrapper,
     
-    # This works bad with big datasets
     # 'pcmci-modified': PCMCIModifiedWrapper,
 }
 algorithms_parameters = {

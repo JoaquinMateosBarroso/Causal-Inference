@@ -6,9 +6,9 @@ from causalai.models.time_series.var_lingam import VARLINGAM
 # To admit the use of this package's data structures
 from causalai.data.time_series import TimeSeriesData
 
-from group_causation.micro_causal_discovery import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery import MicroCausalDiscovery
 
-class GrangerWrapper(MicroCausalDiscoveryBase):
+class GrangerWrapper(MicroCausalDiscovery):
     '''
     Wrapper for Granger algorithm
     
@@ -38,7 +38,7 @@ class GrangerWrapper(MicroCausalDiscoveryBase):
         
         return parents_dict
 
-class VARLINGAMWrapper(MicroCausalDiscoveryBase):
+class VARLINGAMWrapper(MicroCausalDiscovery):
     '''
     Wrapper for VARLINGAM algorithm
     '''

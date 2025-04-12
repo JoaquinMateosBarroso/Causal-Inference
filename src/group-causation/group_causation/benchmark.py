@@ -13,9 +13,9 @@ from group_causation.causal_groups_extraction.causal_groups_extraction import Ca
 from group_causation.causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
 from group_causation.create_toy_datasets import CausalDataset, plot_ts_graph
 from group_causation.utils import get_FN, get_FP, get_TP, get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
-from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscovery
 from group_causation.group_causal_discovery.direction_extraction.direction_extraction_base import DirectionExtractorBase
-from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
+from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscovery
 
 # For printings
 BLUE = '\033[34m'
@@ -34,7 +34,7 @@ class BenchmarkBase(ABC):
         
     @abstractmethod
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                      causalDiscovery: type[MicroCausalDiscoveryBase],
+                      causalDiscovery: type[MicroCausalDiscovery],
                       algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
         '''
         To be implemented by subclasses.
@@ -44,7 +44,7 @@ class BenchmarkBase(ABC):
 
     @abstractmethod
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                    causalDiscovery: type[MicroCausalDiscoveryBase],
+                    causalDiscovery: type[MicroCausalDiscovery],
                     algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
         '''
         To be implemented by subclasses.
@@ -66,7 +66,7 @@ class BenchmarkBase(ABC):
         pass
     
     def benchmark_causal_discovery(self, 
-                                algorithms: dict[str, type[MicroCausalDiscoveryBase]],
+                                algorithms: dict[str, type[MicroCausalDiscovery]],
                                 parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
                                 generate_toy_data: bool = False,
                                 datasets_folder: str = None,
@@ -79,7 +79,7 @@ class BenchmarkBase(ABC):
         using a series of parameters for algorithms and options in the creation of the datasets.
         
         Args:
-            algorithms : dict[str, MicroCausalDiscoveryBase]
+            algorithms : dict[str, MicroCausalDiscovery]
                 A dictionary where keys are the names of the algorithms and values are instances of the algorithms to be tested.
             parameters_iterator : Iterator[tuple[dict[str, Any], dict[str, Any]]]
                 An iterator that returns a tuple with the parameters for the algorithms and the options for the datasets.
@@ -138,7 +138,7 @@ class BenchmarkBase(ABC):
                 if filename.endswith('.csv'):
                     os.remove(f'{self.results_folder}/{filename}')
     
-    def benchmark_with_toy_data(self, algorithms: dict[str, type[MicroCausalDiscoveryBase]],
+    def benchmark_with_toy_data(self, algorithms: dict[str, type[MicroCausalDiscovery]],
                                          parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
                                          n_executions: int,
                                          datasets_folder: str,
@@ -179,7 +179,7 @@ class BenchmarkBase(ABC):
             
         return self.results
     
-    def benchmark_with_given_data(self, algorithms: dict[str, type[GroupCausalDiscoveryBase]],
+    def benchmark_with_given_data(self, algorithms: dict[str, type[GroupCausalDiscovery]],
                                         parameters_iterator: Iterator[tuple[dict[str, Any], dict[str, Any]]],
                                         n_executions_per_data_param: int,
                                         datasets_folder: str,
@@ -213,8 +213,8 @@ class BenchmarkBase(ABC):
         return self.results
     
     def test_algorithms(self, causal_datasets: list[CausalDataset],
-                            algorithms: dict[str, type[MicroCausalDiscoveryBase]],
-                            algorithms_parameters: dict[str, type[MicroCausalDiscoveryBase]],
+                            algorithms: dict[str, type[MicroCausalDiscovery]],
+                            algorithms_parameters: dict[str, type[MicroCausalDiscovery]],
                             ) -> dict[str, dict[str, list[Any]]]:
         '''
         Execute the given algorithms and return the results
@@ -230,7 +230,7 @@ class BenchmarkBase(ABC):
     
     def test_particular_algorithm(self, algorithm_name: str,
                                 causal_datasets: list[CausalDataset],
-                                causalDiscovery: type[MicroCausalDiscoveryBase],
+                                causalDiscovery: type[MicroCausalDiscovery],
                                 algorithm_parameters: dict[str, Any]) -> dict[str, list[Any]]:
         '''
         Execute the given algorithm n_executions times and return the average and std of the results
@@ -439,7 +439,7 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
         return causal_datasets
     
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                      causalDiscovery: type[MicroCausalDiscoveryBase],
+                      causalDiscovery: type[MicroCausalDiscovery],
                       algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
         '''
         Execute the algorithm one single time and calculate the necessary scores.
@@ -506,7 +506,7 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         return _load_group_datasets(datasets_folder)
         
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                      causalDiscovery: type[GroupCausalDiscoveryBase],
+                      causalDiscovery: type[GroupCausalDiscovery],
                       algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
         '''
         Execute the algorithm one single time and calculate the necessary scores.

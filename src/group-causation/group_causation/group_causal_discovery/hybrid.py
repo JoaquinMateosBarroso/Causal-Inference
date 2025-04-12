@@ -2,10 +2,10 @@ import numpy as np
 from sklearn.decomposition import PCA
 from typing import Any
 
-from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
+from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscovery
 from group_causation.group_causal_discovery.micro_level import MicroLevelGroupCausalDiscovery
 
-class HybridGroupCausalDiscovery(GroupCausalDiscoveryBase):
+class HybridGroupCausalDiscovery(GroupCausalDiscovery):
     '''
     Class that implements a group causal discovery algorithm which combines dimension reduction
     techniques with microlevel causal discovery.

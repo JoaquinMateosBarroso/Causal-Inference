@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.metrics import normalized_mutual_info_score
 
-from group_causation.group_causal_discovery import GroupCausalDiscoveryBase, DimensionReductionGroupCausalDiscovery
+from group_causation.group_causal_discovery import GroupCausalDiscovery, DimensionReductionGroupCausalDiscovery
 
 from pgmpy.models import LinearGaussianBayesianNetwork
 from pgmpy.estimators import MaximumLikelihoodEstimator
@@ -62,7 +62,7 @@ def get_normalized_mutual_information(pred_groups: list[set[int]], gt_groups: li
     
     return normalized_mutual_info_score(gt_labels, pred_labels)
 
-def get_bic(data: np.ndarray, groups: list[set[int]], discovery_model: GroupCausalDiscoveryBase=None) -> float:
+def get_bic(data: np.ndarray, groups: list[set[int]], discovery_model: GroupCausalDiscovery=None) -> float:
     '''
     Get the BIC score of the causal model inferred by the groups. A Dynamic Bayesian Network with linear Gaussian CPDs
     is assumed to calculate the BIC score.

@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 
-from group_causation.micro_causal_discovery import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery import MicroCausalDiscovery
 from group_causation.micro_causal_discovery import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from group_causation.micro_causal_discovery import GrangerWrapper, VARLINGAMWrapper
 from group_causation.micro_causal_discovery import DynotearsWrapper
@@ -87,7 +87,7 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFi
         df = pd.read_csv(datasetFile.file)
         
         algorithm_wrapper = algorithms[algorithm]
-        algorithm: MicroCausalDiscoveryBase = algorithm_wrapper(data=df.values, **parameters)
+        algorithm: MicroCausalDiscovery = algorithm_wrapper(data=df.values, **parameters)
         
         parents = algorithm.extract_parents()
         plot_ts_graph(parents)

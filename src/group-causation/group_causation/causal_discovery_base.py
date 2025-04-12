@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from memory_profiler import memory_usage
 
 
-class CausalDiscoveryBase(ABC): # Abstract class
+class CausalDiscovery(ABC): # Abstract class
     '''
     Base class for causal discovery algorithms
     
