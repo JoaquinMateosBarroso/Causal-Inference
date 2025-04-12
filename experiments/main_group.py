@@ -70,9 +70,12 @@ def increasing_N_vars_per_group(options, algorithms_parameters,
         if N_vars_per_group <= 6:
             algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
             algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
-        else:
+        elif N_vars_per_group < 10:
             algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
             algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+        else:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
         
         options['N_vars_per_group'] = N_vars_per_group
         options['N_vars'] = options['N_groups'] * N_vars_per_group
@@ -121,12 +124,12 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     results_folder = 'results_increasing_N_vars_per_group2'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = True
+    execute_benchmark = False
+    plot_graphs = True
+    generate_toy_data = False
     n_executions = 25
     
-    dataset_iteration_to_plot = -1
+    dataset_iteration_to_plot = 3
     plot_x_axis = 'N_vars_per_group'
     
     
