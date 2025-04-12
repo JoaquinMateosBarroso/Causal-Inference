@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Any
 
-from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
-from group_causation.causal_discovery.causal_discovery_causalnex import DynotearsWrapper
-from group_causation.causal_discovery.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
+from group_causation.micro_causal_discovery.causal_discovery_causalnex import DynotearsWrapper
+from group_causation.micro_causal_discovery.causal_discovery_tigramite import PCMCIWrapper, PCStableWrapper
 from group_causation.group_causal_discovery.group_causal_discovery_base import GroupCausalDiscoveryBase
 
 
@@ -72,7 +72,7 @@ class MicroLevelGroupCausalDiscovery(GroupCausalDiscoveryBase):
         
         return group_parents
     
-    def _getCausalDiscoveryAlgorithm(self) -> CausalDiscoveryBase:
+    def _getCausalDiscoveryAlgorithm(self) -> MicroCausalDiscoveryBase:
         '''
         Get the causal discovery algorithm that will be used to discover the causal relationships
         between the variables of each group.

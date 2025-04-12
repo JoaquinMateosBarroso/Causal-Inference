@@ -56,4 +56,3 @@ class CausalDiscoveryBase(ABC): # Abstract class
         
         return parents, execution_time, memory
 
-

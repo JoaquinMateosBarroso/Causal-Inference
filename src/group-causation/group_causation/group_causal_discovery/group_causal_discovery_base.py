@@ -1,10 +1,10 @@
 import numpy as np
 from abc import abstractmethod
 
-from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
 
 
-class GroupCausalDiscoveryBase(CausalDiscoveryBase): # Abstract class
+class GroupCausalDiscoveryBase(MicroCausalDiscoveryBase): # Abstract class
     '''
     Base class for causal discovery on groups of variables algorithms
     

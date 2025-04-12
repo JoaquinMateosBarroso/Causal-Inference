@@ -5,7 +5,7 @@ import numpy as np
 
 from tigramite.pcmci import PCMCI, _nested_to_normal, _create_nested_dictionary
 
-from group_causation.causal_discovery.causal_discovery_custom import summarized_causality_multivariate_granger, summarized_causality_univariate_granger
+from group_causation.micro_causal_discovery.causal_discovery_custom import summarized_causality_multivariate_granger, summarized_causality_univariate_granger
 
 
 class PCMCI_Modified(PCMCI):

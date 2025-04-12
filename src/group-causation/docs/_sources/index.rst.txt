@@ -16,6 +16,7 @@ Causal Discovery Class Diagram
 ==============================
 ..   inheritance-diagram::
 	causal_discovery_algorithms.CausalDiscoveryBase
+	causal_discovery_algorithms.MicroCausalDiscoveryBase
 	causal_discovery_algorithms.GrangerWrapper
 	causal_discovery_algorithms.VARLINGAMWrapper
 	causal_discovery_algorithms.DynotearsWrapper

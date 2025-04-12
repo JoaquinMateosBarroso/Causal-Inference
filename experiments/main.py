@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
 
 from group_causation.benchmark import BenchmarkCausalDiscovery
-from group_causation.causal_discovery import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from group_causation.causal_discovery import GrangerWrapper, VARLINGAMWrapper
-from group_causation.causal_discovery import DynotearsWrapper
+from group_causation.micro_causal_discovery import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from group_causation.micro_causal_discovery import GrangerWrapper, VARLINGAMWrapper
+from group_causation.micro_causal_discovery import DynotearsWrapper
 import shutil
 import os
 

@@ -71,8 +71,8 @@ def increasing_N_vars_per_group(options, algorithms_parameters,
             algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
             algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
         else:
-            algorithm_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-            algorithm_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
         
         options['N_vars_per_group'] = N_vars_per_group
         options['N_vars'] = options['N_groups'] * N_vars_per_group
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group2'
+    results_folder = 'results'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False

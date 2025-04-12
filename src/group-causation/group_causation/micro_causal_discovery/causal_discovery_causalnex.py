@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 
-from group_causation.causal_discovery.causal_discovery_base import CausalDiscoveryBase
+from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscoveryBase
 
 
-class DynotearsWrapper(CausalDiscoveryBase):
+class DynotearsWrapper(MicroCausalDiscoveryBase):
     '''
     Wrapper for DYNOTEARS algorithm
     
