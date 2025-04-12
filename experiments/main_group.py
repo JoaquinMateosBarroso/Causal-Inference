@@ -122,11 +122,11 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group2'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = False
-    plot_graphs = True
-    generate_toy_data = False
+    execute_benchmark = True
+    plot_graphs = False
+    generate_toy_data = True
     n_executions = 25
     
     dataset_iteration_to_plot = 3
