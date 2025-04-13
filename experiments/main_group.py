@@ -46,8 +46,8 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
-    'N_vars': 70, # Number of variables in the dataset
-    'N_groups': 5, # Number of groups in the dataset
+    'N_vars': 60, # Number of variables in the dataset
+    'N_groups': 6, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -73,9 +73,12 @@ def increasing_N_vars_per_group(options, algorithms_parameters,
         elif N_vars_per_group < 10:
             algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
             algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-        else:
+        elif N_vars_per_group < 12:
             algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
             algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
+        else:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
         
         options['N_vars_per_group'] = N_vars_per_group
         options['N_vars'] = options['N_groups'] * N_vars_per_group
@@ -112,7 +115,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'static_parameters'
+chosen_option = 'increasing_N_vars_per_group'
 
 
 
@@ -122,7 +125,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results'
+    results_folder = 'results_increasing_N_vars_per_group_new'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
