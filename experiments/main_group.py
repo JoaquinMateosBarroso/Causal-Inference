@@ -46,7 +46,7 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
-    'N_vars': 50, # Number of variables in the dataset
+    'N_vars': 70, # Number of variables in the dataset
     'N_groups': 5, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
@@ -112,7 +112,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'increasing_N_vars_per_group'
+chosen_option = 'static_parameters'
 
 
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group'
+    results_folder = 'results'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
