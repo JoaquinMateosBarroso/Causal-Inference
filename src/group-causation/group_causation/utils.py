@@ -70,6 +70,33 @@ def changing_N_vars_per_group(options, algorithms_parameters,
         
         yield algorithms_parameters, options
 
+def increasing_N_vars_per_group(options, algorithms_parameters,
+                      list_N_vars_per_group=None):
+    if list_N_vars_per_group is None:
+        list_N_vars_per_group = [2, 4, 6, 8, 10, 12]
+    
+    for N_vars_per_group in list_N_vars_per_group:
+        if N_vars_per_group <= 6:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
+        elif N_vars_per_group < 10:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
+        elif N_vars_per_group < 12:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
+        else:
+            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
+            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
+        
+        options['N_vars_per_group'] = N_vars_per_group
+        options['N_vars'] = options['N_groups'] * N_vars_per_group
+        
+        for algorithm_parameters in algorithms_parameters.values():
+            algorithm_parameters['max_lag'] = options['max_lag']
+        
+        yield algorithms_parameters, options
+
 def changing_alg_params(options, algorithms_parameters,
                        alg_name, list_modifying_algorithms_params):
     for modifying_algorithm_params in list_modifying_algorithms_params:

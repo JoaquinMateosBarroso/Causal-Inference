@@ -130,9 +130,9 @@ if __name__ == '__main__':
     execute_benchmark = True
     plot_graphs = False
     generate_toy_data = True
-    n_executions = 25
+    n_executions = 100
     
-    dataset_iteration_to_plot = 3
+    dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars_per_group'
     
     
