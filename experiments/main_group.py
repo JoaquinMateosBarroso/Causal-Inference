@@ -127,6 +127,7 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupCausalDiscovery()
     results_folder = 'results_increasing_N_vars_per_group_new'
     datasets_folder = f'{results_folder}/toy_data'
+    
     execute_benchmark = True
     plot_graphs = False
     generate_toy_data = True
@@ -161,7 +162,7 @@ if __name__ == '__main__':
             causal_datasets = benchmark.generate_datasets(iteration, n_executions, datasets_folder, data_option)
     
     if plot_graphs:
-        # benchmark.plot_ts_datasets(datasets_folder)
+        benchmark.plot_ts_datasets(datasets_folder)
         
         benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
         # Save results for whole graph scores

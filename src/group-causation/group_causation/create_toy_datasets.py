@@ -93,8 +93,7 @@ class CausalDataset:
         total_generating_vars = int(N_vars * (1 + confounders_density))
         
         # Try to generate data until there are no NaNs
-        it = 0
-        while (it:=it+1) < maximum_tries:
+        for it in range(1, maximum_tries+1):
             # Generate random causal process
             causal_process, noise = generate_structural_causal_process(N=total_generating_vars,
                                                                 L=L,
@@ -105,15 +104,18 @@ class CausalDataset:
             self.parents_dict = get_parents_dict(causal_process)
             # Generate time series data from the causal process
             self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise,)
-            
             # Now we choose what variables will be kept and studied (the rest are hidden confounders)
             chosen_nodes = random.sample(range(total_generating_vars), N_vars)
             self.time_series = self.time_series[:, chosen_nodes]
-            self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
-
-            # If dataset has no NaNs, use it
-            if not np.isnan(self.time_series).any():
+            if confounders_density > 0:
+                self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
+            # If dataset has no NaNs nor infinites, use it
+            if np.all(np.isfinite(self.time_series)) and \
+                np.all(np.abs(self.time_series) < self.max_value_threshold) and \
+                not np.any(np.isnan(self.time_series)):
                 break
+            else:
+                print(f'Dataset has NaNs or infinites, trying again... {it}/{maximum_tries}')
         
         # If the maximum number of tries is reached, raise an error
         if it == maximum_tries:
@@ -418,6 +420,7 @@ def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nod
     # Recursive function to extract the parents of a node with the above specified condition
     def extract_parents_from_path(child, grandchilds=[]) -> Union[int, int]:
         new_parents = []
+        print(f'{child=}, {grandchilds=}')
         for parent, lag in parents_dict[child]:
             if parent in grandchilds: continue # To avoid infinite loops
             grandparents = extract_parents_from_path(parent, grandchilds+[parent])
