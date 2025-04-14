@@ -31,14 +31,14 @@ algorithms_parameters = {
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 1},
+                'verbose': 0},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
                'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 1},
+                'verbose': 0},
 }
 
 data_generation_options = {
