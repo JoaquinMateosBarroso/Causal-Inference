@@ -393,7 +393,7 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
     
     def generate_datasets(self, iteration, n_datasets, datasets_folder, data_option):
         '''
-        Function to generate the datasets for the benchmark
+        Function to generate the datasets for the micro benchmark
         
         Args:
             n_datasets : int The number of datasets to be generated
@@ -406,13 +406,9 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
         
         if self.verbose > 0:
             print('Generating datasets...')
-        # Generate the datasets, with their graph structure and time series
-        causal_datasets = [CausalDataset() for _ in range(n_datasets)]
-        for current_dataset_index, causal_dataset in enumerate(causal_datasets):
-            dataset_index = iteration * n_datasets + current_dataset_index
-            causal_dataset.generate_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
         
-        return causal_datasets
+        return _generate_micro_dataset(iteration=iteration, n_datasets=n_datasets,
+                                       datasets_folder=datasets_folder, data_option=data_option)
     
     def load_datasets(self, datasets_folder):
         '''
@@ -421,22 +417,7 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
         Args:
             datasets_folder : str The folder in which the datasets are saved
         '''
-        causal_datasets = []
-        # Obtain datasets from folders acording to their filename: {number}_data.csv
-        if os.path.exists(datasets_folder):
-            for filename in sorted(os.listdir(datasets_folder), key = lambda x: int(x.split('_')[0])):
-                if filename.endswith('.csv'):
-                    dataset = pd.read_csv(f'{datasets_folder}/{filename}')
-                    parents_filename = f'{datasets_folder}/{filename.split("_")[0]}_parents.txt'
-                    with open(parents_filename, 'r') as f:
-                        parents_dict = eval(f.read())
-                    
-                    causal_datasets.append(CausalDataset(time_series=dataset.values,
-                                                            parents_dict=parents_dict))
-        else:
-            raise ValueError(f'The dataset folder {datasets_folder} does not exist')
-        
-        return causal_datasets
+        return _load_micro_datasets(datasets_folder=datasets_folder)
     
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalDiscovery: type[MicroCausalDiscovery],
@@ -565,7 +546,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         '''
         if self.verbose > 0:
             print('Generating datasets...')
-        return _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
+        return _generate_micro_dataset(iteration, n_datasets, datasets_folder, data_option)
     
     def load_datasets(self, datasets_folder):
         '''
@@ -574,7 +555,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         Args:
             datasets_folder : str The folder in which the datasets are saved
         '''
-        return _load_group_datasets(datasets_folder)
+        return _load_micro_datasets(datasets_folder)
 
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalExtraction: type[CausalGroupsExtractorBase],
@@ -615,6 +596,27 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
 
 
 # INNER AUXILIAR FUNCTIONS
+def _generate_micro_dataset(iteration, n_datasets, datasets_folder, data_option):
+        '''
+        Function to generate the datasets for the benchmark
+        
+        Args:
+            iteration : int The iteration of the dataset
+            n_datasets : int The number of datasets to be generated
+            datasets_folder : str The folder in which the datasets will be saved
+            data_option : dict[str, Any] The options to generate the datasets
+        
+        Returns:
+            causal_datasets : list[CausalDataset] The list with the datasets
+        '''
+        # Generate the datasets, with their graph structure and time series
+        causal_datasets = [CausalDataset() for _ in range(n_datasets)]
+        for current_dataset_index, causal_dataset in enumerate(causal_datasets):
+            dataset_index = iteration * n_datasets + current_dataset_index
+            causal_dataset.generate_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
+        
+        return causal_datasets
+
 def _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option):
     '''
     Function to generate the datasets for the benchmark
@@ -630,6 +632,30 @@ def _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
         causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
     
     return causal_datasets
+
+def _load_micro_datasets(datasets_folder):
+        '''
+        Function to load the datasets for the benchmark
+        
+        Args:
+            datasets_folder : str The folder in which the datasets are saved
+        '''
+        causal_datasets = []
+        # Obtain datasets from folders acording to their filename: {number}_data.csv
+        if os.path.exists(datasets_folder):
+            for filename in sorted(os.listdir(datasets_folder), key = lambda x: int(x.split('_')[0])):
+                if filename.endswith('.csv'):
+                    dataset = pd.read_csv(f'{datasets_folder}/{filename}')
+                    parents_filename = f'{datasets_folder}/{filename.split("_")[0]}_parents.txt'
+                    with open(parents_filename, 'r') as f:
+                        parents_dict = eval(f.read())
+                    
+                    causal_datasets.append(CausalDataset(time_series=dataset.values,
+                                                            parents_dict=parents_dict))
+        else:
+            raise ValueError(f'The dataset folder {datasets_folder} does not exist')
+        
+        return causal_datasets
 
 def _load_group_datasets(datasets_folder):
         '''

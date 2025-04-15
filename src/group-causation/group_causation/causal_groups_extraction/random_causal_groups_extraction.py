@@ -8,7 +8,7 @@ from group_causation.causal_groups_extraction.causal_groups_extraction import Ca
 
 class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     '''
-    Class to extract a set of groups of variables by using an exhaustive search
+    Class to extract a set of groups of variables by using a random search
     
     Args:
         data : np.array with the data, shape (n_samples, n_variables)

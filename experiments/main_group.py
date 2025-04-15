@@ -54,7 +54,7 @@ data_generation_options = {
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
     'auto_coeffs': [0.4], # default: [0.5, 0.7]
-    'noise_dists': ['gaussian'], # deafult: ['gaussian']
+    'noise_dists': ['gaussian', 'weibull'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
     'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'

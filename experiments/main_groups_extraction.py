@@ -6,7 +6,7 @@ import shutil
 import os
 
 from group_causation.causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
-from group_causation.utils import static_parameters
+from group_causation.utils import changing_N_groups, static_parameters
 from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
@@ -15,32 +15,56 @@ algorithms = {
     'random': RandomCausalGroupsExtractor, 
 }
 algorithms_parameters = {
-    'exhaustive': {'scores': ['bic']}, # Exhaustive can get only one score
+    'exhaustive': {'scores': ['explainability_score']}, # Exhaustive can get only one score
     
-    'genetic': {'scores': ['bic'], 'scores_weights': [1.0]},
+    'genetic': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
     
     'random': {},
 }
 
-data_generation_options = {}
+data_generation_options = {
+    'min_lag': 0,
+    'max_lag': 5,
+    'contemp_fraction': 0.25,
+    'T': 1000, # Number of time points in the dataset
+    'N_vars': 60, # Number of variables in the dataset
+    'N_groups': 6, # Number of groups in the dataset
+    'inner_group_crosslinks_density': 0.5,
+    'outer_group_crosslinks_density': 0.5,
+    'n_node_links_per_group_link': 2,
+    # These parameters are used in generate_structural_causal_process:
+    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
+    'auto_coeffs': [0.4], # default: [0.5, 0.7]
+    'noise_dists': ['gaussian'], # deafult: ['gaussian']
+    'noise_sigmas': [0.2], # default: [0.5, 2]
+    
+    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'}
+}
 
 benchmark_options = {
     'static_parameters': (static_parameters, {}),
+    
+    'changing_N_groups': (changing_N_groups,
+                                    {'list_N_groups': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                     'relation_vars_per_group': 1}),
 }
 
-chosen_option = 'static_parameters'
+chosen_option = 'changing_N_groups'
 
 
 
 if __name__ == '__main__':
-    # plt.style.use('ggplot')
+    plt.style.use('default')
+    plt.rcParams['text.usetex'] = True
+    plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupsExtraction()
-    datasets_folder = 'toy_data'
     results_folder = 'results_group_extraction'
+    datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = False
-    generate_toy_data = False
+    generate_toy_data = True
+    n_executions = 10
     
     dataset_iteration_to_plot = -1
     plot_x_axis = ''
@@ -56,7 +80,7 @@ if __name__ == '__main__':
                                             datasets_folder=datasets_folder,
                                             generate_toy_data=generate_toy_data,
                                             results_folder=results_folder,
-                                            n_executions=10,
+                                            n_executions=n_executions,
                                             verbose=1)
     
     if plot_graphs:
@@ -67,10 +91,5 @@ if __name__ == '__main__':
         benchmark.plot_particular_result(results_folder,
                                         dataset_iteration_to_plot=dataset_iteration_to_plot)
     
-    # Copy toy_data folder inside results folder, to have the datasets used in the benchmark
-    destination_folder = os.path.join(results_folder, datasets_folder)
-    if os.path.exists(destination_folder):
-        shutil.rmtree(destination_folder)
-    shutil.copytree(datasets_folder, destination_folder)
-    
+
 
