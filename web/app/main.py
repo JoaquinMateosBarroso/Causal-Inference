@@ -69,6 +69,24 @@ async def run_ts_causal_discovery(algorithm: str,
     return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
 
 
+'''
+Functions for the Causal Discovery from Groups of Time Series
+'''
+@app.get("/ts-group-causal-discovery/")
+@app.get("/ts-group-causal-discovery/{algorithm}")
+async def read_ts_causal_discovery(request: Request):
+    return templates.TemplateResponse("ts-group-causal-discovery.jinja",
+                                {'request': request,
+                                 'algs_params': algs_params_cd_from_ts})
+
+@app.put("/ts-group-causal-discovery/{algorithm}")
+async def run_ts_causal_discovery(algorithm: str,
+                                    algorithm_parameters_str: str = Form(...),
+                                    datasetFile: UploadFile = File(...)):
+    algorithm_parameters = json.loads(algorithm_parameters_str)
+    return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
+
+
 
 '''
 Functions for the Benchmarking of Causal Discovery from Time Series

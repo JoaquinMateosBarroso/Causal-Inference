@@ -97,8 +97,8 @@ benchmark_options = {
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
     
     'changing_N_groups': (changing_N_groups,
-                                    {'list_N_groups': [5, 10, 15, 20, 25, 30],
-                                     'relation_vars_per_group': 3}),
+                                    {'list_N_groups': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+                                     'relation_vars_per_group': 5}),
     
     # 'increasing_N_vars_per_group': (changing_N_vars_per_group,
     #                                 {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
@@ -115,7 +115,7 @@ benchmark_options = {
                                             for variance in list(np.linspace(0.05, 0.95, 19)) + [0.9999]]})
 }
 
-chosen_option = 'increasing_N_vars_per_group'
+chosen_option = 'changing_N_groups'
 
 
 
@@ -125,16 +125,16 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group_new'
+    results_folder = 'results_increasing_N_groups'
     datasets_folder = f'{results_folder}/toy_data'
     
     execute_benchmark = True
     plot_graphs = False
     generate_toy_data = True
-    n_executions = 100
+    n_executions = 25
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = 'N_vars_per_group'
+    plot_x_axis = 'N_groups'
     
     
     options_generator, options_kwargs = benchmark_options[chosen_option]
@@ -162,7 +162,7 @@ if __name__ == '__main__':
             causal_datasets = benchmark.generate_datasets(iteration, n_executions, datasets_folder, data_option)
     
     if plot_graphs:
-        benchmark.plot_ts_datasets(datasets_folder)
+        # benchmark.plot_ts_datasets(datasets_folder)
         
         benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
         # Save results for whole graph scores
