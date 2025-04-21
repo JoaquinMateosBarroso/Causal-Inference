@@ -48,11 +48,11 @@ benchmark_options = {
                                     {'list_N_groups': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                      'relation_vars_per_group': 2}),
     
-    'changing_N_vars': (changing_N_variables,
+    'changing_N_variables': (changing_N_variables,
                                     {'list_N_variables': [6, 7, 8, 9, 10, 11, 12],}),
 }
 
-chosen_option = 'changing_N_groups'
+chosen_option = 'changing_N_variables'
 
 
 
