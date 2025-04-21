@@ -6,7 +6,7 @@ import shutil
 import os
 
 from group_causation.causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
-from group_causation.utils import changing_N_groups, static_parameters
+from group_causation.utils import changing_N_groups, static_parameters, changing_N_variables
 from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
@@ -28,7 +28,7 @@ data_generation_options = {
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
     'N_vars': 60, # Number of variables in the dataset
-    'N_groups': 6, # Number of groups in the dataset
+    'N_groups': 3, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -47,6 +47,9 @@ benchmark_options = {
     'changing_N_groups': (changing_N_groups,
                                     {'list_N_groups': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                      'relation_vars_per_group': 2}),
+    
+    'changing_N_vars': (changing_N_variables,
+                                    {'list_N_variables': [6, 7, 8, 9, 10, 11, 12],}),
 }
 
 chosen_option = 'changing_N_groups'
