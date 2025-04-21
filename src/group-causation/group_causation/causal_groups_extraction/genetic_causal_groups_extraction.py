@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from typing import Callable
+from sympy import bell
 
 from deap import base, creator, tools, algorithms
 
@@ -142,7 +143,7 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     
     # Run the Genetic Algorithm
     def run_ga():
-        pop = toolbox.population(n=50)
+        pop = toolbox.population(n=min(100, bell(n_variables)/4))
         algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=40, verbose=False)
         return pop
 

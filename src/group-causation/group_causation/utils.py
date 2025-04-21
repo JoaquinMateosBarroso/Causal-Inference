@@ -50,7 +50,7 @@ def changing_N_groups(options, algorithms_parameters,
     for N_groups in list_N_groups:
         options['N_groups'] = N_groups
         options['N_vars'] = N_groups * relation_vars_per_group
-        print(f'{options=}')
+
         yield algorithms_parameters, options
 
 def changing_N_vars_per_group(options, algorithms_parameters,

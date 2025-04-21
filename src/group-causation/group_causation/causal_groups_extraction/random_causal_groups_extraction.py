@@ -20,11 +20,12 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     
     def extract_groups(self) -> tuple[list[set[int]]]:
         '''
-        Get score over all possible partitions of dataset and return the optimal one
+        
         
         Returns
             groups : list of sets with the variables that compound each group
         '''
+        print('empiezo')
         # Define the set to partition
         n_variables = self.data.shape[1]
         ELEMENTS = list(range(0, n_variables))
@@ -40,4 +41,5 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
             partition.append([ELEMENTS[i] for i in indices[start:cut]])
             start = cut
         
+        print('termino')
         return partition 

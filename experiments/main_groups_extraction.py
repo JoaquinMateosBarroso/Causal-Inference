@@ -28,7 +28,7 @@ data_generation_options = {
     'contemp_fraction': 0.25,
     'T': 1000, # Number of time points in the dataset
     'N_vars': 60, # Number of variables in the dataset
-    'N_groups': 3, # Number of groups in the dataset
+    'N_groups': 1, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
     'outer_group_crosslinks_density': 0.5,
     'n_node_links_per_group_link': 2,
@@ -49,7 +49,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 2}),
     
     'changing_N_variables': (changing_N_variables,
-                                    {'list_N_variables': [6, 7, 8, 9, 10, 11, 12],}),
+                                    {'list_N_variables': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],}),
 }
 
 chosen_option = 'changing_N_variables'
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupsExtraction()
-    results_folder = 'results_group_extraction'
+    results_folder = 'results_group_extraction_delete'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = True
@@ -87,12 +87,13 @@ if __name__ == '__main__':
                                             verbose=1)
     
     if plot_graphs:
-        benchmark.plot_ts_datasets(datasets_folder)
+        # benchmark.plot_ts_datasets(datasets_folder)
         
-        benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis)
+        scores = ['explainability_score', 'time', 'memory', 'average_explained_variance', 'n_groups']
+        
+        benchmark.plot_moving_results(results_folder, x_axis=plot_x_axis, scores=scores)
         # Save results for scores
         benchmark.plot_particular_result(results_folder,
-                                        dataset_iteration_to_plot=dataset_iteration_to_plot)
+                                        dataset_iteration_to_plot=dataset_iteration_to_plot,
+                                        scores=scores)
     
-
-
