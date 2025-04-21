@@ -62,7 +62,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupsExtraction()
-    results_folder = 'results_group_extraction_delete'
+    results_folder = 'results_group_extraction'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
     plot_graphs = True
