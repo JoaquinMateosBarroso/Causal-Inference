@@ -546,7 +546,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         '''
         if self.verbose > 0:
             print('Generating datasets...')
-        return _generate_micro_dataset(iteration, n_datasets, datasets_folder, data_option)
+        return _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
     
     def load_datasets(self, datasets_folder):
         '''
