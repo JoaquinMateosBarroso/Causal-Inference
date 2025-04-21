@@ -46,7 +46,7 @@ benchmark_options = {
     
     'changing_N_groups': (changing_N_groups,
                                     {'list_N_groups': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                     'relation_vars_per_group': 1}),
+                                     'relation_vars_per_group': 2}),
 }
 
 chosen_option = 'changing_N_groups'
@@ -62,12 +62,12 @@ if __name__ == '__main__':
     results_folder = 'results_group_extraction'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = False
+    plot_graphs = True
     generate_toy_data = True
     n_executions = 10
     
     dataset_iteration_to_plot = -1
-    plot_x_axis = ''
+    plot_x_axis = 'N_vars'
     
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]

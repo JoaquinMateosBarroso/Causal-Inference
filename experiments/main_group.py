@@ -128,9 +128,9 @@ if __name__ == '__main__':
     results_folder = 'results_increasing_N_groups'
     datasets_folder = f'{results_folder}/toy_data'
     
-    execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = True
+    execute_benchmark = False
+    plot_graphs = True
+    generate_toy_data = False
     n_executions = 25
     
     dataset_iteration_to_plot = -1
