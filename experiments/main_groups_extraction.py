@@ -19,7 +19,7 @@ algorithms_parameters = {
     
     'genetic': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
     
-    'random': {},
+    'random': {'scores': ['explainability_score'],},
 }
 
 data_generation_options = {
@@ -49,7 +49,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 2}),
     
     'changing_N_variables': (changing_N_variables,
-                                    {'list_N_variables': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],}),
+                                    {'list_N_variables': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],}),
 }
 
 chosen_option = 'changing_N_variables'
@@ -64,9 +64,9 @@ if __name__ == '__main__':
     benchmark = BenchmarkGroupsExtraction()
     results_folder = 'results_group_extraction'
     datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = True
+    execute_benchmark = False
     plot_graphs = True
-    generate_toy_data = True
+    generate_toy_data = False
     n_executions = 10
     
     dataset_iteration_to_plot = -1

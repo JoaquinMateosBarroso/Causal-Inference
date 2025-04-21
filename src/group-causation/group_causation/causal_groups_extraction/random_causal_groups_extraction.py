@@ -1,8 +1,10 @@
 import random
 import numpy as np
+from sympy import bell
 
 
 from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.causal_groups_extraction.stat_utils import get_scores_getter
 
 
 
@@ -12,12 +14,12 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
     
     Args:
         data : np.array with the data, shape (n_samples, n_variables)
-        score_getter : function that receives a set of groups and returns a score to maximize
-        scores_weights : list with the weights of the scores to optimize (a score of 1.0 means to maximize, -1.0 to minimize)
+        scores : list[str] with the name of the score to optimize (only one)
     '''
-    def __init__(self, data: np.ndarray, **kwargs):
+    def __init__(self, data: np.ndarray, scores: list[str], **kwargs):
         super().__init__(data, **kwargs)
-    
+        self.score_getter = get_scores_getter(data, scores)
+        
     def extract_groups(self) -> tuple[list[set[int]]]:
         '''
         
@@ -25,21 +27,30 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
         Returns
             groups : list of sets with the variables that compound each group
         '''
-        print('empiezo')
         # Define the set to partition
         n_variables = self.data.shape[1]
         ELEMENTS = list(range(0, n_variables))
+        def get_random_partition():
+            
+            # Generate a random partition
+            indices = list(range(n_variables))
+            random.shuffle(indices)
+            num_groups = random.randint(2, n_variables)  # Random number of subsets
+            cuts = sorted(random.sample(range(1, n_variables), num_groups - 1))  # Cut points
+            partition = []
+            start = 0
+            for cut in cuts + [n_variables]:
+                partition.append([ELEMENTS[i] for i in indices[start:cut]])
+                start = cut
+            return partition
         
-        # Generate a random partition
-        indices = list(range(n_variables))
-        random.shuffle(indices)
-        num_groups = random.randint(2, n_variables)  # Random number of subsets
-        cuts = sorted(random.sample(range(1, n_variables), num_groups - 1))  # Cut points
-        partition = []
-        start = 0
-        for cut in cuts + [n_variables]:
-            partition.append([ELEMENTS[i] for i in indices[start:cut]])
-            start = cut
+        best_partition = None
+        best_score = float('-inf')
+        for i in range(min(100, bell(max(int(n_variables/4), 1)))):
+            partition = get_random_partition()
+            [score] = self.score_getter(partition)
+            if score > best_score:
+                best_score = score
+                best_partition = partition
         
-        print('termino')
-        return partition 
+        return best_partition 

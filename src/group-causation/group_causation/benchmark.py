@@ -555,7 +555,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         Args:
             datasets_folder : str The folder in which the datasets are saved
         '''
-        return _load_micro_datasets(datasets_folder)
+        return _load_group_datasets(datasets_folder)
 
     def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
                       causalExtraction: type[CausalGroupsExtractorBase],
@@ -582,7 +582,7 @@ class BenchmarkGroupsExtraction(BenchmarkBase):
         finally:
             result = {'time': time, 'memory': memory}
             actual_groups = causal_dataset.groups
-            
+
             result['predicted_groups'] = predicted_groups
             result['actual_groups'] = actual_groups
             
