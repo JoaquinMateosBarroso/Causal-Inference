@@ -31,11 +31,10 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
         n_variables = self.data.shape[1]
         ELEMENTS = list(range(0, n_variables))
         def get_random_partition():
-            
             # Generate a random partition
             indices = list(range(n_variables))
             random.shuffle(indices)
-            num_groups = random.randint(2, n_variables)  # Random number of subsets
+            num_groups = random.randint(1, n_variables)  # Random number of subsets
             cuts = sorted(random.sample(range(1, n_variables), num_groups - 1))  # Cut points
             partition = []
             start = 0
@@ -49,6 +48,7 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
         for i in range(min(100, bell(max(int(n_variables/4), 1)))):
             partition = get_random_partition()
             [score] = self.score_getter(partition)
+            print(f'{partition=}, {score=}')
             if score > best_score:
                 best_score = score
                 best_partition = partition

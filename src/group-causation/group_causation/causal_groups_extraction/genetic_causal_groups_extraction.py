@@ -55,7 +55,7 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     def random_partition():
         indices = list(range(n_variables))
         random.shuffle(indices)
-        num_groups = random.randint(2, n_variables)  # Random number of subsets
+        num_groups = random.randint(1, n_variables)  # Random number of subsets
         cuts = sorted(random.sample(range(1, n_variables), num_groups - 1))  # Cut points
         partition = []
         start = 0
@@ -143,13 +143,12 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     
     # Run the Genetic Algorithm
     def run_ga():
-        pop = toolbox.population(n=min(100, bell(max(n_variables/4, 1))))
+        pop = toolbox.population(n=min(100, bell(max(int(n_variables/4), 1))))
         algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=40, verbose=False)
         return pop
 
     # Execute GA and get best partition
     best_population = run_ga()
     best_individual = tools.selBest(best_population, k=1)[0]
-    print("Best Partition Found:", best_individual, "Fitness:", scores_getter(best_individual))
     
     return best_individual
