@@ -10,16 +10,16 @@ from group_causation.utils import changing_N_groups, static_parameters, changing
 from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
-    'exhaustive': ExhaustiveCausalGroupsExtractor,
-    'genetic': GeneticCausalGroupsExtractor,
-    'random': RandomCausalGroupsExtractor, 
+    # 'exhaustive': ExhaustiveCausalGroupsExtractor,
+    'genetic2': GeneticCausalGroupsExtractor,
+    'random2': RandomCausalGroupsExtractor, 
 }
 algorithms_parameters = {
     'exhaustive': {'scores': ['explainability_score']}, # Exhaustive can get only one score
     
-    'genetic': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
+    'genetic2': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
     
-    'random': {'scores': ['explainability_score'],},
+    'random2': {'scores': ['explainability_score'],},
 }
 
 data_generation_options = {
@@ -49,7 +49,7 @@ benchmark_options = {
                                      'relation_vars_per_group': 2}),
     
     'changing_N_variables': (changing_N_variables,
-                                    {'list_N_variables': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],}),
+                                    {'list_N_variables': [12, 13, 14, 15, 16],}),
 }
 
 chosen_option = 'changing_N_variables'
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     results_folder = 'results_group_extraction'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = False
+    plot_graphs = True
     generate_toy_data = True
     n_executions = 10
     

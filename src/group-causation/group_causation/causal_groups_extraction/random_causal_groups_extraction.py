@@ -45,10 +45,9 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
         
         best_partition = None
         best_score = float('-inf')
-        for i in range(min(100, bell(max(int(n_variables/4), 1)))):
+        for i in range(bell(max(n_variables//2, 1))):
             partition = get_random_partition()
             [score] = self.score_getter(partition)
-            print(f'{partition=}, {score=}')
             if score > best_score:
                 best_score = score
                 best_partition = partition
