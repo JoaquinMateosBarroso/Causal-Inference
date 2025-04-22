@@ -3,8 +3,8 @@ import numpy as np
 from sympy import bell
 
 
-from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from group_causation.causal_groups_extraction.stat_utils import get_scores_getter
+from group_causation.groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.groups_extraction.stat_utils import get_scores_getter
 
 
 
@@ -45,7 +45,7 @@ class RandomCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
         
         best_partition = None
         best_score = float('-inf')
-        for i in range(bell(max(n_variables//2, 1))):
+        for i in range(min(2500, 25 * bell(max(n_variables//2, 1)))): # This value is equivalent to the number of iterations in the genetic algorithm
             partition = get_random_partition()
             [score] = self.score_getter(partition)
             if score > best_score:

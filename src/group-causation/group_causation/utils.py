@@ -19,10 +19,7 @@ def changing_N_variables(options, algorithms_parameters,
     if list_N_variables is None:
         list_N_variables = [10, 20, 30, 40, 50]
         
-    for N_variables in list_N_variables:
-        # Increase data points in the same proportion as N_vars 
-        options['T'] = int(options['T'] * (N_variables / options['N_vars']))
-        
+    for N_variables in list_N_variables:        
         options['N_vars'] = N_variables
         
         # options['max_lag'] = max_lag

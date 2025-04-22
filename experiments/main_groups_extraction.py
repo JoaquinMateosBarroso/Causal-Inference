@@ -5,19 +5,19 @@ from group_causation.benchmark import BenchmarkGroupsExtraction
 import shutil
 import os
 
-from group_causation.causal_groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
+from group_causation.groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
 from group_causation.utils import changing_N_groups, static_parameters, changing_N_variables
-from group_causation.causal_groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
+from group_causation.groups_extraction import ExhaustiveCausalGroupsExtractor, GeneticCausalGroupsExtractor
 
 algorithms = {
     # 'exhaustive': ExhaustiveCausalGroupsExtractor,
-    'genetic2': GeneticCausalGroupsExtractor,
+    # 'genetic': GeneticCausalGroupsExtractor,
     'random2': RandomCausalGroupsExtractor, 
 }
 algorithms_parameters = {
     'exhaustive': {'scores': ['explainability_score']}, # Exhaustive can get only one score
     
-    'genetic2': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
+    'genetic': {'scores': ['explainability_score'], 'scores_weights': [1.0]},
     
     'random2': {'scores': ['explainability_score'],},
 }
@@ -26,7 +26,7 @@ data_generation_options = {
     'min_lag': 0,
     'max_lag': 5,
     'contemp_fraction': 0.25,
-    'T': 1000, # Number of time points in the dataset
+    'T': 200, # Number of time points in the dataset
     'N_vars': 60, # Number of variables in the dataset
     'N_groups': 1, # Number of groups in the dataset
     'inner_group_crosslinks_density': 0.5,
@@ -63,20 +63,21 @@ if __name__ == '__main__':
     
     benchmark = BenchmarkGroupsExtraction()
     results_folder = 'results_group_extraction'
-    datasets_folder = f'{results_folder}/toy_data'
-    execute_benchmark = True
-    plot_graphs = False
-    generate_toy_data = True
+    datasets_folder = f'{results_folder}/toy_data_aux'
+    execute_benchmark = False
+    plot_graphs = True
+    generate_toy_data = False
     n_executions = 10
     
     dataset_iteration_to_plot = -1
     plot_x_axis = 'N_vars'
     
-    if execute_benchmark:
-        options_generator, options_kwargs = benchmark_options[chosen_option]
-        parameters_iterator = options_generator(data_generation_options,
+    options_generator, options_kwargs = benchmark_options[chosen_option]
+    parameters_iterator = options_generator(data_generation_options,
                                                     algorithms_parameters,
                                                     **options_kwargs)
+    
+    if execute_benchmark:
         
         results = benchmark.benchmark_causal_discovery(algorithms=algorithms,
                                             parameters_iterator=parameters_iterator,
@@ -85,7 +86,18 @@ if __name__ == '__main__':
                                             results_folder=results_folder,
                                             n_executions=n_executions,
                                             verbose=1)
-    
+    elif generate_toy_data:
+        # Delete previous toy data
+        if os.path.exists(datasets_folder):
+            for filename in os.listdir(datasets_folder):
+                os.remove(f'{datasets_folder}/{filename}')
+        else:
+            os.makedirs(datasets_folder)
+
+        for iteration, current_parameters in enumerate(parameters_iterator):
+            current_algorithms_parameters, data_option = current_parameters
+            causal_datasets = benchmark.generate_datasets(iteration, n_executions, datasets_folder, data_option)
+        
     if plot_graphs:
         # benchmark.plot_ts_datasets(datasets_folder)
         

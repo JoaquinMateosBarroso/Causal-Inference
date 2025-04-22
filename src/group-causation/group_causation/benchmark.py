@@ -9,8 +9,8 @@ from typing import Any, Iterator
 from tqdm import tqdm
 
 # Inner library imports
-from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from group_causation.causal_groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
+from group_causation.groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.groups_extraction.stat_utils import get_average_pc1_explained_variance, get_normalized_mutual_information, get_explainability_score
 from group_causation.create_toy_datasets import CausalDataset, plot_ts_graph
 from group_causation.utils import get_FN, get_FP, get_TP, get_f1, get_precision, get_recall, get_shd, window_to_summary_graph
 from group_causation.micro_causal_discovery.micro_causal_discovery_base import MicroCausalDiscovery

@@ -5,8 +5,8 @@ from sympy import bell
 
 from deap import base, creator, tools, algorithms
 
-from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from group_causation.causal_groups_extraction.stat_utils import get_scores_getter
+from group_causation.groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.groups_extraction.stat_utils import get_scores_getter
 
 
 
@@ -143,8 +143,8 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
     
     # Run the Genetic Algorithm
     def run_ga():
-        pop = toolbox.population(n=bell(max(n_variables//2, 1)))
-        algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=40, verbose=False)
+        pop = toolbox.population(n=min(100, bell(max(n_variables//2, 1))))
+        algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=50, verbose=False)
         return pop
 
     # Execute GA and get best partition

@@ -2,8 +2,8 @@ import numpy as np
 from more_itertools import set_partitions
 
 
-from group_causation.causal_groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
-from group_causation.causal_groups_extraction.stat_utils import get_scores_getter
+from group_causation.groups_extraction.causal_groups_extraction import CausalGroupsExtractorBase
+from group_causation.groups_extraction.stat_utils import get_scores_getter
 
 
 class ExhaustiveCausalGroupsExtractor(CausalGroupsExtractorBase): # Abstract class
