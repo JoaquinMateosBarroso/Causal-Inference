@@ -65,7 +65,7 @@ if __name__ == '__main__':
     results_folder = 'results_group_extraction'
     datasets_folder = f'{results_folder}/toy_data'
     execute_benchmark = True
-    plot_graphs = True
+    plot_graphs = False
     generate_toy_data = True
     n_executions = 10
     
