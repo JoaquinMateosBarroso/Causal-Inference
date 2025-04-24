@@ -90,7 +90,6 @@ class CausalDataset:
         
         L = N_vars * crosslinks_density / (1 - crosslinks_density) # Forcing crosslinks_density = L / (N + L)
         L = int(L//(1-contemp_fraction)) # So that the contemp links are not counted in L
-        print(f'{L=}')
         total_generating_vars = int(N_vars * (1 + confounders_density))
         
         # Try to generate data until there are no NaNs
