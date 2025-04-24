@@ -12,10 +12,11 @@ class DynotearsWrapper(MicroCausalDiscovery):
         data : np.array with the data, shape (n_samples, n_features)
         max_lag : maximum lag to consider
     '''
-    def __init__(self, data: np.ndarray, max_lag: int, **kwargs):
+    def __init__(self, data: np.ndarray, min_lag: int, max_lag: int, **kwargs):
         super().__init__(data, **kwargs)
         
         self.df = pd.DataFrame(self.data, columns=range(self.data.shape[1]))
+        self.min_lag = min_lag
         self.max_lag = max_lag
         self.kwargs = kwargs
         
@@ -26,37 +27,24 @@ class DynotearsWrapper(MicroCausalDiscovery):
         Args:
             data : np.array with the data, shape (n_samples, n_features)
         '''
-        graph_structure = from_pandas_dynamic(time_series=self.df,
+        predicted_parents = from_pandas_dynamic(time_series=self.df,
                                                         p=self.max_lag,
                                                         **self.kwargs)
         
-        return graph_structure
-
-
-def get_parents_from_causalnex_edges(edges: list[tuple[str, str]]) -> dict[int, list[int]]:
-    '''
-    Function to extract the parents from the edges list.
-    
-    Args:
-        edges : list of tuples with the edges, where each tuple is (parent, child),
-                being a node represented by '{origin}_lag{lag}'. E.g. '0_lag1'.
-    Returns:
-        parents : dict with the parents of each node.
-    '''
-    parents = {}
-    for edge in edges:
-        origin, destiny = edge
-        child = origin.split('_lag')
-        child = (int(child[0]), -int(child[1]))
-        parent = int(destiny.split('_lag')[0])
-        if child[1] <  0: # Include just lagged edges
-            parents[parent] = parents.get(parent, []) + [child]
+        if self.min_lag > 0:
+            predicted_parents = {
+                k: [(v, lag) for v, lag in v_lags if lag >= self.min_lag]
+                for k, v_lags in predicted_parents.items()
+            }
+            
         
-    return parents
+        return predicted_parents
+    
 
 
 
-# CODE IN THIS FILE IS ADAPTED FROM THE CAUSALNEX LIBRARY
+
+# CODE IN THE REST OF THIS FILE IS ADAPTED FROM THE CAUSALNEX LIBRARY
 # Copyright 2019-2020 QuantumBlack Visual Analytics Limited
 # SPDX-License-Identifier: Apache-2.0
 # THE ADDAPTATIONS ARE ONLY RELATED TO THE INTERFACE OF THE CLASS AND NOT TO THE FUNCTIONALITY

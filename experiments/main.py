@@ -11,7 +11,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from group_causation.utils import changing_N_variables, changing_preselection_alpha, static_parameters
 
-MAX_LAG = 3
+MIN_LAG = 0
+MAX_LAG = 5
 
 algorithms = {
     'pcmci': PCMCIWrapper,
@@ -27,11 +28,11 @@ algorithms = {
 }
 algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha
-    'pcmci':     {'min_lag': 0, 'max_lag': MAX_LAG, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
-    'granger':   {'min_lag': 0, 'max_lag': MAX_LAG, 'cv': 5, },
-    'varlingam': {'min_lag': 0, 'max_lag': MAX_LAG},
-    'dynotears': {              'max_lag': MAX_LAG, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    'pc-stable': {'min_lag': 0, 'max_lag': MAX_LAG, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
+    'pcmci':     {'min_lag': MIN_LAG, 'max_lag': MAX_LAG, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
+    'granger':   {'min_lag': MIN_LAG, 'max_lag': MAX_LAG, 'cv': 5, },
+    'varlingam': {'min_lag': MIN_LAG, 'max_lag': MAX_LAG},
+    'dynotears': {'min_lag': MIN_LAG, 'max_lag': MAX_LAG, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
+    'pc-stable': {'min_lag': MIN_LAG, 'max_lag': MAX_LAG, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
     
     # 'pcmci-modified': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
     #                     'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
@@ -40,20 +41,20 @@ algorithms_parameters = {
 }
 
 data_generation_options = {
-    'min_lag': 0,
+    'min_lag': MIN_LAG,
     'max_lag': MAX_LAG,
-    'contemp_fraction': 0.3, # Fraction of contemporaneous links; between 0 and 1
+    'contemp_fraction': 0.25, # Fraction of contemporaneous links; between 0 and 1
     'crosslinks_density': 0.7, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
-    'T': 1000, # Number of time points in the dataset
-    'N_vars': 20, # Number of variables in the dataset
+    'T': 2000, # Number of time points in the dataset
+    'N_vars': 100, # Number of variables in the dataset
     'confounders_density': 0, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.5, 0.6], # default: [0.5, 0.7]
-    'noise_dists': ['weibull'], # deafult: ['gaussian']
+    'auto_coeffs': [0.5], # default: [0.5, 0.7]
+    'noise_dists': ['gaussian', 'weibull'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
-    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'],
+    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
 }
 
 benchmark_options = {
@@ -73,14 +74,14 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkCausalDiscovery()
-    results_folder = 'results'
+    results_folder = 'results_micro_big'
     datasets_folder = f'{results_folder}/toy_data'
     
     plot_graphs = True
     execute_benchmark = True
     generate_toy_data = True
     
-    n_executions = 5
+    n_executions = 50
 
     if execute_benchmark:    
         options_generator, options_kwargs = benchmark_options[chosen_option]

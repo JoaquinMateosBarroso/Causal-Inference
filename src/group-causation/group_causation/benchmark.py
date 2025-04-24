@@ -261,7 +261,7 @@ class BenchmarkBase(ABC):
                 parents_dict = eval(f.read())
             
             # Plot the time series dataset
-            fig, axs = self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
+            self._plot_ts_dataset(f'{folder_name}/{filename}', parents_dict)
             plt.savefig(f'{folder_name}/{data_name}_plot.pdf')
             plt.close('all')
             
@@ -304,9 +304,7 @@ class BenchmarkBase(ABC):
             axs[i].set_title(f'$X^{{{i}}}_t$ - Parents: {parents_str}')
         
         plt.subplots_adjust(hspace=0.5)
-        
-        return fig, axs
-    
+            
     def plot_moving_results(self, results_folder, scores=['shd', 'f1', 'precision', 'recall', 'time', 'memory'],
                             x_axis='max_lag'):
         '''

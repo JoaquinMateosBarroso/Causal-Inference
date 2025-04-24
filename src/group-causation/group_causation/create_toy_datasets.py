@@ -5,11 +5,10 @@ from causal processes, which are defined by ts DAGs.
 
 
 
-import json
 import os
 import random
 from typing import Callable, Union
-from matplotlib import pyplot as plt
+import warnings
 import numpy as np
 import pandas as pd
 from tigramite.toymodels.structural_causal_processes import generate_structural_causal_process, structural_causal_process
@@ -51,7 +50,7 @@ class CausalDataset:
     }
     
     def generate_toy_data(self, name, T=100, N_vars=10, crosslinks_density=0.75,
-                      confounders_density = 0, min_lag=1, max_lag=3, contemp_fraction=0.,
+                      confounders_density = 0, min_lag=1, max_lag=3, contemp_fraction=0,
                       dependency_funcs=['nonlinear'], datasets_folder = None, maximum_tries=100,
                       **kw_generation_args) \
                             -> tuple[np.ndarray, dict[int, list[int]]]:
@@ -82,14 +81,16 @@ class CausalDataset:
         """
         if min_lag > 0 and contemp_fraction > 1e-6:
             raise ValueError('If min_lag > 0, then contemp_fraction must be 0')
+        elif min_lag == 0 and contemp_fraction < 1e-6:
+            raise ValueError('If min_lag is 0, then contemp_fraction can not be 0.')
         
         # Convert dependency_funcs names to functions
         dependency_funcs = [self.dependency_funcs_dict[func] if func in self.dependency_funcs_dict else func
                                 for func in dependency_funcs ]
         
         L = N_vars * crosslinks_density / (1 - crosslinks_density) # Forcing crosslinks_density = L / (N + L)
-        L = int(L*(1+contemp_fraction)) # So that the contemp links are not counted in L
-        
+        L = int(L//(1-contemp_fraction)) # So that the contemp links are not counted in L
+        print(f'{L=}')
         total_generating_vars = int(N_vars * (1 + confounders_density))
         
         # Try to generate data until there are no NaNs
@@ -103,11 +104,11 @@ class CausalDataset:
                                                                 **kw_generation_args)
             self.parents_dict = get_parents_dict(causal_process)
             # Generate time series data from the causal process
-            self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise,)
-            # Now we choose what variables will be kept and studied (the rest are hidden confounders)
-            chosen_nodes = random.sample(range(total_generating_vars), N_vars)
-            self.time_series = self.time_series[:, chosen_nodes]
-            if confounders_density > 0:
+            self.time_series, _ = structural_causal_process(causal_process, T=T, noises=noise)
+            if confounders_density > 1e-6:
+                # Now we choose what variables will be kept and studied (the rest are hidden confounders)
+                chosen_nodes = random.sample(range(total_generating_vars), N_vars)
+                self.time_series = self.time_series[:, chosen_nodes]
                 self.parents_dict = _extract_subgraph(self.parents_dict, chosen_nodes)
             # If dataset has no NaNs nor infinites, use it
             if np.all(np.isfinite(self.time_series)) and \
