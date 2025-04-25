@@ -434,6 +434,12 @@ class BenchmarkCausalDiscovery(BenchmarkBase):
         algorithm = causalDiscovery(data=causal_dataset.time_series, **algorithm_parameters)
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt caught. Continuing with the next iteration.')
+            print('Returning nan values for this algorithm')
+            predicted_parents = {}
+            time = np.nan
+            memory = np.nan
         except Exception as e:
             print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
             print('Returning nan values for this algorithm')

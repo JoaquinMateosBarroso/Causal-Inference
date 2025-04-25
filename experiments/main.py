@@ -77,9 +77,9 @@ if __name__ == '__main__':
     results_folder = 'results_micro_big'
     datasets_folder = f'{results_folder}/toy_data'
     
-    plot_graphs = True
+    plot_graphs = False
     execute_benchmark = True
-    generate_toy_data = True
+    generate_toy_data = False
     
     n_executions = 25
 
