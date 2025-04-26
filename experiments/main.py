@@ -79,7 +79,7 @@ if __name__ == '__main__':
     
     plot_graphs = False
     execute_benchmark = True
-    generate_toy_data = False
+    generate_toy_data = True
     
     n_executions = 25
 
