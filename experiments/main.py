@@ -74,7 +74,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkCausalDiscovery()
-    results_folder = 'results_micro_little2'
+    results_folder = 'results_micro_big'
     datasets_folder = f'{results_folder}/toy_data'
     
     plot_graphs = True
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     
     n_executions = 25
 
-    if execute_benchmark:    
+    if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
         parameters_iterator = options_generator(data_generation_options,
                                                     algorithms_parameters,
