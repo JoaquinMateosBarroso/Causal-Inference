@@ -81,7 +81,7 @@ if __name__ == '__main__':
     execute_benchmark = True
     generate_toy_data = True
     
-    n_executions = 25
+    n_executions = 10
 
     if execute_benchmark:
         options_generator, options_kwargs = benchmark_options[chosen_option]
