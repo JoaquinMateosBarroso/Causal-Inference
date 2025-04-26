@@ -47,14 +47,14 @@ data_generation_options = {
     'crosslinks_density': 0.7, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
     'T': 2000, # Number of time points in the dataset
     'N_vars': 100, # Number of variables in the dataset
-    'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
+    'confounders_density': 0, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
     'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
     'auto_coeffs': [0.5], # default: [0.5, 0.7]
     'noise_dists': ['gaussian', 'weibull'], # deafult: ['gaussian']
     'noise_sigmas': [0.2], # default: [0.5, 2]
     
-    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
+    'dependency_funcs': ['linear', 'linear', 'linear', 'linear', 'negative-exponential', 'sin', 'cos', 'step'],
 }
 
 benchmark_options = {

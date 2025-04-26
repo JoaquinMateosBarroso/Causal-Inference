@@ -636,7 +636,7 @@ def _generate_group_dataset(iteration, n_datasets, datasets_folder, data_option)
         causal_dataset.generate_group_toy_data(dataset_index, datasets_folder=datasets_folder, **data_option)
     
     return causal_datasets
-
+    
 def _load_micro_datasets(datasets_folder):
         '''
         Function to load the datasets for the benchmark
