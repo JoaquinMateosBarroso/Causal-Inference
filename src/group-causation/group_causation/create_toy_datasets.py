@@ -5,6 +5,7 @@ from causal processes, which are defined by ts DAGs.
 
 
 
+from collections import deque
 import os
 import random
 from typing import Callable, Union
@@ -408,37 +409,55 @@ def plot_ts_graph(parents_dict, var_names=None):
     )
 
 
-def _extract_subgraph(parents_dict: dict[int, list[tuple[int, int]]], chosen_nodes: list[int]
-                      ) -> dict[int, list[tuple[int, int]]]:
+def _extract_subgraph(parents: dict[int, list[tuple[int,int]]],
+                     chosen_nodes: list[int]
+                    ) -> dict[int, list[tuple[int,int]]]:
     '''
     Given a dictionary with the parents of each node in a graph,
     return a dictionary with the parents of chosen nodes, considering that
     a variable between the chosen_nodes is son of another if and only if
     there is a directed path from the parent to the child that only goes
     through non-chosen nodes.
-    '''
-    # Recursive function to extract the parents of a node with the above specified condition
-    def extract_parents_from_path(child, grandchilds=[]) -> Union[int, int]:
-        new_parents = []
-        print(f'{child=}, {grandchilds=}')
-        for parent, lag in parents_dict[child]:
-            if parent in grandchilds: continue # To avoid infinite loops
-            grandparents = extract_parents_from_path(parent, grandchilds+[parent])
-            if parent in chosen_nodes and \
-                    (parent!=child or lag!=0): # To avoid X -> X
-                new_parent = (chosen_nodes.index(parent), lag)
-                new_parents.append(new_parent)
-            else:
-                new_parents.extend(grandparents)
-        return new_parents
+    '''    
+    chosen_set = set(chosen_nodes)
+    idx_of = {node: i for i, node in enumerate(chosen_nodes)}
     
-    # Initialize the new parents_dict
-    new_parents_dict = dict()
-    for new_node, old_node in enumerate(chosen_nodes):
-        new_parents_dict[new_node] = extract_parents_from_path(old_node)
+    new_parents = {idx: [] for idx in idx_of.values()}
+    
+    for child in chosen_nodes:
+        child_idx = idx_of[child]
         
-    return new_parents_dict
-                    
+        # BFS queue entries are (current_node, cum_lag)
+        queue = deque([(child, 0)])
+        visited = {child}
+        
+        while queue:
+            curr, cum_lag = queue.popleft()
+            
+            for p, lag in parents.get(curr, []):
+                if p in visited:
+                    continue
+                total_lag = cum_lag + lag
+                
+                if p in chosen_set:
+                    # avoid trivial self-loop with lag==0
+                    if not (p == child and lag == 0):
+                        new_parents[child_idx].append((idx_of[p], total_lag))
+                    # do *not* walk past a chosen node
+                else:
+                    visited.add(p)
+                    queue.append((p, total_lag))
+        
+        # remove duplicates (in case multiple paths hit the same chosen parent)
+        seen = set()
+        uniq = []
+        for pair in new_parents[child_idx]:
+            if pair not in seen:
+                seen.add(pair)
+                uniq.append(pair)
+        new_parents[child_idx] = uniq
+    
+    return new_parents             
 
 
 if __name__ == '__main__':
