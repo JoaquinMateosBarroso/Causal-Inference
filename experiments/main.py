@@ -59,13 +59,13 @@ data_generation_options = {
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
-                                    {'list_N_variables': [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]}),
+                                    {'list_N_variables': [10,  20, 30, 40, 50, 60, 70, 80, 90, 100]}),
     
     'changing_preselection_alpha': (changing_preselection_alpha,
                                     {'list_preselection_alpha': [0.01, 0.05, 0.1, 0.2]}),
     'static': (static_parameters, {}),
 }
-chosen_option = 'static'
+chosen_option = 'changing_N_variables'
 
 
 if __name__ == '__main__':
