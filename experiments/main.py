@@ -74,7 +74,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkCausalDiscovery()
-    results_folder = 'results_micro_big'
+    results_folder = 'results_micro_increasing_n_vars'
     datasets_folder = f'{results_folder}/toy_data'
     
     plot_graphs = False
