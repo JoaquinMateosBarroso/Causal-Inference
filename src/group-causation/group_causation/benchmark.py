@@ -365,6 +365,7 @@ class BenchmarkBase(ABC):
                 all_results.append(current_dataset_results)
             
             all_results_df = pd.concat(all_results)
+            print(all_results_df[score])
             sns.violinplot(x='algorithm', y=score, data=all_results_df,
                            hue='algorithm',ax=ax)
             ax.grid(axis='y')

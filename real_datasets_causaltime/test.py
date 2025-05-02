@@ -12,7 +12,7 @@ np.random.seed(0)
 import pandas as pd
 sys.path.append('../')
 
-data_names = ['pm25', 'medical', 'traffic']
+data_names = ['medical', 'traffic', 'pm25']
 
 def matrix_graph_to_parents(matrix_graph: np.ndarray) -> dict[int, list[int]]:
     """
@@ -142,20 +142,20 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05}},
     
     'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
-                            'node_causal_discovery_params': {'max_lag': 3, 'lambda_w': 0.05, 'lambda_a': 0.05}},
+                            'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'lambda_w': 0.05, 'lambda_a': 0.05}},
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05}},
     
     'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.7,
                                                    'groups_division_method': 'group_embedding'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05},
                 'verbose': 0},
     
     'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.7,
                                                    'groups_division_method': 'subgroups'},
                 'node_causal_discovery_alg': 'pcmci',
                 'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05},
@@ -171,11 +171,7 @@ benchmark_options = {
 chosen_option = 'static_parameters'
 
 
-def execute_benchmark(data_name):
-    plt.style.use('default')
-    plt.rcParams['text.usetex'] = True
-    plt.rcParams['font.family'] = 'serif'
-    
+def execute_benchmark(data_name):    
     benchmark = BenchmarkGroupCausalDiscovery()
     results_folder = f'results_{data_name}'
     datasets_folder = f'data_{data_name}'
@@ -195,12 +191,20 @@ def execute_benchmark(data_name):
     return results, benchmark
 
 # %%
+from group_causation.benchmark import BenchmarkGroupCausalDiscovery
+
+plt.style.use('default')
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
+
 for data_name in (data_names:=['pm25', 'medical', 'traffic']):
     print('Executing benchmark of', data_name)
     results, benchmark = execute_benchmark(data_name)
-    results_folder = f'results_{data_name}'
     
-    # Plot graphs
+# Plot graphs
+for data_name in (data_names:=['pm25', 'medical', 'traffic']):
+    results_folder = f'results_{data_name}'
+    benchmark = BenchmarkGroupCausalDiscovery()
     # benchmark.plot_particular_result(results_folder, results_folder + '/summary',
     #                                 scores=[f'{score}_summary' for score in \
     #                                                 ['shd', 'f1', 'precision', 'recall']],

@@ -74,7 +74,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkCausalDiscovery()
-    results_folder = 'results_micro_increasing_n_vars'
+    results_folder = 'results_pm25'
     datasets_folder = f'{results_folder}/toy_data'
     
     plot_graphs = True
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     if plot_graphs:
         # benchmark.plot_ts_datasets(datasets_folder)
         
-        benchmark.plot_moving_results(results_folder, x_axis='N_vars')
+        # benchmark.plot_moving_results(results_folder, x_axis='N_vars')
         # Save results for whole graph scores
         benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=-1)
         # Save results for summary graph scores
