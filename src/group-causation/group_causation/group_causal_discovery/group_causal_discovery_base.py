@@ -24,9 +24,9 @@ class GroupCausalDiscovery(CausalDiscovery): # Abstract class
         else:
             self.data = data
         if groups is None:
-            self.groups = [set([i]) for i in range(data.shape[1])]
+            self.groups = [[i] for i in range(data.shape[1])]
         else:
-            self.groups = groups
+            self.groups = [list(group) for group in groups]
         self.extra_args = kwargs
 
     @abstractmethod
