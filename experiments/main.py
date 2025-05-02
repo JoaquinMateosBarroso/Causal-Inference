@@ -77,9 +77,9 @@ if __name__ == '__main__':
     results_folder = 'results_micro_increasing_n_vars'
     datasets_folder = f'{results_folder}/toy_data'
     
-    plot_graphs = False
-    execute_benchmark = True
-    generate_toy_data = True
+    plot_graphs = True
+    execute_benchmark = False
+    generate_toy_data = False
     
     n_executions = 10
 
@@ -102,11 +102,11 @@ if __name__ == '__main__':
         
         benchmark.plot_moving_results(results_folder, x_axis='N_vars')
         # Save results for whole graph scores
-        benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=0)
+        benchmark.plot_particular_result(results_folder, dataset_iteration_to_plot=-1)
         # Save results for summary graph scores
         benchmark.plot_particular_result(results_folder, results_folder + '/summary',
                                         scores=[f'{score}_summary' for score in \
                                                         ['shd', 'f1', 'precision', 'recall']],
-                                        dataset_iteration_to_plot=0)
+                                        dataset_iteration_to_plot=-1)
 
 

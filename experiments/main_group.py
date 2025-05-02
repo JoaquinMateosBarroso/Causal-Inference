@@ -60,34 +60,6 @@ data_generation_options = {
     'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'
 }
 
-# TODO: Borrar cuando tenga terminado el benchmark completo
-def increasing_N_vars_per_group(options, algorithms_parameters,
-                      list_N_vars_per_group=None):
-    if list_N_vars_per_group is None:
-        list_N_vars_per_group = [2, 4, 6, 8, 10, 12]
-    
-    for N_vars_per_group in list_N_vars_per_group:
-        if N_vars_per_group <= 6:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.6
-        elif N_vars_per_group < 10:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.5
-        elif N_vars_per_group < 12:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.4
-        else:
-            algorithms_parameters['group-embedding']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
-            algorithms_parameters['subgroups']['dimensionality_reduction_params']['explained_variance_threshold'] = 0.3
-        
-        options['N_vars_per_group'] = N_vars_per_group
-        options['N_vars'] = options['N_groups'] * N_vars_per_group
-        
-        for algorithm_parameters in algorithms_parameters.values():
-            algorithm_parameters['max_lag'] = options['max_lag']
-        
-        yield algorithms_parameters, options
-
 benchmark_options = {
     'static_parameters': (static_parameters, {}),
     'changing_N_variables': (changing_N_variables,
@@ -125,7 +97,7 @@ if __name__ == '__main__':
     plt.rcParams['font.family'] = 'serif'
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_groups'
+    results_folder = 'results_increasing_N_vars_per_group'
     datasets_folder = f'{results_folder}/toy_data'
     
     execute_benchmark = False
@@ -133,8 +105,8 @@ if __name__ == '__main__':
     generate_toy_data = False
     n_executions = 25
     
-    dataset_iteration_to_plot = -1
-    plot_x_axis = 'N_groups'
+    dataset_iteration_to_plot = 4
+    plot_x_axis = 'N_vars_per_group'
     
     
     options_generator, options_kwargs = benchmark_options[chosen_option]

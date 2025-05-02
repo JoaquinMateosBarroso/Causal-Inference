@@ -1,3 +1,4 @@
+from collections import defaultdict
 import random
 import numpy as np
 from typing import Callable
@@ -71,57 +72,6 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
 
     toolbox.register("evaluate", scores_getter)
 
-    # Custom crossover: swap two random subsets
-    def crossover_partitions(part1, part2):
-        '''
-        Performs a crossover between two partitions, returning two new partitions.
-
-        Parameters:
-        - part1, part2: List of sets representing partitions of the same universal set.
-
-        Returns:
-        - Two new partitions as lists of sets.
-        '''
-        # Flatten elements to track assignments
-        universe = set().union(*part1)  # Get all elements in the set
-        elem_to_group1 = {}
-        elem_to_group2 = {}
-
-        # Randomly assign elements based on partitions
-        for subset in part1:
-            if random.random() < 0.5:
-                for elem in subset:
-                    elem_to_group1[elem] = subset
-            else:
-                for elem in subset:
-                    elem_to_group2[elem] = subset
-
-        for subset in part2:
-            if random.random() < 0.5:
-                for elem in subset:
-                    elem_to_group1[elem] = subset
-            else:
-                for elem in subset:
-                    elem_to_group2[elem] = subset
-
-        # Ensure every element is assigned
-        for elem in universe:
-            if elem not in elem_to_group1:
-                elem_to_group1[elem] = {elem}
-            if elem not in elem_to_group2:
-                elem_to_group2[elem] = {elem}
-
-        # Reconstruct partitions
-        offspring1 = list({frozenset(v) for v in elem_to_group1.values()})
-        offspring2 = list({frozenset(v) for v in elem_to_group2.values()})
-
-        # Convert frozenset to set
-        part1[:] = [set(s) for s in offspring1]
-        part2[:] = [set(s) for s in offspring2]
-        
-        return part1, part2
-
-
     toolbox.register("mate", crossover_partitions)
 
     # Custom mutation: move an element from one subset to another
@@ -146,9 +96,62 @@ def _run_genetic_algorithm(n_variables, scores_getter: Callable, scores_weights:
         pop = toolbox.population(n=min(100, bell(max(n_variables//2, 1))))
         algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=50, verbose=False)
         return pop
-
+    
     # Execute GA and get best partition
     best_population = run_ga()
     best_individual = tools.selBest(best_population, k=1)[0]
     
+    # Delete empty groups from the list
+    best_individual = [group for group in best_individual if len(group) > 0]
+    
     return best_individual
+
+
+# Custom crossover: swap two random subsets
+def crossover_partitions(part1, part2):
+    '''
+    Performs a crossover between two partitions, returning two new partitions.
+
+    Parameters:
+    - part1, part2: List of sets representing partitions of the same universal set.
+
+    Returns:
+    - Two new partitions as lists of sets (no overlaps, covering the entire universe).
+    '''
+    universe = set().union(*part1, *part2)
+    elem_to_group1 = {}
+    elem_to_group2 = {}
+
+    # Randomly assign elements from part1 and part2 to offspring groupings
+    for subset in part1:
+        if random.random() < 0.5:
+            for elem in subset:
+                elem_to_group1[elem] = None  # Mark for now
+    for subset in part2:
+        if random.random() < 0.5:
+            for elem in subset:
+                elem_to_group2[elem] = None
+
+    # Any missing elements go to the other mapping
+    for elem in universe:
+        if elem not in elem_to_group1:
+            elem_to_group1[elem] = None
+        if elem not in elem_to_group2:
+            elem_to_group2[elem] = None
+
+    # Reconstruct partitions by creating groupings
+    groupings1 = defaultdict(set)
+    groupings2 = defaultdict(set)
+
+    # Assign elements into disjoint groups deterministically (e.g., by hash)
+    for elem in universe:
+        group_id1 = hash((elem, 'a')) % len(universe)
+        group_id2 = hash((elem, 'b')) % len(universe)
+        groupings1[group_id1].add(elem)
+        groupings2[group_id2].add(elem)
+
+    # Use only sets that contain assigned elements
+    part1[:] = list(groupings1.values())
+    part2[:] = list(groupings2.values())
+
+    return part1, part2

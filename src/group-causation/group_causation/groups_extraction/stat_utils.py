@@ -24,13 +24,22 @@ def get_average_pc1_explained_variance(data: np.ndarray, groups: list[set[int]])
     
     return np.mean(explained_variances)
 
+def get_harmonic_explained_variance(data: np.ndarray, groups: list[set[int]]) -> float:
+    '''
+    Get the average explained variance of the first principal component of the data
+    for each group.
+    '''
+    explained_variances = np.array([get_pc1_explained_variance(data[:, list(group)]) for group in groups])
+
+    return 1 / np.mean(1 / explained_variances) if np.all(explained_variances > 1e-6) else 0
+
 def get_explainability_score(data: np.ndarray, groups: list[set[int]]) -> float:
     '''
     Get a score that represents how well the data can be explained by the groups.
     '''
     cleaned_groups = [group for group in groups if len(group) > 0]
     
-    explained_variance = get_average_pc1_explained_variance(data, cleaned_groups)
+    explained_variance = get_harmonic_explained_variance(data, cleaned_groups)
     inverse_n_groups = 1 - len(cleaned_groups) / data.shape[1]
     
     geometric_mean = (explained_variance * inverse_n_groups) ** (1/2)
@@ -66,6 +75,7 @@ def get_scores_getter(data: np.ndarray, scores: list[str]) -> Callable:
     '''
     scores_getters = {
         'average_variance_explained': get_pc1_explained_variance,
+        'harmonic_variance_explained': get_harmonic_explained_variance,
         'explainability_score': get_explainability_score,
     }
     

@@ -185,7 +185,6 @@ class BenchmarkBase(ABC):
                                         datasets_folder: str,
                                         )  -> dict[str, list[ dict[str, Any] ]]:
         causal_datasets = self.load_datasets(datasets_folder)
-        
         # Execute the algorithms with the given datasets
         for current_algorithms_parameters, data_option in parameters_iterator:
             if self.verbose > 0:

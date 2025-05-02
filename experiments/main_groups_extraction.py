@@ -2,7 +2,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from group_causation.benchmark import BenchmarkGroupsExtraction
-import shutil
 import os
 
 from group_causation.groups_extraction.random_causal_groups_extraction import RandomCausalGroupsExtractor
