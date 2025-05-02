@@ -512,8 +512,6 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             time = np.nan
             memory = np.nan
         finally:
-            print(f'{predicted_parents=}')
-            print(f'{causal_dataset.parents_dict=}')
             result = {'time': time, 'memory': memory}
             actual_parents = causal_dataset.parents_dict
             actual_parents_summary = window_to_summary_graph(actual_parents)
