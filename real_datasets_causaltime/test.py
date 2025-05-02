@@ -104,15 +104,18 @@ for data_name, groups in datasets_groups.items():
     for son_group_idx, son_group in enumerate(groups):
         group_parents[son_group_idx] = []
         for son_node in son_group:
-            for parent_node in node_parents[son_node]:
+            for parent_node, lag in node_parents[son_node]:
                 parent_group_idx = find_index_with_element(groups, parent_node)
-                if (parent_group_idx, -1) not in group_parents[son_group_idx]:
+                if (parent_group_idx, lag) not in group_parents[son_group_idx]:
                     group_parents[son_group_idx].append((parent_group_idx, -1))
                 
     with open(f'./data_{data_name}/0_parents.txt', 'w') as f:
         f.write(str(group_parents))
     for i in range(1, SAMPLE_NUM):
         shutil.copyfile(f'./data_{data_name}/0_parents.txt', f'./data_{data_name}/{i}_parents.txt')
+
+# %%
+find_index_with_element(groups, 11)
 
 # %% [markdown]
 # ## Perform the benchmark for each of the datasets
@@ -186,7 +189,7 @@ def execute_benchmark(data_name):
                                         datasets_folder=datasets_folder,
                                         generate_toy_data=False,
                                         results_folder=results_folder,
-                                        n_executions=480,
+                                        n_executions=5,
                                         verbose=1)
     
     return results, benchmark
@@ -198,9 +201,9 @@ for data_name in (data_names:=['pm25', 'medical', 'traffic']):
     results_folder = f'results_{data_name}'
     
     # Plot graphs
-    benchmark.plot_particular_result(results_folder, results_folder + '/summary',
-                                    scores=[f'{score}_summary' for score in \
-                                                    ['shd', 'f1', 'precision', 'recall']],
-                                    dataset_iteration_to_plot=0)
+    # benchmark.plot_particular_result(results_folder, results_folder + '/summary',
+    #                                 scores=[f'{score}_summary' for score in \
+    #                                                 ['shd', 'f1', 'precision', 'recall']],
+    #                                 dataset_iteration_to_plot=0)
 
 
