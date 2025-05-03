@@ -194,7 +194,7 @@ class BenchmarkBase(ABC):
             # Generate and save results of all algorithms with given datasets
             current_results = self.test_algorithms(causal_datasets, algorithms,
                                                     current_algorithms_parameters)
-            
+            print(f'{current_results=}')
             for name, algorithm_results in current_results.items():
                 iteration = -1
                 for particular_result in algorithm_results:

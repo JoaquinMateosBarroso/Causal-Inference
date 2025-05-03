@@ -78,8 +78,8 @@ def extract_and_save_groups(data_name):
 
     print(data_name, 'dataset obtained the groups:', groups)
     
-    with open(f'./data_{data_name}/0_groups.txt', 'w') as f:
-        f.write(str(groups))
+    # with open(f'./data_{data_name}/0_groups.txt', 'w') as f:
+    #     f.write(str(groups))
     
     for i in range(1, SAMPLE_NUM):
         shutil.copyfile(f'./data_{data_name}/0_groups.txt', f'./data_{data_name}/{i}_groups.txt')
@@ -95,6 +95,10 @@ def find_index_with_element(groups, x):
     for i, group in enumerate(groups):
         if x in group: return i
     return None
+
+for data_name in data_names:
+    with open(f'./data_{data_name}/0_groups.txt', 'r') as f:
+        datasets_groups[data_name] = eval(f.read())
 
 for data_name, groups in datasets_groups.items():
     with open(f'./data_{data_name}/0_node_parents.txt', 'r') as f:
@@ -142,7 +146,7 @@ algorithms_parameters = {
                             'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05}},
     
     'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
-                            'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'lambda_w': 0.05, 'lambda_a': 0.05}},
+                            'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'lambda_w': 0.001, 'lambda_a': 0.001}},
     
     'micro-level': {'node_causal_discovery_alg': 'pcmci',
                             'node_causal_discovery_params': {'min_lag': 1, 'max_lag': 3, 'pc_alpha': 0.05}},

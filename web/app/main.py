@@ -87,7 +87,6 @@ async def run_ts_causal_discovery(algorithm: str,
     return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
 
 
-
 '''
 Functions for the Benchmarking of Causal Discovery from Time Series
 '''
