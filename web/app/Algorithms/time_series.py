@@ -1,11 +1,13 @@
+import ast
 import asyncio
 import os
 import shutil
 from fastapi import UploadFile
+from fastapi.datastructures import QueryParams
 from matplotlib import pyplot as plt
 import pandas as pd
 
-
+# Single time series dependencies
 from group_causation.micro_causal_discovery import MicroCausalDiscovery
 from group_causation.micro_causal_discovery import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
 from group_causation.micro_causal_discovery import GrangerWrapper, VARLINGAMWrapper
@@ -13,9 +15,14 @@ from group_causation.micro_causal_discovery import DynotearsWrapper
 from group_causation.benchmark import plot_ts_graph
 from group_causation.benchmark import BenchmarkCausalDiscovery
 
-from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
-from group_causation.group_causal_discovery import DimensionReductionGroupCausalDiscovery
+# Group time series dependencies
+from group_causation.group_causal_discovery import GroupCausalDiscovery
 from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscovery
+from group_causation.group_causal_discovery import DimensionReductionGroupCausalDiscovery
+from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
+from group_causation.benchmark import BenchmarkGroupCausalDiscovery
+
+
 
 from fastapi.responses import JSONResponse
 
@@ -91,19 +98,57 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFi
     """
     if algorithm not in ts_algorithms:
         raise ValueError(f'Unknown algorithm: {algorithm}')
-    else:
-        df = pd.read_csv(datasetFile.file)
-        
-        algorithm_wrapper = ts_algorithms[algorithm]
-        algorithm: MicroCausalDiscovery = algorithm_wrapper(data=df.values, **parameters)
-        
-        parents = algorithm.extract_parents()
-        plot_ts_graph(parents)
-        
-        graph_image = get_image()
-        
-        return {'graph_image': f"data:image/png;base64,{graph_image}"}
 
+    df = pd.read_csv(datasetFile.file)
+    algorithm_wrapper = ts_algorithms[algorithm]
+    algorithm: MicroCausalDiscovery = algorithm_wrapper(data=df.values, **parameters)
+    
+    parents = algorithm.extract_parents()
+    plot_ts_graph(parents)
+    
+    graph_image = get_image()
+    
+    return {'graph_image': f"data:image/png;base64,{graph_image}"}
+
+
+def runGroupCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict,
+                                          datasetFile: UploadFile, query_params: QueryParams)->dict:
+    """
+    Run the group causal discovery from time series algorithm.
+    
+    Args:
+        algorithm (str): The algorithm to run.
+        datasetFile (UploadFile): The file containing the dataset.
+        
+    Returns:
+        dict: The result of the algorithm.
+    """
+    if algorithm not in group_ts_algorithms:
+        raise ValueError(f'Unknown algorithm: {algorithm}')
+
+    compound_params = ['node_causal_discovery_params', 'dimensionality_reduction_params']
+    for param in compound_params:
+        if type(parameters[param]) == str:
+            parameters[param] = ast.literal_eval(parameters[param])
+
+    groups = []
+    groups_names = []
+    for key, value in query_params.items():
+        if isinstance(value, str) and key.split('-')[0] == 'group':
+            groups.append(ast.literal_eval(value))
+            groups_names.append(key.split('-')[1])
+    
+    df = pd.read_csv(datasetFile.file)
+    
+    algorithm_wrapper = group_ts_algorithms[algorithm]
+    algorithm: GroupCausalDiscovery = algorithm_wrapper(data=df.values, groups=groups, **parameters)
+    
+    parents = algorithm.extract_parents()
+    plot_ts_graph(parents, var_names=groups_names)
+    
+    graph_image = get_image()
+    
+    return {'graph_image': f"data:image/png;base64,{graph_image}"}
 
 async def generateDataset(dataset_parameters: dict, n_datasets: int, aux_folder_name: str) -> pd.DataFrame:
     """

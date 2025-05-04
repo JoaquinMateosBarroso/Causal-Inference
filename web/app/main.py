@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from app.Algorithms.time_series import ts_algorithms_parameters
 from app.Algorithms.time_series import group_ts_algorithms_parameters
 from app.Algorithms.time_series import data_generation_options
-from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, generateDataset
+from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, runGroupCausalDiscoveryFromTimeSeries, generateDataset
 
 import uuid
 
@@ -75,17 +75,19 @@ Functions for the Causal Discovery from Groups of Time Series
 '''
 @app.get("/group-ts-causal-discovery/")
 @app.get("/group-ts-causal-discovery/{algorithm}")
-async def read_ts_causal_discovery(request: Request):
+async def read_group_ts_causal_discovery(request: Request):
     return templates.TemplateResponse("group-ts-causal-discovery.jinja",
                                 {'request': request,
                                  'algs_params': group_ts_algorithms_parameters})
 
 @app.put("/group-ts-causal-discovery/{algorithm}")
-async def run_ts_causal_discovery(algorithm: str,
+async def run_group_ts_causal_discovery(request: Request, 
+                                    algorithm: str,
                                     algorithm_parameters_str: str = Form(...),
                                     datasetFile: UploadFile = File(...)):
     algorithm_parameters = json.loads(algorithm_parameters_str)
-    return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
+    return runGroupCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters,
+                                                 datasetFile, request.query_params)
 
 
 '''
@@ -96,7 +98,7 @@ async def read_benchmark_causal_discovery(request: Request,
                                      chosen_algorithm: str='pcmci'):
     return templates.TemplateResponse("benchmark-ts-causal-discovery.jinja",
                                 {'request': request,
-                                 'algs_params': algs_params_cd_from_ts,
+                                 'algs_params': ts_algorithms_parameters,
                                  'chosen_algorithm': chosen_algorithm})
 
 @app.put("/benchmark-ts-causal-discovery")

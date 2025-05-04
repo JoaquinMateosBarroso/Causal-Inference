@@ -122,17 +122,20 @@ async function callAlgorithm() {
     const formData = new FormData();
     formData.append('algorithm_parameters_str', JSON.stringify(algorithm_parameters));
     formData.append('datasetFile', chosenDatasetFile);
-    
-    function getVariablesFromElement(element) {
-        return Array.from(element.children)
-            .map(column => column.id)
-            .slice(1); // remove the first element which is the column name
-    }
 
-    const defaultVariables =  getVariablesFromElement(document.getElementById('default-column'));
-    
+    const groupColumns = document.getElementById('group-columns').children;
+    const groupVariables = Array.from(groupColumns).map(group => {
+        return Array.from(group.children)
+            .filter(element => element.tagName !== 'H2') // Exclude the group title
+            .map(column => column.id.split('-')[1]); // Get the variable names
+        });
+        
     let urlParams = '';
-    urlParams += `defaultVariables=${defaultVariables.toString()}`;
+    groupVariables.forEach((group, index) => {
+        urlParams += `group-${index+1}=[${group.toString()}]`;
+        if (index < groupVariables.length-1)
+            urlParams += '&';
+    });
     
     // Get the current URL path
     const baseUrl = window.location.pathname.split('/').slice(0, -1).join('/');
