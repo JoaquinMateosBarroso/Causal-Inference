@@ -1,8 +1,8 @@
 import ast
-import asyncio
 import os
 import shutil
 from fastapi import UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.datastructures import QueryParams
 from matplotlib import pyplot as plt
 import pandas as pd
@@ -67,7 +67,7 @@ data_generation_options = {
     'max_lag': 5,
     'contemp_fraction': 0.2, # Fraction of contemporaneous links; between 0 and 1
     'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
-    'T': 2000, # Number of time points in the dataset
+    'T': 500, # Number of time points in the dataset
     'N_vars': 5, # Number of variables in the dataset
     'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
     # These parameters are used in generate_structural_causal_process:
@@ -78,6 +78,60 @@ data_generation_options = {
     
     'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
 }
+
+'''
+UTILS FOR GROUP TIME SERIES CAUSAL DISCOVERY
+'''
+group_ts_algorithms = {
+    'group-embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
+}
+group_ts_algorithms_parameters = {
+    'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
+    'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
+                            'node_causal_discovery_params': {'max_lag': 5, 'lambda_w': 0.05, 'lambda_a': 0.05}},
+    
+    'micro-level': {'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
+    'group-embedding': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+                                                   'groups_division_method': 'group_embedding'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                'verbose': 0},
+    
+    'subgroups': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+                                                   'groups_division_method': 'subgroups'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                'verbose': 0},
+}
+
+group_data_generation_options = {
+    'min_lag': 0,
+    'max_lag': 5,
+    'contemp_fraction': 0.25,
+    'T': 500, # Number of time points in the dataset
+    'N_vars': 9, # Number of variables in the dataset
+    'N_groups': 3, # Number of groups in the dataset
+    'inner_group_crosslinks_density': 0.5,
+    'outer_group_crosslinks_density': 0.5,
+    'n_node_links_per_group_link': 2,
+    # These parameters are used in generate_structural_causal_process:
+    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
+    'auto_coeffs': [0.4], # default: [0.5, 0.7]
+    'noise_dists': ['gaussian', 'weibull'], # deafult: ['gaussian']
+    'noise_sigmas': [0.2], # default: [0.5, 2]    
+    'dependency_funcs': ['linear']#, 'negative-exponential', 'sin', 'cos', 'step'], # Options: 'linear', 'negative-exponential', 'sin', 'cos', 'step'   
+}
+
 
 benchmark_options = {
     'static': (static_parameters, {}),
@@ -184,8 +238,8 @@ async def generateDataset(dataset_parameters: dict, n_datasets: int, aux_folder_
         os.makedirs(datasets_folder)
 
     # Generate the datasets asynchronously
-    await asyncio.to_thread( benchmark.generate_datasets, 0, n_datasets, datasets_folder, dataset_parameters )
-    await asyncio.to_thread( benchmark.plot_ts_datasets, datasets_folder )
+    await run_in_threadpool( benchmark.generate_datasets, 0, n_datasets, datasets_folder, dataset_parameters )
+    await run_in_threadpool( benchmark.plot_ts_datasets, datasets_folder )
     
     # Get all necessary files
     files_data = []
@@ -198,6 +252,60 @@ async def generateDataset(dataset_parameters: dict, n_datasets: int, aux_folder_
     shutil.rmtree(datasets_folder)
     
     return JSONResponse(content={"files": files_data})
+
+
+async def generateGroupDataset(dataset_parameters: dict, n_datasets: int, aux_folder_name: str) -> pd.DataFrame:
+    """
+    Generate a group type dataset based on the given parameters.
+    
+    Args:
+        aux_folder_name (str): The name of the auxiliary folder where the dataset will be created.
+        dataset_parameters (dict): The parameters for generating the dataset.
+        n_datasets (int): The number of datasets to generate.
+        
+    Returns:
+        pd.DataFrame: The generated dataset.
+    """
+    benchmark = BenchmarkGroupCausalDiscovery()
+
+    # Modify parameters that need to be change from frontend
+    try:
+        dataset_parameters['auto_coeffs'] = [float(i) for i in dataset_parameters['auto_coeffs'].split(',')]
+        dataset_parameters['contemp_fraction'] = float(dataset_parameters['contemp_fraction'])
+        dataset_parameters['dependency_coeffs'] = [float(i) for i in dataset_parameters['dependency_coeffs'].split(',')]
+        dataset_parameters['dependency_funcs'] = dataset_parameters['dependency_funcs'].split(',')
+        dataset_parameters['inner_group_crosslinks_density'] = float(dataset_parameters['inner_group_crosslinks_density'])
+        dataset_parameters['outer_group_crosslinks_density'] = float(dataset_parameters['outer_group_crosslinks_density'])              
+        dataset_parameters['noise_dists'] = dataset_parameters['noise_dists'].split(',')
+        dataset_parameters['noise_sigmas'] = [float(i) for i in dataset_parameters['noise_sigmas'].split(',')]
+    except Exception as e:
+        raise ValueError(f'Error in dataset parameters: {e}')
+    
+    datasets_folder = f'toy_data/{aux_folder_name}'
+    
+    # Delete previous toy data
+    if os.path.exists(datasets_folder):
+        for filename in os.listdir(datasets_folder):
+            os.remove(f'{datasets_folder}/{filename}')
+    else:
+        os.makedirs(datasets_folder)
+
+    # Generate the datasets asynchronously
+    await run_in_threadpool( benchmark.generate_datasets, 0, n_datasets, datasets_folder, dataset_parameters )
+    await run_in_threadpool( benchmark.plot_ts_datasets, datasets_folder )
+    
+    # Get all necessary files
+    files_data = []
+    for filename in os.listdir(datasets_folder):
+        with open(os.path.join(datasets_folder, filename), "rb") as f:
+            files_data.append({"filename": filename, 
+                               "content": base64.b64encode(f.read()).decode("utf-8")})
+
+    # Clean the datasets folder
+    shutil.rmtree(datasets_folder)
+    
+    return JSONResponse(content={"files": files_data})
+
 
 def get_image():
     # Save plot to a BytesIO object
@@ -214,39 +322,4 @@ def get_image():
     
     return graph_image
 
-
-'''
-UTILS FOR GROUP TIME SERIES CAUSAL DISCOVERY
-'''
-group_ts_algorithms = {
-    'group-embedding': HybridGroupCausalDiscovery,
-    'subgroups': HybridGroupCausalDiscovery,
-    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
-    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
-    'micro-level': MicroLevelGroupCausalDiscovery,
-}
-group_ts_algorithms_parameters = {
-    'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
-                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
-    
-    'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
-                            'node_causal_discovery_params': {'max_lag': 5, 'lambda_w': 0.05, 'lambda_a': 0.05}},
-    
-    'micro-level': {'node_causal_discovery_alg': 'pcmci',
-                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
-    
-    'group-embedding': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
-                                                   'groups_division_method': 'group_embedding'},
-                'node_causal_discovery_alg': 'pcmci',
-                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 0},
-    
-    'subgroups': {'dimensionality_reduction': 'pca', 
-               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
-                                                   'groups_division_method': 'subgroups'},
-                'node_causal_discovery_alg': 'pcmci',
-                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
-                'verbose': 0},
-}
 

@@ -72,12 +72,8 @@ benchmark_options = {
                                     {'list_N_groups': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
                                      'relation_vars_per_group': 5}),
     
-    # 'increasing_N_vars_per_group': (changing_N_vars_per_group,
-    #                                 {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
-    
-    'increasing_N_vars_per_group': (increasing_N_vars_per_group,
+    'increasing_N_vars_per_group': (changing_N_vars_per_group,
                                     {'list_N_vars_per_group': [2, 4, 6, 8, 10, 12, 14, 16]}),
-    
     
     'changing_alg_params': (changing_alg_params,
                                     {'alg_name': 'subgroups',

@@ -1,5 +1,6 @@
 import json
 from fastapi import FastAPI, Form, Request, UploadFile, File
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 
 from fastapi.staticfiles import StaticFiles
@@ -7,8 +8,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.Algorithms.time_series import ts_algorithms_parameters
 from app.Algorithms.time_series import group_ts_algorithms_parameters
-from app.Algorithms.time_series import data_generation_options
-from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, runGroupCausalDiscoveryFromTimeSeries, generateDataset
+from app.Algorithms.time_series import data_generation_options, group_data_generation_options
+from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, runGroupCausalDiscoveryFromTimeSeries, generateDataset, generateGroupDataset
 
 import uuid
 
@@ -35,7 +36,7 @@ async def favicon():
 Functions for the Dataset Creation
 '''
 @app.get("/create-toy-data/")
-async def read_ts_causal_discovery(request: Request,):
+async def read_create_toy_data(request: Request,):
     return templates.TemplateResponse("create-toy-data.jinja",
                                 {'request': request,
                                  'dataset_creation_params': data_generation_options})
@@ -48,6 +49,21 @@ async def execute_create_toy_data(request: Request, dataset_parameters_str: str 
     
     # Call the function to create the toy data
     return await generateDataset(dataset_parameters, n_datasets, aux_folder_name)
+
+@app.get("/create-group-toy-data/")
+async def read_create_toy_data_group(request: Request,):
+    return templates.TemplateResponse("create-group-toy-data.jinja",
+                                {'request': request,
+                                 'dataset_creation_params': group_data_generation_options})
+
+@app.put("/create-group-toy-data/")
+async def execute_create_toy_data_group(dataset_parameters_str: str = Form(...)):
+    dataset_parameters = json.loads(dataset_parameters_str)
+    n_datasets = dataset_parameters.pop('n_datasets')
+    aux_folder_name = str(uuid.uuid4())
+    
+    # Call the function to create the toy data
+    return await generateGroupDataset(dataset_parameters, n_datasets, aux_folder_name)
 
 
 '''
@@ -67,7 +83,8 @@ async def run_ts_causal_discovery(algorithm: str,
                                     algorithm_parameters_str: str = Form(...),
                                     datasetFile: UploadFile = File(...)):
     algorithm_parameters = json.loads(algorithm_parameters_str)
-    return runCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters, datasetFile)
+    return await run_in_threadpool(runCausalDiscoveryFromTimeSeries,
+                                   algorithm, algorithm_parameters, datasetFile)
 
 
 '''
@@ -86,10 +103,10 @@ async def run_group_ts_causal_discovery(request: Request,
                                     algorithm_parameters_str: str = Form(...),
                                     datasetFile: UploadFile = File(...)):
     algorithm_parameters = json.loads(algorithm_parameters_str)
-    return runGroupCausalDiscoveryFromTimeSeries(algorithm, algorithm_parameters,
-                                                 datasetFile, request.query_params)
-
-
+    return await run_in_threadpool(runGroupCausalDiscoveryFromTimeSeries,
+                                    algorithm, algorithm_parameters,
+                                    datasetFile, request.query_params)
+    
 '''
 Functions for the Benchmarking of Causal Discovery from Time Series
 '''
@@ -107,4 +124,5 @@ async def run_benchmark_causal_discovery(algorithms_parameters_str: str = Form(.
     algorithms_parameters = json.loads(algorithms_parameters_str)
     aux_folder_name = str(uuid.uuid4())
 
-    return await runTimeSeriesBenchmarkFromZip(algorithms_parameters, datasetFile, aux_folder_name)
+    return await run_in_threadpool(runTimeSeriesBenchmarkFromZip,
+                             algorithms_parameters, datasetFile, aux_folder_name)

@@ -75,7 +75,7 @@ benchmark_options = {
 chosen_option = 'static'
 
 
-async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
+def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
                                   datasetsFile: UploadFile,
                                   aux_folder_name):
     plt.style.use('ggplot')
@@ -97,7 +97,7 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
         os.makedirs(datasets_folder)
     
     # Unzip the datasets
-    dataset_contents = await datasetsFile.read()
+    dataset_contents = datasetsFile.read()
     with zipfile.ZipFile(io.BytesIO(dataset_contents), "r") as zip_ref:
         zip_ref.extractall(datasets_folder)
     
