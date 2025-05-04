@@ -13,6 +13,10 @@ from group_causation.micro_causal_discovery import DynotearsWrapper
 from group_causation.benchmark import plot_ts_graph
 from group_causation.benchmark import BenchmarkCausalDiscovery
 
+from group_causation.group_causal_discovery import HybridGroupCausalDiscovery
+from group_causation.group_causal_discovery import DimensionReductionGroupCausalDiscovery
+from group_causation.group_causal_discovery import MicroLevelGroupCausalDiscovery
+
 from fastapi.responses import JSONResponse
 
 # Ignore FutureWarnings, due to versions of libraries
@@ -23,7 +27,11 @@ from group_causation.utils import static_parameters
 import io
 import base64
 
-algorithms = {
+
+'''
+UTILS FOR TIME SERIES CAUSAL DISCOVERY
+'''
+ts_algorithms = {
     'pcmci': PCMCIWrapper,
     'dynotears': DynotearsWrapper,
     'granger': GrangerWrapper,
@@ -34,7 +42,7 @@ algorithms = {
     # This works bad with big datasets
     # 'pcmci-modified': PCMCIModifiedWrapper,
 }
-algorithms_parameters = {
+ts_algorithms_parameters = {
     # pc_alpha to None performs a search for the best alpha in tigramite algorithms
     'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
     'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
@@ -81,12 +89,12 @@ def runCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict, datasetFi
     Returns:
         dict: The result of the algorithm.
     """
-    if algorithm not in algorithms:
+    if algorithm not in ts_algorithms:
         raise ValueError(f'Unknown algorithm: {algorithm}')
     else:
         df = pd.read_csv(datasetFile.file)
         
-        algorithm_wrapper = algorithms[algorithm]
+        algorithm_wrapper = ts_algorithms[algorithm]
         algorithm: MicroCausalDiscovery = algorithm_wrapper(data=df.values, **parameters)
         
         parents = algorithm.extract_parents()
@@ -160,3 +168,40 @@ def get_image():
     plt.close()
     
     return graph_image
+
+
+'''
+UTILS FOR GROUP TIME SERIES CAUSAL DISCOVERY
+'''
+group_ts_algorithms = {
+    'group-embedding': HybridGroupCausalDiscovery,
+    'subgroups': HybridGroupCausalDiscovery,
+    'pca+pcmci': DimensionReductionGroupCausalDiscovery,
+    'pca+dynotears': DimensionReductionGroupCausalDiscovery,
+    'micro-level': MicroLevelGroupCausalDiscovery,
+}
+group_ts_algorithms_parameters = {
+    'pca+pcmci': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
+    'pca+dynotears': {'dimensionality_reduction': 'pca', 'node_causal_discovery_alg': 'dynotears',
+                            'node_causal_discovery_params': {'max_lag': 5, 'lambda_w': 0.05, 'lambda_a': 0.05}},
+    
+    'micro-level': {'node_causal_discovery_alg': 'pcmci',
+                            'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05}},
+    
+    'group-embedding': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+                                                   'groups_division_method': 'group_embedding'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                'verbose': 0},
+    
+    'subgroups': {'dimensionality_reduction': 'pca', 
+               'dimensionality_reduction_params': {'explained_variance_threshold': 0.3,
+                                                   'groups_division_method': 'subgroups'},
+                'node_causal_discovery_alg': 'pcmci',
+                'node_causal_discovery_params': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05},
+                'verbose': 0},
+}
+

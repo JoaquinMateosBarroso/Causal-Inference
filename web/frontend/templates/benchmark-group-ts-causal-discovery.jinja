@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+
+{% block extra_head %}
+    <link rel="stylesheet" href="/frontend/static/causal-discovery/style.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Benchmarking Time Series Causal Discovery Algorithms</h1>
+        <div class="text-item" style="background-color:rgb(171, 170, 170)">
+            <h2>Upload ZIP file:</h2>
+            <p>Upload a ZIP file with time series data and associated parents.</p>
+            <p>Strucuture of the ZIP file must follow the format of CSV and TXT files <br/>created by the  
+                <a href="/create-toy-data" style="color:blue;text-decoration:underline" target="_blank">page for toy dataset generation</a>.</p>
+            <input type="file" class="choose-file" id="load-zip-button" onchange="loadZIP()" accept=".zip"></button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="text-item" id="algorithm-container">
+            <button type="button" onclick="addAlgorithm()">Add Algorithm</button>
+            <h2>Algorithms:</h2>
+
+            <hr style="border: 2px solid black; margin: 20px 0;">
+            
+            <div id="algorithm-section">
+                <select id="algorithm-options-0" class="dropdown" onchange="updateAlgorithmParams(0)">
+                    {% for algorithm_name in algs_params.keys() %}
+                        <option value="{{ algorithm_name }}">{{algorithm_name}}</option>
+                    {% endfor %}
+                </select>
+                </br>
+                <h3>Algorithm parameters:</h3>
+                <form id="algorithm-params-container-0">
+                <!-- Parameters will be dynamically updated here -->
+                </form>
+                <br/>
+                <button type="button" onclick="deleteAlgorithm()">Delete Algorithm</button>
+                <hr style="border: 2px solid black; margin: 20px 0;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="calling-container">
+        <button onclick="callBenchmark()" class="calling-button" id="obtain-causalities-button">Run benchmark</button>
+        <div id="loading-container">
+            <img src="/frontend/static/images/loading.gif" alt="Loading..." class="loading-gif">
+        </div>
+    </div>
+
+    <div id="graphs-container"></div>
+
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="/frontend/static/causal-discovery/script.js"></script>
+
+    {# This script must be in the html because it uses jinja2 variables. #}
+    <script>
+        function updateAlgorithmParams(algorithm_counter) {
+            const selectedAlgorithm = document.getElementById(`algorithm-options-${algorithm_counter}`).value;
+            const paramsContainer = document.getElementById(`algorithm-params-container-${algorithm_counter}`);
+            paramsContainer.innerHTML = ''; // Clear existing parameters
+
+            const algsParams = {{ algs_params | tojson }};
+            const params = algsParams[selectedAlgorithm];
+
+            for (const [paramName, paramValue] of Object.entries(params)) {
+                const paramItem = document.createElement('div');
+                paramItem.className = 'param-item';
+
+                const label = document.createElement('label');
+                label.setAttribute('for', paramName);
+                label.textContent = `${paramName}:`;
+                label.style.display = 'inline-block';
+                label.style.width = '150px'; // Adjust width as needed
+
+                const input = document.createElement('input');
+                input.type = typeof paramValue === 'number' ? 'number' : 'text';
+                input.id = paramName;
+                input.name = paramName;
+                input.value = paramValue;
+
+
+                paramItem.appendChild(label);
+                paramItem.appendChild(input);
+                paramsContainer.appendChild(paramItem);
+            }
+        }
+
+        // Ensure the form is cleared and updated correctly
+        document.getElementById('algorithm-params-container-0').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+        });
+
+        updateAlgorithmParams(0);
+    </script>
+
+
+    <script>
+        let algorithmCount = 1;
+
+        function addAlgorithm() {
+            const algorithmContainer = document.getElementById('algorithm-container');
+            
+            const newAlgorithmDiv = document.createElement('div');
+            newAlgorithmDiv.id = `algorithm-section-${algorithmCount}`;
+            newAlgorithmDiv.innerHTML = `
+                <select id="algorithm-options-${algorithmCount}" class="dropdown" onchange="updateAlgorithmParams(${algorithmCount})">
+                    {% for algorithm_name in algs_params.keys() %}
+                        <option value="{{ algorithm_name }}">{{algorithm_name}}</option>
+                    {% endfor %}
+                </select>
+                </br>
+                <h3>Algorithm parameters:</h3>
+                <form id="algorithm-params-container-${algorithmCount}">
+                <!-- Parameters will be dynamically updated here -->
+                </form>
+                <br/>
+                <button type="button" onclick="deleteAlgorithm(${algorithmCount})">Delete Algorithm</button>
+                
+                <hr style="border: 2px solid black; margin: 20px 0;">
+            `;
+            algorithmContainer.appendChild(newAlgorithmDiv);
+
+            updateAlgorithmParams(algorithmCount); // Initialize parameters for the new algorithm
+            algorithmCount++;
+        }
+
+        function deleteAlgorithm(id = null) {
+            if (id) {
+                const algorithmDiv = document.getElementById(`algorithm-section-${id}`);
+                if (algorithmDiv)
+                    algorithmDiv.remove();
+            } else {
+                const algorithmSection = document.getElementById('algorithm-section');
+                if (algorithmSection)
+                    algorithmSection.remove();
+            }
+            algorithmCount--;
+        }
+    </script>
+
+{% endblock %}

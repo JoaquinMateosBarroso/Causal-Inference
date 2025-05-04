@@ -5,7 +5,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.Algorithms.time_series import algorithms_parameters as algs_params_cd_from_ts
+from app.Algorithms.time_series import ts_algorithms_parameters
+from app.Algorithms.time_series import group_ts_algorithms_parameters
 from app.Algorithms.time_series import data_generation_options
 from app.Algorithms.time_series import runCausalDiscoveryFromTimeSeries, generateDataset
 
@@ -58,7 +59,7 @@ async def read_ts_causal_discovery(request: Request,
                                      chosen_algorithm: str='pcmci'):
     return templates.TemplateResponse("ts-causal-discovery.jinja",
                                 {'request': request,
-                                 'algs_params': algs_params_cd_from_ts,
+                                 'algs_params': ts_algorithms_parameters,
                                  'chosen_algorithm': chosen_algorithm})
 
 @app.put("/ts-causal-discovery/{algorithm}")
@@ -72,14 +73,14 @@ async def run_ts_causal_discovery(algorithm: str,
 '''
 Functions for the Causal Discovery from Groups of Time Series
 '''
-@app.get("/ts-group-causal-discovery/")
-@app.get("/ts-group-causal-discovery/{algorithm}")
+@app.get("/group-ts-causal-discovery/")
+@app.get("/group-ts-causal-discovery/{algorithm}")
 async def read_ts_causal_discovery(request: Request):
-    return templates.TemplateResponse("ts-group-causal-discovery.jinja",
+    return templates.TemplateResponse("group-ts-causal-discovery.jinja",
                                 {'request': request,
-                                 'algs_params': algs_params_cd_from_ts})
+                                 'algs_params': group_ts_algorithms_parameters})
 
-@app.put("/ts-group-causal-discovery/{algorithm}")
+@app.put("/group-ts-causal-discovery/{algorithm}")
 async def run_ts_causal_discovery(algorithm: str,
                                     algorithm_parameters_str: str = Form(...),
                                     datasetFile: UploadFile = File(...)):

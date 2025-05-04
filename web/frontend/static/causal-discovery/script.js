@@ -20,6 +20,12 @@ function loadCSV(file=null) {
         element.style.display = 'inline-block';})
 }
 
+function loadGroupCSV(file=null) {
+    loadCSV(file);
+    document.getElementById('group-adder').style.display = 'flex';
+}
+
+
 function loadZIP() {
     file = document.getElementById('load-zip-button').files[0];
     chosenDatasetFile = file;
@@ -32,12 +38,12 @@ function loadZIP() {
 }
 
 function displayColumnNames(columns) {
-    const columnContainer = document.getElementById('default-column');
+    const columnContainer = document.getElementById('group-column-1');
 
     columns.forEach(column => {
         let columnBox = document.createElement('div');
         columnBox.className = 'column-item';
-        columnBox.id = column;
+        columnBox.id = `node-${column}`;
         columnBox.textContent = column;
         columnBox.setAttribute('draggable', true);
         columnBox.setAttribute('ondragstart', 'drag(event)');
@@ -51,6 +57,7 @@ function displayColumnNames(columns) {
         callingButtons[i].style.visibility = 'visible';
     }
 }
+
 
 
 function allowDrop(event) {
@@ -68,6 +75,25 @@ function drop(event, columnId) {
 
     target = document.getElementById(columnId);
     target.appendChild(draggedElement);
+}
+
+function addGroup() {
+    const columnContainer = document.getElementById('group-columns');
+
+    // Create the new group container
+    const groupContainer = document.createElement('div');
+    groupContainer.className = 'column';
+    const groupIndex = columnContainer.children.length + 1;
+    groupContainer.id = `group-${groupIndex}`;
+    groupContainer.setAttribute('ondrop', 'drop(event, this.id)');
+    groupContainer.setAttribute('ondragover', 'allowDrop(event)');
+
+    columnContainer.appendChild(groupContainer);
+
+    const columnTitle = document.createElement('h2');
+    columnTitle.textContent = `Group ${groupIndex}`;
+
+    groupContainer.appendChild(columnTitle);
 }
 
 async function callAlgorithm() {
