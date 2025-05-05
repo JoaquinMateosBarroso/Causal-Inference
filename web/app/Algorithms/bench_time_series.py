@@ -51,6 +51,7 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
         benchmark = BenchmarkCausalDiscovery()
         algorithms = ts_algorithms
 
+    # Convert the string representations of the parameters to their actual types
     complex_parameters = ['dimensionality_reduction_params', 'node_causal_discovery_params']
     for algorithm_parameters in algorithms_parameters.values():
         for parameter in complex_parameters:
@@ -86,7 +87,7 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
     
     chosen_algorithms = {f'{algorithm}': algorithms[algorithm] \
                                     for algorithm in algorithms_parameters.keys()}
-    results = await run_in_threadpool(benchmark.benchmark_causal_discovery,
+    await run_in_threadpool(benchmark.benchmark_causal_discovery,
                                         algorithms=chosen_algorithms,
                                         parameters_iterator=parameters_iterator,
                                         datasets_folder=datasets_folder,
@@ -94,11 +95,6 @@ async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, An
                                         verbose=1)
     
     files = os.listdir(results_folder)
-    # results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
-    # get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
-    # results_dataframes = {get_algo_name(filename): pd.read_csv(f'{results_folder}/{filename}')\
-    #                         for filename in results_files}
-    
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder)
     # Save results for summary graph scores

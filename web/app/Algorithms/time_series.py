@@ -50,17 +50,15 @@ ts_algorithms = {
     # 'pcmci-modified': PCMCIModifiedWrapper,
 }
 ts_algorithms_parameters = {
-    # pc_alpha to None performs a search for the best alpha in tigramite algorithms
+    # pc_alpha to None performs a search for the best alpha
     'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
-    'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
-    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'max_combinations': 100, 'max_conds_dim': 5},
     'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
     'varlingam': {'min_lag': 0, 'max_lag': 5},
-    'dynotears': {              'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    
-    # 'pcmci-modified': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
-    #                     'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
+    'dynotears': {'min_lag': 0, 'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
+    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
+    'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
 }
+
 
 data_generation_options = {
     'min_lag': 0,
@@ -182,7 +180,7 @@ def runGroupCausalDiscoveryFromTimeSeries(algorithm: str, parameters: dict,
 
     compound_params = ['node_causal_discovery_params', 'dimensionality_reduction_params']
     for param in compound_params:
-        if type(parameters[param]) == str:
+        if param in parameters and type(parameters[param]) == str:
             parameters[param] = ast.literal_eval(parameters[param])
 
     groups = []
