@@ -1,17 +1,21 @@
+import ast
 import base64
 import io
 from typing import Any, Iterator, Union
 import zipfile
 
 from fastapi import UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 from matplotlib import pyplot as plt
 import numpy as np
 
-from group_causation.benchmark import BenchmarkCausalDiscovery
-from group_causation.micro_causal_discovery import PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from group_causation.micro_causal_discovery import GrangerWrapper, VARLINGAMWrapper
-from group_causation.micro_causal_discovery import DynotearsWrapper
+from app.Algorithms.time_series import ts_algorithms, ts_algorithms_parameters
+from app.Algorithms.time_series import group_ts_algorithms, group_ts_algorithms_parameters
+from app.Algorithms.time_series import data_generation_options, group_data_generation_options
+
+from group_causation.benchmark import BenchmarkCausalDiscovery, BenchmarkGroupCausalDiscovery
+
 import shutil
 import os
 
@@ -23,46 +27,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from group_causation.utils import changing_N_variables, changing_preselection_alpha, static_parameters
 
-algorithms = {
-    'pcmci': PCMCIWrapper,
-    'dynotears': DynotearsWrapper,
-    'granger': GrangerWrapper,
-    'varlingam': VARLINGAMWrapper,
-    'pc-stable': PCStableWrapper,
-    
-    'fullpcmci': PCMCIWrapper,
-    'lpcmci': LPCMCIWrapper,
-}
-algorithms_parameters = {
-    # pc_alpha to None performs a search for the best alpha
-    'pcmci':     {'min_lag': 0, 'max_lag': 5, 'pc_alpha': 0.05, 'cond_ind_test': 'parcorr'},
-    'granger':   {'min_lag': 0, 'max_lag': 5, 'cv': 5, },
-    'varlingam': {'min_lag': 0, 'max_lag': 5},
-    'dynotears': {              'max_lag': 5, 'max_iter': 1000, 'lambda_w': 0.05, 'lambda_a': 0.05},
-    'pc-stable': {'min_lag': 0, 'max_lag': 5, 'pc_alpha': None, 'max_combinations': 100, 'max_conds_dim': 5},
-    
-    'pcmci-modified': {'pc_alpha': 0.05, 'min_lag': 1, 'max_lag': 5, 'max_combinations': 1,
-                        'max_summarized_crosslinks_density': 0.2, 'preselection_alpha': 0.05},
-    'fullpcmci': {'pc_alpha': None, 'min_lag': 1, 'max_lag': 3, 'max_combinations': 100, 'max_conds_dim': 5},
-    'lpcmci': {'pc_alpha': 0.01, 'min_lag': 1, 'max_lag': 3},
-}
-
-data_generation_options = {
-    'min_lag': 0,
-    'max_lag': 5,
-    'contemp_fraction': 1, # Fraction of contemporaneous links; between 0 and 1
-    'crosslinks_density': 0.5, # Portion of links that won't be in the kind of X_{t-1}->X_t; between 0 and 1
-    'T': 2000, # Number of time points in the dataset
-    'N_vars': 5, # Number of variables in the dataset
-    'confounders_density': 0.2, # Portion of dataset that will be overgenerated as confounders; between 0 and inf
-    # These parameters are used in generate_structural_causal_process:
-    'dependency_coeffs': [-0.3, 0.3], # default: [-0.5, 0.5]
-    'auto_coeffs': [0.7], # default: [0.5, 0.7]
-    'noise_dists': ['gaussian'], # deafult: ['gaussian']
-    'noise_sigmas': [0.3], # default: [0.5, 2]
-    
-    'dependency_funcs': ['linear', 'negative-exponential', 'sin', 'cos', 'step'],
-}
 
 benchmark_options = {
     'changing_N_variables': (changing_N_variables, 
@@ -75,12 +39,24 @@ benchmark_options = {
 chosen_option = 'static'
 
 
-def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
+async def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
                                   datasetsFile: UploadFile,
-                                  aux_folder_name):
+                                  aux_folder_name,
+                                  group_type: bool = False):
     plt.style.use('ggplot')
-    benchmark = BenchmarkCausalDiscovery()
+    if group_type:
+        benchmark = BenchmarkGroupCausalDiscovery()
+        algorithms = group_ts_algorithms
+    else:
+        benchmark = BenchmarkCausalDiscovery()
+        algorithms = ts_algorithms
 
+    complex_parameters = ['dimensionality_reduction_params', 'node_causal_discovery_params']
+    for algorithm_parameters in algorithms_parameters.values():
+        for parameter in complex_parameters:
+            if parameter in algorithm_parameters:
+                algorithm_parameters[parameter] = ast.literal_eval(algorithm_parameters[parameter])
+    
     options_generator, options_kwargs = benchmark_options[chosen_option]
     parameters_iterator = options_generator(data_generation_options,
                                                 algorithms_parameters,
@@ -97,7 +73,7 @@ def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
         os.makedirs(datasets_folder)
     
     # Unzip the datasets
-    dataset_contents = datasetsFile.read()
+    dataset_contents = await datasetsFile.read()
     with zipfile.ZipFile(io.BytesIO(dataset_contents), "r") as zip_ref:
         zip_ref.extractall(datasets_folder)
     
@@ -110,19 +86,18 @@ def runTimeSeriesBenchmarkFromZip(algorithms_parameters: list[dict[str, Any]],
     
     chosen_algorithms = {f'{algorithm}': algorithms[algorithm] \
                                     for algorithm in algorithms_parameters.keys()}
-    results = benchmark.benchmark_causal_discovery(algorithms=chosen_algorithms,
+    results = await run_in_threadpool(benchmark.benchmark_causal_discovery,
+                                        algorithms=chosen_algorithms,
                                         parameters_iterator=parameters_iterator,
                                         datasets_folder=datasets_folder,
                                         results_folder=results_folder,
                                         verbose=1)
     
-    
-    
     files = os.listdir(results_folder)
-    results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
-    get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
-    results_dataframes = {get_algo_name(filename): pd.read_csv(f'{results_folder}/{filename}')\
-                            for filename in results_files}
+    # results_files = filter(lambda x: x.startswith('results_') and x.endswith('.csv'), files)
+    # get_algo_name = lambda filename: filename.split('_')[1].split('.')[0]
+    # results_dataframes = {get_algo_name(filename): pd.read_csv(f'{results_folder}/{filename}')\
+    #                         for filename in results_files}
     
     # Save results for whole graph scores
     benchmark.plot_particular_result(results_folder)

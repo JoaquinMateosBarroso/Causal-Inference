@@ -124,5 +124,22 @@ async def run_benchmark_causal_discovery(algorithms_parameters_str: str = Form(.
     algorithms_parameters = json.loads(algorithms_parameters_str)
     aux_folder_name = str(uuid.uuid4())
 
-    return await run_in_threadpool(runTimeSeriesBenchmarkFromZip,
-                             algorithms_parameters, datasetFile, aux_folder_name)
+    return await runTimeSeriesBenchmarkFromZip(algorithms_parameters, datasetFile, aux_folder_name)
+
+@app.get("/benchmark-group-ts-causal-discovery")
+async def read_benchmark_group_causal_discovery(request: Request,
+                                     chosen_algorithm: str='pcmci'):
+    return templates.TemplateResponse("benchmark-group-ts-causal-discovery.jinja",
+                                {'request': request,
+                                 'algs_params': group_ts_algorithms_parameters,
+                                 'chosen_algorithm': chosen_algorithm})
+
+@app.put("/benchmark-group-ts-causal-discovery")
+async def run_benchmark_group_causal_discovery(algorithms_parameters_str: str = Form(...),
+                                        datasetFile: UploadFile = File(...)):
+    algorithms_parameters = json.loads(algorithms_parameters_str)
+    aux_folder_name = str(uuid.uuid4())
+
+    return await runTimeSeriesBenchmarkFromZip(algorithms_parameters,
+                                               datasetFile, aux_folder_name,
+                                               group_type=True)

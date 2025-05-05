@@ -7,12 +7,12 @@
 
 {% block content %}
     <div class="container">
-        <h1>Benchmarking Time Series Causal Discovery Algorithms</h1>
+        <h1>Benchmarking Group Time Series Causal Discovery Algorithms</h1>
         <div class="text-item" style="background-color:rgb(171, 170, 170)">
             <h2>Upload ZIP file:</h2>
             <p>Upload a ZIP file with time series data and associated parents.</p>
             <p>Strucuture of the ZIP file must follow the format of CSV and TXT files <br/>created by the  
-                <a href="/create-toy-data" style="color:blue;text-decoration:underline" target="_blank">page for toy dataset generation</a>.</p>
+                <a href="/create-group-toy-data" style="color:blue;text-decoration:underline" target="_blank">page for toy dataset generation</a>.</p>
             <input type="file" class="choose-file" id="load-zip-button" onchange="loadZIP()" accept=".zip"></button>
         </div>
     </div>
@@ -68,7 +68,7 @@
             const algsParams = {{ algs_params | tojson }};
             const params = algsParams[selectedAlgorithm];
 
-            for (const [paramName, paramValue] of Object.entries(params)) {
+            for (let [paramName, paramValue] of Object.entries(params)) {
                 const paramItem = document.createElement('div');
                 paramItem.className = 'param-item';
 
@@ -79,11 +79,13 @@
                 label.style.width = '150px'; // Adjust width as needed
 
                 const input = document.createElement('input');
+                
                 input.type = typeof paramValue === 'number' ? 'number' : 'text';
+                if (typeof paramValue !== 'string')
+                    paramValue = JSON.stringify(paramValue);
                 input.id = paramName;
                 input.name = paramName;
                 input.value = paramValue;
-
 
                 paramItem.appendChild(label);
                 paramItem.appendChild(input);
