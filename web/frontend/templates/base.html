@@ -8,11 +8,12 @@
     {% block extra_head %} {% endblock %}
 </head>
 <body>
-    <div>
+    <div class="home-button">
         <a href="/"><img src='/frontend/static/images/home-logo.png'/ width="40px">  </a> <!-- Home button at top left -->
     </div>
 
-    {% block content %} {% endblock %}
-
+    <div class="container">
+        {% block content %} {% endblock %}
+    </div>
 </body>
 </html>

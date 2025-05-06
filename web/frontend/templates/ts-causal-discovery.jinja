@@ -8,14 +8,16 @@
 {% block content %}
     <div class="container">
         <h1>Causal Discovery from Time Series</h1>
-        <div class="text-item" style="background-color:rgb(171, 170, 170)">
+    </div>
+
+    <div class="container">
+        <div class="text-item" style="background-color:#2980b9">
             <h2>Upload CSV file:</h2>
             <p>Upload a CSV file with time series data. The first row should contain the variable names.</p>
             <p>If you want to use toy data, create it 
-                <a href="/create-toy-data" style="color:blue;text-decoration:underline" target="_blank">here</a>.</p>
+                <a href="/create-toy-data" style="color:rgb(255, 255, 255);text-decoration:underline" target="_blank">here</a>.</p>
             <input type="file" class="choose-file" id="load-csv-button" onchange="loadCSV()" accept=".csv"></button>
         </div>
-        
     </div>
     
     <div class="container">
@@ -35,9 +37,10 @@
     </div>
 
     <div class="container">
-        <div id="group-columns" class="column-container">
+        <div id="group-columns" class="column-container text-item">
             <div class="column" id="group-column-1" ondrop="drop(event, 'default-column')" ondragover="allowDrop(event)">
                 <h2>Variables</h2>
+                <!-- Variables will be dynamically updated here -->
             </div>
         </div>
     </div>

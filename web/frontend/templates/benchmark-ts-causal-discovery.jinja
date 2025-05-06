@@ -8,11 +8,11 @@
 {% block content %}
     <div class="container">
         <h1>Benchmarking Time Series Causal Discovery Algorithms</h1>
-        <div class="text-item" style="background-color:rgb(171, 170, 170)">
+        <div class="text-item" style="background-color:#2980b9">
             <h2>Upload ZIP file:</h2>
             <p>Upload a ZIP file with time series data and associated parents.</p>
             <p>Strucuture of the ZIP file must follow the format of CSV and TXT files <br/>created by the  
-                <a href="/create-toy-data" style="color:blue;text-decoration:underline" target="_blank">page for toy dataset generation</a>.</p>
+                <a href="/create-toy-data" style="color:white;text-decoration:underline" target="_blank">page for toy dataset generation</a>.</p>
             <input type="file" class="choose-file" id="load-zip-button" onchange="loadZIP()" accept=".zip"></button>
         </div>
     </div>
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
     <div class="calling-container">
         <button onclick="callBenchmark()" class="calling-button" id="obtain-causalities-button">Run benchmark</button>

@@ -1,4 +1,5 @@
 .choose-file {
+    color:black;
     background-color: #fff;
     width: 40%;
     padding: 15px;
@@ -31,7 +32,7 @@
     width: 80%;
     max-width: 1200px;
     padding: 20px;
-    background: linear-gradient(135deg, #6dd5fa, #2980b9);
+    background: #2980b9;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
@@ -44,10 +45,12 @@
     align-items: center;
     margin: 0 5%;
     width: 100%;
-    background: linear-gradient(50deg, #38388a, #2980b9);
+    background: #102e9af7;
+    color:white;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     display: flex;
+    padding: 10px 0;
 }
 
 .column-container:hover {
@@ -55,6 +58,7 @@
 }
 
 .column-item {
+    color:black;
     background-color: #fff;
     padding: 10px;
     margin: 5px 0;
@@ -72,7 +76,7 @@
 .calling-button {
     display: none;
     padding: 10px 20px;
-    margin: 20px 0;
+    margin: 10px 0;
     font-size: 24px;
     font-weight: bold;
     color: #ffffff;
@@ -86,7 +90,7 @@
 }
 
 .calling-button:hover {
-    background-color: #45a049;
+    transform: scale(1.02);
 }
 
 .calling-container {
