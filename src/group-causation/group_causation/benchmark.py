@@ -40,16 +40,6 @@ class BenchmarkBase(ABC):
         To be implemented by subclasses.
         '''
         pass
-
-
-    @abstractmethod
-    def test_particular_algorithm_particular_dataset(self, causal_dataset: CausalDataset,
-                    causalDiscovery: type[MicroCausalDiscovery],
-                    algorithm_parameters: dict[str, Any],) -> dict[str, Any]:
-        '''
-        To be implemented by subclasses.
-        '''
-        pass
     
     @abstractmethod
     def generate_datasets(self, iteration, n_datasets, datasets_folder, data_option):
@@ -365,7 +355,6 @@ class BenchmarkBase(ABC):
                 all_results.append(current_dataset_results)
             
             all_results_df = pd.concat(all_results)
-            print(all_results_df[score])
             sns.violinplot(x='algorithm', y=score, data=all_results_df,
                            hue='algorithm',ax=ax)
             ax.grid(axis='y')
@@ -506,6 +495,12 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
         algorithm = causalDiscovery(data=causal_dataset.time_series, groups=causal_dataset.groups,  **algorithm_parameters)
         try:
             predicted_parents, time, memory = algorithm.extract_parents_time_and_memory()
+            # Obtain the same metrics in the summary graph
+            predicted_parents_summary = window_to_summary_graph(predicted_parents)
+            if self.verbose > 1:
+                print(f'Algorithm {causalDiscovery.__name__} executed in {time:.3f} seconds and {memory:.3f} MB of memory')
+                print(f'Predicted parents: {predicted_parents}')
+                print(f'Predicted parents summary: {predicted_parents_summary}')
         except Exception as e:
             print(f'Error in algorithm {causalDiscovery.__name__}: {e}')
             print('Returning nan values for this algorithm')
@@ -525,8 +520,6 @@ class BenchmarkGroupCausalDiscovery(BenchmarkCausalDiscovery):
             result['f1'] = get_f1(actual_parents, predicted_parents)
             result['shd'] = get_shd(actual_parents, predicted_parents)
             
-            # Obtain the same metrics in the summary graph
-            predicted_parents_summary = window_to_summary_graph(predicted_parents)
             result['TP_summary'] = get_TP(actual_parents_summary, predicted_parents_summary)
             result['FP_summary'] = get_FP(actual_parents_summary, predicted_parents_summary)
             result['FN_summary'] = get_FN(actual_parents_summary, predicted_parents_summary)

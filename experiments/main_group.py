@@ -91,18 +91,19 @@ if __name__ == '__main__':
     plt.style.use('default')
     plt.rcParams['text.usetex'] = True
     plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 14
     
     benchmark = BenchmarkGroupCausalDiscovery()
-    results_folder = 'results_increasing_N_vars_per_group'
+    results_folder = 'results_increasing_N_groups'
     datasets_folder = f'{results_folder}/toy_data'
     
     execute_benchmark = False
-    plot_graphs = True
     generate_toy_data = False
+    plot_graphs = True
     n_executions = 25
     
     dataset_iteration_to_plot = 4
-    plot_x_axis = 'N_vars_per_group'
+    plot_x_axis = 'N_groups'
     
     
     options_generator, options_kwargs = benchmark_options[chosen_option]

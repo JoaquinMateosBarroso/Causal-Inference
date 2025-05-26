@@ -1,12 +1,7 @@
 # Imports
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-# %matplotlib notebook
-## use `%matplotlib notebook` for interactive figures
-plt.style.use('ggplot')
 
-from tigramite import data_processing as pp
 
 '''
 PARAMETERS GENERATIONS
