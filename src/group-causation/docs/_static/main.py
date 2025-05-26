@@ -4,9 +4,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from benchmark import BenchmarkCausalDiscovery
-from causal_discovery_algorithms import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
-from causal_discovery_algorithms import GrangerWrapper, VARLINGAMWrapper
-from causal_discovery_algorithms import DynotearsWrapper
+from micro_causal_discovery import PCMCIModifiedWrapper, PCMCIWrapper, LPCMCIWrapper, PCStableWrapper
+from micro_causal_discovery import GrangerWrapper, VARLINGAMWrapper
+from micro_causal_discovery import DynotearsWrapper
 import shutil
 import os
 

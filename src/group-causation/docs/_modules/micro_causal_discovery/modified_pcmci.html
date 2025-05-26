@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_discovery_algorithms.modified_pcmci &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
+  <title>micro_causal_discovery.modified_pcmci &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -44,8 +44,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">causal_discovery_algorithms.modified_pcmci</li>
+      <li class="breadcrumb-item active">micro_causal_discovery.modified_pcmci</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,7 +76,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for causal_discovery_algorithms.modified_pcmci</h1><div class="highlight"><pre>
+  <h1>Source code for micro_causal_discovery.modified_pcmci</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="c1"># from bayes_opt import BayesianOptimization</span>
@@ -84,14 +84,14 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">tigramite.pcmci</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCMCI</span><span class="p">,</span> <span class="n">_nested_to_normal</span><span class="p">,</span> <span class="n">_create_nested_dictionary</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms.causal_discovery_custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarized_causality_multivariate_granger</span><span class="p">,</span> <span class="n">summarized_causality_univariate_granger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.micro_causal_discovery.causal_discovery_custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarized_causality_multivariate_granger</span><span class="p">,</span> <span class="n">summarized_causality_univariate_granger</span>
 
 
 <div class="viewcode-block" id="PCMCI_Modified">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.modified_pcmci.PCMCI_Modified">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.modified_pcmci.PCMCI_Modified">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PCMCI_Modified</span><span class="p">(</span><span class="n">PCMCI</span><span class="p">):</span>
 <div class="viewcode-block" id="PCMCI_Modified.run_pcmciplus">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.modified_pcmci.PCMCI_Modified.run_pcmciplus">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.modified_pcmci.PCMCI_Modified.run_pcmciplus">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_pcmciplus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">link_assumptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">tau_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>

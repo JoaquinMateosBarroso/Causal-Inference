@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_groups_extraction.exhaustive_causal_groups_extraction &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
+  <title>groups_extraction.random_causal_groups_extraction &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -44,8 +44,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">causal_groups_extraction.exhaustive_causal_groups_extraction</li>
+      <li class="breadcrumb-item active">groups_extraction.random_causal_groups_extraction</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,21 +76,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for causal_groups_extraction.exhaustive_causal_groups_extraction</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">more_itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_partitions</span>
+  <h1>Source code for groups_extraction.random_causal_groups_extraction</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="kn">import</span> <span class="n">bell</span>
 
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction.causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalGroupsExtractorBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_groups_extraction.stat_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_scores_getter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.groups_extraction.causal_groups_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalGroupsExtractorBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.groups_extraction.stat_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_scores_getter</span>
 
 
-<div class="viewcode-block" id="ExhaustiveCausalGroupsExtractor">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ExhaustiveCausalGroupsExtractor</span><span class="p">(</span><span class="n">CausalGroupsExtractorBase</span><span class="p">):</span> <span class="c1"># Abstract class</span>
+
+<div class="viewcode-block" id="RandomCausalGroupsExtractor">
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomCausalGroupsExtractor</span><span class="p">(</span><span class="n">CausalGroupsExtractorBase</span><span class="p">):</span> <span class="c1"># Abstract class</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Class to extract a set of groups of variables by using an exhaustive search.</span>
-<span class="sd">    </span>
+<span class="sd">    Class to extract a set of groups of variables by using a random search</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        data : np.array with the data, shape (n_samples, n_variables)</span>
@@ -99,30 +100,43 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score_getter</span> <span class="o">=</span> <span class="n">get_scores_getter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
-    
-<div class="viewcode-block" id="ExhaustiveCausalGroupsExtractor.extract_groups">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor.extract_groups">[docs]</a>
+        
+<div class="viewcode-block" id="RandomCausalGroupsExtractor.extract_groups">
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor.extract_groups">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Get score over all possible partitions of dataset and return the optimal one</span>
+<span class="sd">        </span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">            groups : list of sets with the variables that compound each group</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">all_posible_partitions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">set_partitions</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-        <span class="n">best_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)</span>
+        <span class="c1"># Define the set to partition</span>
+        <span class="n">n_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ELEMENTS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">))</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_random_partition</span><span class="p">():</span>
+            <span class="c1"># Generate a random partition</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_variables</span><span class="p">))</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="n">num_groups</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">)</span>  <span class="c1"># Random number of subsets</span>
+            <span class="n">cuts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">),</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># Cut points</span>
+            <span class="n">partition</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="n">cuts</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_variables</span><span class="p">]:</span>
+                <span class="n">partition</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ELEMENTS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">cut</span><span class="p">]])</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">cut</span>
+            <span class="k">return</span> <span class="n">partition</span>
+        
         <span class="n">best_partition</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">partition</span> <span class="ow">in</span> <span class="n">all_posible_partitions</span><span class="p">:</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">2500</span><span class="p">,</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">bell</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">n_variables</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))):</span> <span class="c1"># This value is equivalent to the number of iterations in the genetic algorithm</span>
+            <span class="n">partition</span> <span class="o">=</span> <span class="n">get_random_partition</span><span class="p">()</span>
             <span class="p">[</span><span class="n">score</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_getter</span><span class="p">(</span><span class="n">partition</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
                 <span class="n">best_score</span> <span class="o">=</span> <span class="n">score</span>
                 <span class="n">best_partition</span> <span class="o">=</span> <span class="n">partition</span>
         
-        <span class="k">return</span> <span class="n">best_partition</span></div>
+        <span class="k">return</span> <span class="n">best_partition</span> </div>
 </div>
-
-    
-
 
 </pre></div>
 

@@ -1,10 +1,10 @@
-causal\_groups\_extraction package
-==================================
+groups\_extraction package
+==========================
 
 causal\_groups\_extraction.causal\_groups\_extraction module
 ------------------------------------------------------------
 
-.. automodule:: causal_groups_extraction.causal_groups_extraction
+.. automodule:: groups_extraction.causal_groups_extraction
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ causal\_groups\_extraction.causal\_groups\_extraction module
 causal\_groups\_extraction.exhaustive\_causal\_groups\_extraction module
 ------------------------------------------------------------------------
 
-.. automodule:: causal_groups_extraction.exhaustive_causal_groups_extraction
+.. automodule:: groups_extraction.exhaustive_causal_groups_extraction
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ causal\_groups\_extraction.exhaustive\_causal\_groups\_extraction module
 causal\_groups\_extraction.genetic\_causal\_groups\_extraction module
 ---------------------------------------------------------------------
 
-.. automodule:: causal_groups_extraction.genetic_causal_groups_extraction
+.. automodule:: groups_extraction.genetic_causal_groups_extraction
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,7 +28,7 @@ causal\_groups\_extraction.genetic\_causal\_groups\_extraction module
 causal\_groups\_extraction.random\_causal\_groups\_extraction module
 --------------------------------------------------------------------
 
-.. automodule:: causal_groups_extraction.random_causal_groups_extraction
+.. automodule:: groups_extraction.random_causal_groups_extraction
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,7 +36,7 @@ causal\_groups\_extraction.random\_causal\_groups\_extraction module
 causal\_groups\_extraction.stat\_utils module
 ---------------------------------------------
 
-.. automodule:: causal_groups_extraction.stat_utils
+.. automodule:: groups_extraction.stat_utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,7 +44,7 @@ causal\_groups\_extraction.stat\_utils module
 Module contents
 ---------------
 
-.. automodule:: causal_groups_extraction
+.. automodule:: groups_extraction
    :members:
    :undoc-members:
    :show-inheritance:

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_discovery_algorithms.causal_discovery_causalai &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
+  <title>micro_causal_discovery.causal_discovery_causalai &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -44,8 +44,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">causal_discovery_algorithms.causal_discovery_causalai</li>
+      <li class="breadcrumb-item active">micro_causal_discovery.causal_discovery_causalai</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,7 +76,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for causal_discovery_algorithms.causal_discovery_causalai</h1><div class="highlight"><pre>
+  <h1>Source code for micro_causal_discovery.causal_discovery_causalai</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">causalai.models.time_series.granger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Granger</span>
@@ -85,11 +85,11 @@
 <span class="c1"># To admit the use of this package&#39;s data structures</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">causalai.data.time_series</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesData</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.causal_discovery_algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">CausalDiscoveryBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.micro_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroCausalDiscovery</span>
 
 <div class="viewcode-block" id="GrangerWrapper">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.GrangerWrapper">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">GrangerWrapper</span><span class="p">(</span><span class="n">CausalDiscoveryBase</span><span class="p">):</span>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.GrangerWrapper">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GrangerWrapper</span><span class="p">(</span><span class="n">MicroCausalDiscovery</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Wrapper for Granger algorithm</span>
 <span class="sd">    </span>
@@ -109,7 +109,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">granger</span> <span class="o">=</span> <span class="n">Granger</span><span class="p">(</span><span class="n">TimeSeriesData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GrangerWrapper.extract_parents">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.GrangerWrapper.extract_parents">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.GrangerWrapper.extract_parents">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the parents dict</span>
@@ -124,8 +124,8 @@
 
 
 <div class="viewcode-block" id="VARLINGAMWrapper">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.VARLINGAMWrapper">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">VARLINGAMWrapper</span><span class="p">(</span><span class="n">CausalDiscoveryBase</span><span class="p">):</span>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.VARLINGAMWrapper">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VARLINGAMWrapper</span><span class="p">(</span><span class="n">MicroCausalDiscovery</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Wrapper for VARLINGAM algorithm</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -146,7 +146,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">varlingam</span> <span class="o">=</span> <span class="n">VARLINGAM</span><span class="p">(</span><span class="n">TimeSeriesData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
     
 <div class="viewcode-block" id="VARLINGAMWrapper.extract_parents">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.VARLINGAMWrapper.extract_parents">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.VARLINGAMWrapper.extract_parents">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the parents dict</span>
@@ -163,7 +163,7 @@
 
 
 <div class="viewcode-block" id="get_parents_dict">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.get_parents_dict">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.get_parents_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_parents_dict</span><span class="p">(</span><span class="n">parents_causalai</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Convert the parents dict from CausalAI format to the format used in the benchmarks</span>

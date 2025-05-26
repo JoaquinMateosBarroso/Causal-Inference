@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="causal_discovery_algorithms package" href="causal_discovery_algorithms.html" />
-    <link rel="prev" title="Welcome to Causal Inference for Time Series Analysis documentation!" href="index.html" />
+    <link rel="next" title="micro_causal_discovery package" href="micro_causal_discovery.html" />
+    <link rel="prev" title="Group Causation’s documentation" href="index.html" />
     <link href="_static/wide-page-style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -48,8 +48,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -82,112 +82,111 @@
              
   <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="causal_discovery_algorithms.html">causal_discovery_algorithms package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.causal_discovery_base">causal_discovery_algorithms.causal_discovery_base module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_base.CausalDiscoveryBase"><code class="docutils literal notranslate"><span class="pre">CausalDiscoveryBase</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_base.CausalDiscoveryBase.extract_parents"><code class="docutils literal notranslate"><span class="pre">CausalDiscoveryBase.extract_parents()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_base.CausalDiscoveryBase.extract_parents_time_and_memory"><code class="docutils literal notranslate"><span class="pre">CausalDiscoveryBase.extract_parents_time_and_memory()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="micro_causal_discovery.html">micro_causal_discovery package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.micro_causal_discovery_base">micro_causal_discovery.micro_causal_discovery_base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.micro_causal_discovery_base.MicroCausalDiscovery"><code class="docutils literal notranslate"><span class="pre">MicroCausalDiscovery</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.causal_discovery_causalai">causal_discovery_algorithms.causal_discovery_causalai module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.GrangerWrapper"><code class="docutils literal notranslate"><span class="pre">GrangerWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.GrangerWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">GrangerWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.VARLINGAMWrapper"><code class="docutils literal notranslate"><span class="pre">VARLINGAMWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.VARLINGAMWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">VARLINGAMWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalai.get_parents_dict"><code class="docutils literal notranslate"><span class="pre">get_parents_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.causal_discovery_causalnex">causal_discovery_algorithms.causal_discovery_causalnex module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalnex.DynotearsWrapper"><code class="docutils literal notranslate"><span class="pre">DynotearsWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalnex.DynotearsWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">DynotearsWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalnex.convert_to_dynotears_format"><code class="docutils literal notranslate"><span class="pre">convert_to_dynotears_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalnex.from_numpy_dynamic"><code class="docutils literal notranslate"><span class="pre">from_numpy_dynamic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_causalnex.from_pandas_dynamic"><code class="docutils literal notranslate"><span class="pre">from_pandas_dynamic()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.causal_discovery_custom">causal_discovery_algorithms.causal_discovery_custom module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.check_stationarity"><code class="docutils literal notranslate"><span class="pre">check_stationarity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.create_lag_matrix"><code class="docutils literal notranslate"><span class="pre">create_lag_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.insert_top_k_edges"><code class="docutils literal notranslate"><span class="pre">insert_top_k_edges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.select_order_univariate"><code class="docutils literal notranslate"><span class="pre">select_order_univariate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_ind_test"><code class="docutils literal notranslate"><span class="pre">summarized_causality_ind_test()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_multivariate_granger"><code class="docutils literal notranslate"><span class="pre">summarized_causality_multivariate_granger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_univariate_granger"><code class="docutils literal notranslate"><span class="pre">summarized_causality_univariate_granger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.causal_discovery_tigramite">causal_discovery_algorithms.causal_discovery_tigramite module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.LPCMCIWrapper"><code class="docutils literal notranslate"><span class="pre">LPCMCIWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.LPCMCIWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">LPCMCIWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.PCMCIModifiedWrapper"><code class="docutils literal notranslate"><span class="pre">PCMCIModifiedWrapper</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.PCMCIWrapper"><code class="docutils literal notranslate"><span class="pre">PCMCIWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.PCMCIWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">PCMCIWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.PCStableWrapper"><code class="docutils literal notranslate"><span class="pre">PCStableWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.PCStableWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">PCStableWrapper.extract_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.causal_discovery_tigramite.convert_to_tigramite_dataframe"><code class="docutils literal notranslate"><span class="pre">convert_to_tigramite_dataframe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery.modified_pcmci">causal_discovery_algorithms.modified_pcmci module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.modified_pcmci.PCMCI_Modified"><code class="docutils literal notranslate"><span class="pre">PCMCI_Modified</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micro_causal_discovery.html#micro_causal_discovery.modified_pcmci.PCMCI_Modified.run_pcmciplus"><code class="docutils literal notranslate"><span class="pre">PCMCI_Modified.run_pcmciplus()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.causal_discovery_causalai">causal_discovery_algorithms.causal_discovery_causalai module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.GrangerWrapper"><code class="docutils literal notranslate"><span class="pre">GrangerWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.GrangerWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">GrangerWrapper.extract_parents()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="micro_causal_discovery.html#module-micro_causal_discovery">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.VARLINGAMWrapper"><code class="docutils literal notranslate"><span class="pre">VARLINGAMWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.VARLINGAMWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">VARLINGAMWrapper.extract_parents()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalai.get_parents_dict"><code class="docutils literal notranslate"><span class="pre">get_parents_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.causal_discovery_causalnex">causal_discovery_algorithms.causal_discovery_causalnex module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalnex.DynotearsWrapper"><code class="docutils literal notranslate"><span class="pre">DynotearsWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalnex.DynotearsWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">DynotearsWrapper.extract_parents()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_causalnex.get_parents_from_causalnex_edges"><code class="docutils literal notranslate"><span class="pre">get_parents_from_causalnex_edges()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.causal_discovery_custom">causal_discovery_algorithms.causal_discovery_custom module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.check_stationarity"><code class="docutils literal notranslate"><span class="pre">check_stationarity()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.create_lag_matrix"><code class="docutils literal notranslate"><span class="pre">create_lag_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.insert_top_k_edges"><code class="docutils literal notranslate"><span class="pre">insert_top_k_edges()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.select_order_univariate"><code class="docutils literal notranslate"><span class="pre">select_order_univariate()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_ind_test"><code class="docutils literal notranslate"><span class="pre">summarized_causality_ind_test()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_multivariate_granger"><code class="docutils literal notranslate"><span class="pre">summarized_causality_multivariate_granger()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_univariate_granger"><code class="docutils literal notranslate"><span class="pre">summarized_causality_univariate_granger()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.causal_discovery_tigramite">causal_discovery_algorithms.causal_discovery_tigramite module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.LPCMCIWrapper"><code class="docutils literal notranslate"><span class="pre">LPCMCIWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.LPCMCIWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">LPCMCIWrapper.extract_parents()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.PCMCIModifiedWrapper"><code class="docutils literal notranslate"><span class="pre">PCMCIModifiedWrapper</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.PCMCIWrapper"><code class="docutils literal notranslate"><span class="pre">PCMCIWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.PCMCIWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">PCMCIWrapper.extract_parents()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.PCStableWrapper"><code class="docutils literal notranslate"><span class="pre">PCStableWrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.PCStableWrapper.extract_parents"><code class="docutils literal notranslate"><span class="pre">PCStableWrapper.extract_parents()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_tigramite.convert_to_tigramite_dataframe"><code class="docutils literal notranslate"><span class="pre">convert_to_tigramite_dataframe()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms.modified_pcmci">causal_discovery_algorithms.modified_pcmci module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.modified_pcmci.PCMCI_Modified"><code class="docutils literal notranslate"><span class="pre">PCMCI_Modified</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_discovery_algorithms.html#causal_discovery_algorithms.modified_pcmci.PCMCI_Modified.run_pcmciplus"><code class="docutils literal notranslate"><span class="pre">PCMCI_Modified.run_pcmciplus()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="groups_extraction.html">groups_extraction package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction.causal_groups_extraction">causal_groups_extraction.causal_groups_extraction module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="groups_extraction.html#groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase.extract_groups"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase.extract_groups()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="groups_extraction.html#groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase.extract_groups_time_and_memory"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase.extract_groups_time_and_memory()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="causal_discovery_algorithms.html#module-causal_discovery_algorithms">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="causal_groups_extraction.html">causal_groups_extraction package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction.causal_groups_extraction">causal_groups_extraction.causal_groups_extraction module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase.extract_groups"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase.extract_groups()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.causal_groups_extraction.CausalGroupsExtractorBase.extract_groups_time_and_memory"><code class="docutils literal notranslate"><span class="pre">CausalGroupsExtractorBase.extract_groups_time_and_memory()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction.exhaustive_causal_groups_extraction">causal_groups_extraction.exhaustive_causal_groups_extraction module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">ExhaustiveCausalGroupsExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="groups_extraction.html#groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">ExhaustiveCausalGroupsExtractor.extract_groups()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction.exhaustive_causal_groups_extraction">causal_groups_extraction.exhaustive_causal_groups_extraction module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">ExhaustiveCausalGroupsExtractor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.exhaustive_causal_groups_extraction.ExhaustiveCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">ExhaustiveCausalGroupsExtractor.extract_groups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction.genetic_causal_groups_extraction">causal_groups_extraction.genetic_causal_groups_extraction module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">GeneticCausalGroupsExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="groups_extraction.html#groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">GeneticCausalGroupsExtractor.extract_groups()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.genetic_causal_groups_extraction.crossover_partitions"><code class="docutils literal notranslate"><span class="pre">crossover_partitions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction.random_causal_groups_extraction">causal_groups_extraction.random_causal_groups_extraction module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">RandomCausalGroupsExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="groups_extraction.html#groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">RandomCausalGroupsExtractor.extract_groups()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction.genetic_causal_groups_extraction">causal_groups_extraction.genetic_causal_groups_extraction module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">GeneticCausalGroupsExtractor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.genetic_causal_groups_extraction.GeneticCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">GeneticCausalGroupsExtractor.extract_groups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction.stat_utils">causal_groups_extraction.stat_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_average_pc1_explained_variance"><code class="docutils literal notranslate"><span class="pre">get_average_pc1_explained_variance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_explainability_score"><code class="docutils literal notranslate"><span class="pre">get_explainability_score()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_harmonic_explained_variance"><code class="docutils literal notranslate"><span class="pre">get_harmonic_explained_variance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_normalized_mutual_information"><code class="docutils literal notranslate"><span class="pre">get_normalized_mutual_information()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_pc1_explained_variance"><code class="docutils literal notranslate"><span class="pre">get_pc1_explained_variance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups_extraction.html#groups_extraction.stat_utils.get_scores_getter"><code class="docutils literal notranslate"><span class="pre">get_scores_getter()</span></code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction.random_causal_groups_extraction">causal_groups_extraction.random_causal_groups_extraction module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor"><code class="docutils literal notranslate"><span class="pre">RandomCausalGroupsExtractor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.random_causal_groups_extraction.RandomCausalGroupsExtractor.extract_groups"><code class="docutils literal notranslate"><span class="pre">RandomCausalGroupsExtractor.extract_groups()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction.stat_utils">causal_groups_extraction.stat_utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_average_pc1_explained_variance"><code class="docutils literal notranslate"><span class="pre">get_average_pc1_explained_variance()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_bic"><code class="docutils literal notranslate"><span class="pre">get_bic()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_explainability_score"><code class="docutils literal notranslate"><span class="pre">get_explainability_score()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_normalized_mutual_information"><code class="docutils literal notranslate"><span class="pre">get_normalized_mutual_information()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_pc1_explained_variance"><code class="docutils literal notranslate"><span class="pre">get_pc1_explained_variance()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_scores_getter"><code class="docutils literal notranslate"><span class="pre">get_scores_getter()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="causal_groups_extraction.html#module-causal_groups_extraction">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groups_extraction.html#module-groups_extraction">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="group_causal_discovery.html">group_causal_discovery package</a><ul>
@@ -277,8 +276,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Causal Inference for Time Series Analysis documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="causal_discovery_algorithms.html" class="btn btn-neutral float-right" title="causal_discovery_algorithms package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Group Causation’s documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="micro_causal_discovery.html" class="btn btn-neutral float-right" title="micro_causal_discovery package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

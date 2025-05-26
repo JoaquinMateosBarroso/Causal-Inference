@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_discovery_algorithms.causal_discovery_custom &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
+  <title>micro_causal_discovery.causal_discovery_custom &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -44,8 +44,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">causal_discovery_algorithms.causal_discovery_custom</li>
+      <li class="breadcrumb-item active">micro_causal_discovery.causal_discovery_custom</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,7 +76,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for causal_discovery_algorithms.causal_discovery_custom</h1><div class="highlight"><pre>
+  <h1>Source code for micro_causal_discovery.causal_discovery_custom</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -87,7 +87,7 @@
 
 
 <div class="viewcode-block" id="check_stationarity">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.check_stationarity">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.check_stationarity">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_stationarity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">significance</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check covariance stationarity for each series in X using the Augmented Dickey-Fuller test.</span>
@@ -103,7 +103,7 @@
 
 
 <div class="viewcode-block" id="create_lag_matrix">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.create_lag_matrix">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.create_lag_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_lag_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a lagged design matrix from the time series data.</span>
@@ -122,7 +122,7 @@
 
 
 <div class="viewcode-block" id="insert_top_k_edges">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.insert_top_k_edges">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.insert_top_k_edges">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">insert_top_k_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">p_values</span><span class="p">,</span> <span class="n">max_summarized_crosslinks_density</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Insert in G the top k% edges with the lowest p-values.</span>
@@ -141,7 +141,7 @@
 
 
 <div class="viewcode-block" id="summarized_causality_multivariate_granger">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_multivariate_granger">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_multivariate_granger">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">summarized_causality_multivariate_granger</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">max_lag</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_summarized_crosslinks_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
                                    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.025</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -234,7 +234,7 @@
 
 
 <div class="viewcode-block" id="summarized_causality_univariate_granger">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_univariate_granger">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_univariate_granger">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">summarized_causality_univariate_granger</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">max_lag</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_summarized_crosslinks_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
                                             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.025</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -316,7 +316,7 @@
 
 
 <div class="viewcode-block" id="select_order_univariate">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.select_order_univariate">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.select_order_univariate">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">select_order_univariate</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">max_lag</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Selects the optimal lag order for a univariate time series using AIC.</span>
@@ -343,7 +343,7 @@
 
 
 <div class="viewcode-block" id="summarized_causality_ind_test">
-<a class="viewcode-back" href="../../causal_discovery_algorithms.html#causal_discovery_algorithms.causal_discovery_custom.summarized_causality_ind_test">[docs]</a>
+<a class="viewcode-back" href="../../micro_causal_discovery.html#micro_causal_discovery.causal_discovery_custom.summarized_causality_ind_test">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">summarized_causality_ind_test</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">max_lag</span><span class="p">,</span> <span class="n">max_summarized_crosslinks_density</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Obtain the summarized causality graph, using independence test with the whole lags of each variable.</span>

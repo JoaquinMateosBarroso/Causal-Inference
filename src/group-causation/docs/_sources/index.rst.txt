@@ -15,7 +15,6 @@ Group Causation is an open source Python library for causal discovery on time se
 Causal Discovery Class Diagram
 ==============================
 ..   inheritance-diagram::
-	causal_discovery_base.CausalDiscoveryBase
 	micro_causal_discovery.MicroCausalDiscovery
 	micro_causal_discovery.GrangerWrapper
 	micro_causal_discovery.VARLINGAMWrapper
@@ -35,10 +34,10 @@ Causal Discovery Class Diagram
 Group Extraction Class Diagram
 ==============================
 ..   inheritance-diagram::
-	causal_groups_extraction.CausalGroupsExtractorBase
-	causal_groups_extraction.ExhaustiveCausalGroupsExtractor
-	causal_groups_extraction.RandomCausalGroupsExtractor
-	causal_groups_extraction.GeneticCausalGroupsExtractor
+	groups_extraction.CausalGroupsExtractorBase
+	groups_extraction.ExhaustiveCausalGroupsExtractor
+	groups_extraction.RandomCausalGroupsExtractor
+	groups_extraction.GeneticCausalGroupsExtractor
 	:parts: 1
 	:caption: ABC stands for Abstract Base Class.
 

@@ -77,7 +77,7 @@ class DimensionReductionGroupCausalDiscovery(GroupCausalDiscovery):
         self.causal_discovery_alg = self._getCausalDiscoveryAlgorithm()
         
         group_parents = self.causal_discovery_alg.extract_parents()
-
+                
         return group_parents
 
     def _getCausalDiscoveryAlgorithm(self) -> MicroCausalDiscovery:

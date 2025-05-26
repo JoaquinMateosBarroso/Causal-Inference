@@ -65,17 +65,17 @@ import scipy.linalg as slin
 import scipy.optimize as sopt
 
 def from_pandas_dynamic(
-    time_series: Union[pd.DataFrame, List[pd.DataFrame]],
-    p: int,
-    lambda_w: float = 0.1,
-    lambda_a: float = 0.1,
-    max_iter: int = 100,
-    h_tol: float = 1e-8,
-    w_threshold: float = 0.0,
-    tabu_edges: List[Tuple[int, int, int]] = None,
-    tabu_parent_nodes: List[int] = None,
-    tabu_child_nodes: List[int] = None,
-) -> dict[int, list[tuple[int, int]]]:
+        time_series: Union[pd.DataFrame, List[pd.DataFrame]],
+        p: int,
+        lambda_w: float = 0.1,
+        lambda_a: float = 0.1,
+        max_iter: int = 100,
+        h_tol: float = 1e-8,
+        w_threshold: float = 0.0,
+        tabu_edges: List[Tuple[int, int, int]] = None,
+        tabu_parent_nodes: List[int] = None,
+        tabu_child_nodes: List[int] = None,
+    ) -> dict[int, list[tuple[int, int]]]:
     """
     Learn the graph structure of a Dynamic Bayesian Network describing conditional dependencies between variables in
     data. The input data is a time series or a list of realisations of a same time series.
@@ -85,15 +85,19 @@ def from_pandas_dynamic(
     encapsulated how acyclic the graph is (less = more acyclic).
 
     Based on "DYNOTEARS: Structure Learning from Time-Series Data".
-    https://arxiv.org/abs/2002.00498
-    @inproceedings{pamfil2020dynotears,
-        title={DYNOTEARS: Structure Learning from Time-Series Data},
-        author={Pamfil, Roxana and Sriwattanaworachai, Nisara and Desai, Shaan and Pilgerstorfer,
-        Philip and Georgatzis, Konstantinos and Beaumont, Paul and Aragam, Bryon},
-        booktitle={International Conference on Artificial Intelligence and Statistics},
-        pages={1595--1605},
-        year={2020}year={2020},
-    }
+    
+    .. code-block:: bibtex
+    
+        https://arxiv.org/abs/2002.00498
+        @inproceedings{pamfil2020dynotears,
+            title={DYNOTEARS: Structure Learning from Time-Series Data},
+            author={Pamfil, Roxana and Sriwattanaworachai, Nisara and Desai, Shaan and Pilgerstorfer,
+            Philip and Georgatzis, Konstantinos and Beaumont, Paul and Aragam, Bryon},
+            booktitle={International Conference on Artificial Intelligence and Statistics},
+            pages={1595--1605},
+            year={2020},
+        }
+    
     Args:
         time_series: pd.DataFrame or List of pd.DataFrame instances.
         If a list is provided each element of the list being an realisation of a time series (i.e. time series governed
@@ -146,17 +150,17 @@ def from_pandas_dynamic(
 
 
 def from_numpy_dynamic(
-    X: np.ndarray,
-    Xlags: np.ndarray,
-    lambda_w: float = 0.1,
-    lambda_a: float = 0.1,
-    max_iter: int = 100,
-    h_tol: float = 1e-8,
-    w_threshold: float = 0.0,
-    tabu_edges: List[Tuple[int, int, int]] = None,
-    tabu_parent_nodes: List[int] = None,
-    tabu_child_nodes: List[int] = None,
-) -> dict[int, list[tuple[int, int]]]:
+        X: np.ndarray,
+        Xlags: np.ndarray,
+        lambda_w: float = 0.1,
+        lambda_a: float = 0.1,
+        max_iter: int = 100,
+        h_tol: float = 1e-8,
+        w_threshold: float = 0.0,
+        tabu_edges: List[Tuple[int, int, int]] = None,
+        tabu_parent_nodes: List[int] = None,
+        tabu_child_nodes: List[int] = None,
+    ) -> dict[int, list[tuple[int, int]]]:
     """
     Learn the graph structure of a Dynamic Bayesian Network describing conditional dependencies between variables in
     data. The input data is time series data present in numpy arrays X and Xlags.
@@ -168,18 +172,21 @@ def from_numpy_dynamic(
 
     Based on "DYNOTEARS: Structure Learning from Time-Series Data".
     https://arxiv.org/abs/2002.00498
-    @inproceedings{pamfil2020dynotears,
-        title={DYNOTEARS: Structure Learning from Time-Series Data},
-        author={Pamfil, Roxana and Sriwattanaworachai, Nisara and Desai, Shaan and Pilgerstorfer,
-        Philip and Georgatzis, Konstantinos and Beaumont, Paul and Aragam, Bryon},
-        booktitle={International Conference on Artificial Intelligence and Statistics},
-        pages={1595--1605},
-        year={2020}year={2020},
-    }
+    
+    .. code-block:: bibtex
+    
+        @inproceedings{pamfil2020dynotears,
+            title={DYNOTEARS: Structure Learning from Time-Series Data},
+            author={Pamfil, Roxana and Sriwattanaworachai, Nisara and Desai, Shaan and Pilgerstorfer,
+            Philip and Georgatzis, Konstantinos and Beaumont, Paul and Aragam, Bryon},
+            booktitle={International Conference on Artificial Intelligence and Statistics},
+            pages={1595--1605},
+            year={2020},
+        }
 
     Args:
         X (np.ndarray): 2d input data, axis=1 is data columns, axis=0 is data rows. Each column represents one variable,
-        and each row represents x(m,t) i.e. the mth time series at time t.
+            and each row represents x(m,t) i.e. the mth time series at time t.
         Xlags (np.ndarray): shifted data of X with lag orders stacking horizontally. Xlags=[shift(X,1)|...|shift(X,p)]
         lambda_w (float): l1 regularization parameter of intra-weights W
         lambda_a (float): l1 regularization parameter of inter-weights A
@@ -190,6 +197,7 @@ def from_numpy_dynamic(
         forbidden in the INTRA graph (W), while lag > 0 implies an INTER weight equal zero.
         tabu_parent_nodes: list of nodes banned from being a parent of any other nodes.
         tabu_child_nodes: list of nodes banned from being a child of any other nodes.
+    
     Returns:
         Dictionary with the parents of each node. The dictionary is in the format {son: [(parent, lag), ...]} where son
         is the index of the child node and parent is the index of the parent node. The lag is the time lag of the parent
@@ -476,6 +484,7 @@ def convert_to_dynotears_format(
 ) -> Union[pd.DataFrame, Tuple[np.ndarray, np.ndarray]]:
     """
     Applies transformation to format the dataframe properly
+    
     Args:
         time_series: time_series: pd.DataFrame or List of pd.DataFrame instances. Details on `fit` documentation
         p: Number of past interactions we allow the model to create. The state of a variable at time `t` is affected by
@@ -508,6 +517,7 @@ def convert_to_dynotears_format(
 def _check_input_from_pandas(time_series: List[pd.DataFrame], columns: list[str]):
     """
     Check if the input of function `from_pandas_dynamic` is valid
+    
     Args:
         time_series: List of pd.DataFrame instances.
             each element of the list being an realisation of a same time series

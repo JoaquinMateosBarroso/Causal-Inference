@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>causal_groups_extraction.stat_utils &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
+  <title>groups_extraction.stat_utils &mdash; Group Causation, a library for Group Time Series Analysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
@@ -44,8 +44,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_discovery_algorithms.html">causal_discovery_algorithms package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../causal_groups_extraction.html">causal_groups_extraction package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../micro_causal_discovery.html">micro_causal_discovery package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../groups_extraction.html">groups_extraction package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../group_causal_discovery.html">group_causal_discovery package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmark.html">benchmark module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_toy_datasets.html">create_toy_datasets module</a></li>
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">causal_groups_extraction.stat_utils</li>
+      <li class="breadcrumb-item active">groups_extraction.stat_utils</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,19 +76,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for causal_groups_extraction.stat_utils</h1><div class="highlight"><pre>
+  <h1>Source code for groups_extraction.stat_utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalized_mutual_info_score</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">group_causation.group_causal_discovery</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupCausalDiscovery</span><span class="p">,</span> <span class="n">DimensionReductionGroupCausalDiscovery</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">pgmpy.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGaussianBayesianNetwork</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pgmpy.estimators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaximumLikelihoodEstimator</span>
 
 <div class="viewcode-block" id="get_pc1_explained_variance">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_pc1_explained_variance">[docs]</a>
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_pc1_explained_variance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pc1_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get the explained variance of the first principal component of the data.</span>
@@ -102,7 +98,7 @@
 
 
 <div class="viewcode-block" id="get_average_pc1_explained_variance">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_average_pc1_explained_variance">[docs]</a>
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_average_pc1_explained_variance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_average_pc1_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get the average explained variance of the first principal component of the data</span>
@@ -113,14 +109,28 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">explained_variances</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="get_harmonic_explained_variance">
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_harmonic_explained_variance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_harmonic_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the average explained variance of the first principal component of the data</span>
+<span class="sd">    for each group.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">explained_variances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">get_pc1_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="p">)])</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">explained_variances</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">explained_variances</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span></div>
+
+
 <div class="viewcode-block" id="get_explainability_score">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_explainability_score">[docs]</a>
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_explainability_score">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_explainability_score</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get a score that represents how well the data can be explained by the groups.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">explained_variance</span> <span class="o">=</span> <span class="n">get_average_pc1_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
-    <span class="n">inverse_n_groups</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cleaned_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">explained_variance</span> <span class="o">=</span> <span class="n">get_harmonic_explained_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cleaned_groups</span><span class="p">)</span>
+    <span class="n">inverse_n_groups</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_groups</span><span class="p">)</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     
     <span class="n">geometric_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">explained_variance</span> <span class="o">*</span> <span class="n">inverse_n_groups</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     
@@ -128,7 +138,7 @@
 
 
 <div class="viewcode-block" id="get_normalized_mutual_information">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_normalized_mutual_information">[docs]</a>
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_normalized_mutual_information">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_mutual_information</span><span class="p">(</span><span class="n">pred_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">gt_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get the normalized mutual information between two sets of groups.</span>
@@ -153,76 +163,16 @@
     <span class="k">return</span> <span class="n">normalized_mutual_info_score</span><span class="p">(</span><span class="n">gt_labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_bic">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_bic">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_bic</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">discovery_model</span><span class="p">:</span> <span class="n">GroupCausalDiscovery</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Get the BIC score of the causal model inferred by the groups. A Dynamic Bayesian Network with linear Gaussian CPDs</span>
-<span class="sd">    is assumed to calculate the BIC score.</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">        data: The data used to infer the causal model.</span>
-<span class="sd">        groups: The groups used to infer the causal model.</span>
-<span class="sd">        discovery_model: The model used to infer the causal model. If None, a default model will be used.</span>
-<span class="sd">    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        The BIC score of the inferred causal model.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">discovery_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">discovery_model</span> <span class="o">=</span> <span class="n">DimensionReductionGroupCausalDiscovery</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
-    
-    <span class="c1"># Extract parents and convert to pgmpy format</span>
-    <span class="n">parents</span> <span class="o">=</span> <span class="n">discovery_model</span><span class="o">.</span><span class="n">extract_parents</span><span class="p">()</span>
-    
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_log_likelihood</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-        <span class="n">log_likelihood</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># Iterate over each time step (row)</span>
-            <span class="n">observation</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])}</span>  <span class="c1"># Convert row to dict</span>
-            <span class="n">prob</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">forward_inference</span><span class="p">([</span><span class="n">observation</span><span class="p">])</span>
-            <span class="n">log_likelihood</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">log_likelihood</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">count_parameters</span><span class="p">(</span><span class="n">dbn</span><span class="p">):</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dbn</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
-            <span class="n">node_card</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">cardinality</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-            <span class="n">parent_card</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">dbn</span><span class="o">.</span><span class="n">parents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[]):</span>
-                <span class="n">parent_card</span> <span class="o">*=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">cardinality</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span>
-            <span class="c1"># (node_card - 1) free parameters for each configuration of parents</span>
-            <span class="n">k</span> <span class="o">+=</span> <span class="p">(</span><span class="n">node_card</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">parent_card</span>
-        <span class="k">return</span> <span class="n">k</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_bic</span><span class="p">(</span><span class="n">dbn</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data must contain at least one sample.&quot;</span><span class="p">)</span>
-        
-        <span class="n">logL</span> <span class="o">=</span> <span class="n">compute_log_likelihood</span><span class="p">(</span><span class="n">dbn</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">dbn</span><span class="p">)</span>
-        
-        <span class="c1"># Compute BIC: -2*log_likelihood + k*log(n)</span>
-        <span class="n">bic</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">logL</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bic</span>
-
-    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearGaussianBayesianNetwork</span><span class="p">()</span>
-    
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">MaximumLikelihoodEstimator</span><span class="p">)</span>
-    
-    
-    <span class="k">return</span> <span class="n">bic</span></div>
-
-
 <div class="viewcode-block" id="get_scores_getter">
-<a class="viewcode-back" href="../../causal_groups_extraction.html#causal_groups_extraction.stat_utils.get_scores_getter">[docs]</a>
+<a class="viewcode-back" href="../../groups_extraction.html#groups_extraction.stat_utils.get_scores_getter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_scores_getter</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Generate a score getter function that receives a set of groups and returns a score to maximize.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">scores_getters</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;average_variance_explained&#39;</span><span class="p">:</span> <span class="n">get_pc1_explained_variance</span><span class="p">,</span>
+        <span class="s1">&#39;harmonic_variance_explained&#39;</span><span class="p">:</span> <span class="n">get_harmonic_explained_variance</span><span class="p">,</span>
         <span class="s1">&#39;explainability_score&#39;</span><span class="p">:</span> <span class="n">get_explainability_score</span><span class="p">,</span>
-        <span class="s1">&#39;bic&#39;</span><span class="p">:</span> <span class="n">get_bic</span><span class="p">,</span>
     <span class="p">}</span>
     
     <span class="k">return</span> <span class="k">lambda</span> <span class="n">groups</span><span class="p">:</span> <span class="p">[</span><span class="n">scores_getters</span><span class="p">[</span><span class="n">score</span><span class="p">](</span><span class="n">data</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">]</span></div>
